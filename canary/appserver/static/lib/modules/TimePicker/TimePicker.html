@@ -1,0 +1,15 @@
+<%
+# Copyright (C) 2018-2019 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+ % if module.get("label",""):
+    <label>${module.get("label","")|h}</label>
+ % endif
+ <ul class="svMenu top menuFormElement">
+   <li class="topLevel hasSubMenu">
+     <a class="topAnchor hasSubMenu" href="#"></a>
+     <span class="ui-icon ui-icon-triangle-1-s"></span>
+   </li>
+ </ul>
+

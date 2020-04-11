@@ -1,0 +1,33 @@
+
+.Pulldown select,
+.TextField input {
+    border:0px;
+    display:inline;
+    font-weight:bold;
+}
+
+
+.SearchControls,
+.JobStatus,
+.Button,
+.SubmitButton,
+.doNotPrint {
+    display:none;
+}
+
+
+.layoutRow.viewHeader {
+    display:block !important;
+}
+
+.SimpleResultsTable .simpleResultsTableWrapper {
+    overflow-x: visible;
+}
+.SimpleResultsTable table.enableMouseover tr td.d {
+    color:#000;
+}
+
+.Pulldown div.multipleSelect option:not(:checked) {
+    display:none;
+}
+

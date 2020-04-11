@@ -1,0 +1,16 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="/base.html" />
+
+<link type="text/css" href="${canary_static_url_prefix}lib/editor/editor.css" rel="stylesheet" />
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/jquery/jquery-3.1.0.js"></script>
+
+
+<div class="outerWrapper">
+
+    <h2>${title|h}</h2>
+
+    <p class="description">${text| h}</p>
+    <p class="description">${escapedText}</p>
+</div>

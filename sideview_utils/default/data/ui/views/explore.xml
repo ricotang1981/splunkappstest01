@@ -1,0 +1,469 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="search.html" isSticky="False">
+  <label>Sideview Explorer</label>
+  <module name="SideviewUtils" layoutPanel="messaging">
+    <param name="customJavascript">sideview_utils/explore.js sideview_utils/report.js sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/explore.css</param>
+  </module>
+  
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+
+  <module name="Message" layoutPanel="viewHeader">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">False</param>
+  </module>
+  <module name="Message" layoutPanel="viewHeader">
+    <param name="filter">splunk.search.*</param>
+    <param name="maxSize">1</param>
+    <param name="clearOnJobDispatch">True</param>
+  </module>
+
+  
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    <module name="Search">
+      <param name="search">| stats count | fields - count | fields `filterable_fields` | transpose | eval type="filterable_fields" | append [| stats count | fields - count | fields `numeric_fields` | transpose | eval type="numeric_fields"] | stats list(column) as fields by type | eval fields=mvjoin(fields," ") | eval foo="1" | chart last(fields) over foo by type | fields - foo | eval numeric_field_stats=numeric_fields | eval numeric_field_stats=split(numeric_field_stats," ") | eval numeric_field_stats=mvjoin(numeric_field_stats,") last(") | eval numeric_field_stats = " last(" + numeric_field_stats + ")"</param>
+      <module name="ResultsValueSetter">
+        <param name="fields">filterable_fields,numeric_fields,numeric_field_stats</param>
+
+        <module name="TimeRangePicker">
+          <param name="searchWhenChanged">True</param>
+          <param name="default">Last 4 hours</param>
+
+          <module name="TextField">
+            <param name="name">searchTerms</param>
+            <param name="label">misc search terms</param>
+            <param name="width">200px</param>
+
+            <module name="Filters">
+              <param name="name">filters</param>
+
+              <module name="Search" layoutPanel="mainSearchControls">
+                <param name="search"><![CDATA[
+                  `get_base_data_for_explorer` `conversions` $filters$ $searchTerms$ `get_fields_for_explore_pulldowns("$filterable_fields$","$numeric_fields$","$filters.fields$")` 
+                ]]></param>
+
+                <module name="Pulldown">
+                  <param name="name">field</param>
+                  <param name="valueField">field</param>
+                  <param name="labelField">label</param>
+                  <param name="postProcess">| eval filterableFields=split("$filterable_fields$"," ") | where not isnull(mvfind(filterableFields,field))</param>
+
+                  <param name="staticOptions">
+                    <list><param name="label">Add new filter ...</param><param name="value"></param></list>
+                  </param>
+                  <param name="customBehavior">hideDownstreamModulesUntilFieldSelected</param>
+
+                  <module name="Pulldown">
+                    <param name="name">operator</param>
+                    <param name="staticOptions">
+                      <list><param name="value">=</param></list>
+                      <list><param name="value">&gt;</param></list>
+                      <list><param name="value">&lt;</param></list>
+                      <list><param name="value">!=</param></list>
+                    </param>
+
+                    <module name="Search" group="list">
+                      <param name="search"><![CDATA[
+                        `get_base_data_for_explorer` `conversions` $filters$ $searchTerms$ | head 1000 | stats count by $field$ | fields - count | sort $field$ | rename $field$ as value
+                      ]]></param>
+
+                      <module name="Pulldown">
+                        <param name="name">value</param>
+                        <param name="valueField">value</param>
+                        <param name="staticOptions">
+                          <list><param name="value"></param><param name="label">enter value manually...</param></list>
+                        </param>
+
+                        <module name="TextField">
+                          <param name="name">value</param>
+                          <param name="customBehavior">activeOnlyIfManualEntrySelected</param>
+
+                          <module name="Button">
+                            <param name="label">+</param>
+                            <param name="allowSoftSubmit">False</param>
+                            <param name="allowAutoSubmit">False</param>
+                            <module name="CustomBehavior">
+                              <param name="customBehavior">addNewFilterToFilterBar</param>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+                  
+                <module name="PostProcess">
+                  <param name="search">search count!=1 | eval filterableFields=split("$filterable_fields$"," ") | where not isnull(mvfind(filterableFields,field)) | fields - filterableFields  | rename field as highestNonUniqueField | head 1 | eval hasNonUniqueField="hasNonUniqueField" | append [| stats count | eval hasNonUniqueField="noNonUniqueField" | fields - count]</param>
+
+                  <!-- 
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                      $search$<br>
+                      <br>
+                      $postProcess$
+                      ]]></param>
+                  </module>
+                  -->
+                  
+                  <module name="ResultsValueSetter">
+                    <param name="fields">highestNonUniqueField,hasNonUniqueField</param>
+
+                    <module name="PostProcess">
+                      <param name="search"> </param>
+                      
+
+                      <module name="Tabs">
+                        <param name="name">selectedTab</param>
+                        <param name="staticTabs">
+                          <list>
+                            <param name="label">Browse</param>
+                            <param name="value">Browse</param>
+                          </list>
+                          <list>
+                            <param name="label">Report</param>
+                            <param name="value">Report</param>
+                          </list>
+                        </param>
+
+
+                        <module name="Switcher" group=" " layoutPanel="graphArea">
+                          <param name="selectedGroup">$selectedTab$</param>
+
+                          <module name="Switcher" group="Browse">
+                            <param name="selectedGroup">$hasNonUniqueField$</param>
+
+                            <!-- 1. STRAIGHT MEASUREMENTS -->
+                            <module name="NullModule" group="noNonUniqueField">
+
+                              <module name="HTML">
+                                <param name="html"><![CDATA[
+                                  Drill in on any statistic to be taken to the corresponding report.
+                                  ]]></param>
+                              </module>
+
+                              <module name="Search">
+                                <param name="search"><![CDATA[
+                                  `get_base_data_for_explorer` `conversions` $filters$ $searchTerms$ | fields `numeric_fields` | fields - _* | stats min max avg | transpose | rex field=column "(?<stat>[^\(]+)\((?<field>[^\)]+)" | rename "row 1" as value | table field stat value | xyseries field stat value
+                                ]]></param>
+                                
+
+                                <module name="Pager">
+                                  <module name="SimpleResultsTable">
+                                    <param name="displayRowNumbers">False</param>
+                                    <param name="entityName">results</param>
+                                    <param name="drilldown">all</param>
+
+                                    <module name="CustomBehavior">
+                                      <param name="customBehavior">pivotToReportTab</param>
+                                    </module>
+
+                                  </module>
+                                  <module name="Pager"></module>
+                                </module>
+                              </module>
+                            </module>
+
+                            <!-- 2. segments to show -->
+                            <module name="NullModule" group="hasNonUniqueField">
+
+                              <module name="Search">
+                                <param name="search">`get_base_data_for_explorer` `conversions` $filters$ $searchTerms$ | chart $numeric_field_stats$ count over $highestNonUniqueField$ </param>
+
+                                <module name="ProgressIndicator" />
+
+                                <module name="Pager">
+                                  <module name="SimpleResultsTable">
+                                    <param name="displayRowNumbers">False</param>
+                                    <param name="entityName">results</param>
+                                    <param name="drilldown">row</param>
+
+                                    <module name="CustomBehavior">
+                                      <param name="customBehavior">bounceUpToFilter</param>
+                                    </module>
+
+                                  </module>
+                                  <module name="Pager"></module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+
+                          <module name="Pulldown" group="Report">
+                            <param name="name">stat</param>
+                            <param name="label">Show the</param>
+                            <param name="staticOptions">
+                              <list>
+                                <param name="label">count of events</param>
+                                <param name="value"></param>
+                              </list>
+                              <list>
+                                <param name="label">distinct count of</param>
+                                <param name="value">dc</param>
+                              </list>
+                              <list>
+                                <param name="label">sum of</param>
+                                <param name="value">sum</param>
+                              </list>
+                              <list>
+                                <param name="label">average</param>
+                                <param name="value">avg</param>
+                              </list>
+                              <list>
+                                <param name="label">max</param>
+                                <param name="value">max</param>
+                              </list>
+                              <list>
+                                <param name="label">min</param>
+                                <param name="value">min</param>
+                              </list>
+                              <list>
+                                <param name="label">95th percentile of</param>
+                                <param name="value">perc95</param>
+                              </list>
+                              <list>
+                                <param name="label">5th percentile of</param>
+                                <param name="value">perc5</param>
+                              </list>
+                              <list>
+                                <param name="label">std deviation of</param>
+                                <param name="value">stdev</param>
+                              </list>
+                              <list>
+                                <param name="label">variance of</param>
+                                <param name="value">var</param>
+                              </list>
+                              
+                            </param>
+
+                            <module name="Pulldown">
+                              <param name="name">yField</param>
+                              <param name="postProcess"></param>
+                              <param name="staticOptions">
+                                <!-- 
+                                <list>
+                                  <param name="label">of all properties</param>
+                                  <param name="value">all</param>
+                                </list>
+                                -->
+                              </param>
+                              <param name="valueField">field</param>
+                              <param name="customBehavior">customYFieldPulldownForExplore</param>
+
+
+                              <module name="Pulldown">
+                                <param name="name">xField</param>
+                                <param name="postProcess">eval label="for each " + field</param>
+                                <param name="staticOptions">
+                                  <list>
+                                    <param name="label">over time</param>
+                                    <param name="value">_time</param>
+                                  </list>
+                                </param>
+                                <param name="valueField">field</param>
+                                <param name="labelField">label</param>
+
+                                <module name="Pulldown">
+                                  <param name="name">zField</param>
+                                  <param name="label">split by</param>
+                                  <param name="customBehavior">customZFieldPulldown</param>
+                                  <param name="staticOptions">
+                                    <list>
+                                      <param name="label">(none)</param>
+                                      <param name="value"></param>
+                                    </list>
+                                  </param>
+                                  <param name="valueField">field</param>
+
+                                  <module name="Search">
+                                    <param name="search">| stats count 
+                                    | fields - count 
+                                    | eval field1=if(len("$stat$")==0,"count","$stat$($yField$)")
+                                    | eval field2=field1+" (ascending)" 
+                                    | eval field1=field1+" (descending)"
+                                    | eval field3="$xField$  (ascending)" 
+                                    | eval field4="$xField$  (descending)" 
+                                    | transpose | rename "row 1" as sortByLabel | eval sortByValue=replace(replace(sortByLabel,"\(ascending\)",""),"\(descending\)","desc")</param>
+
+
+                                    <module name="Pulldown">
+                                      <param name="name">sortBy</param>
+                                      <param name="label">sort by</param>
+                                      <param name="template"> | sort by $value$</param>
+                                      <param name="valueField">sortByValue</param>
+                                      <param name="labelField">sortByLabel</param>
+                                      <param name="staticOptions"></param>
+                                      <param name="customBehavior">customSortByPulldown</param>
+
+
+                                  
+
+                                      <module name="Button">
+                                        <param name="allowSoftSubmit">True</param>
+
+                                        <module name="Report" layoutPanel="viewHeader">
+                                          <param name="name">report</param>
+                                          <param name="stat">$stat$</param>
+                                          <param name="xField">$xField$</param>
+                                          <param name="yField">$yField$</param>
+                                          <param name="zField">$zField$</param>
+                                      
+                                          <module name="Search">
+                                            <param name="search">`get_base_data_for_explorer` `conversions` $filters$ $searchTerms$ | $report$ $sortBy$</param>
+                                            <param name="preview">True</param>
+                                            <param name="customBehavior">customReportingLogic</param>
+
+                                            <module name="SearchControls" layoutPanel="graphArea">
+                                              <param name="saveMenu">saveSearch</param>
+                                            </module>
+                                            
+                                            <module name="CustomBehavior" layoutPanel="graphArea">
+                                              <param name="customBehavior">constructReportHeader</param>
+                                              <module name="HTML">
+                                                <param name="html"><![CDATA[
+                                                  <h2>$reportHeader$<a href="chart?searchBar=$encodedSearch$&earliest=$search.timeRange.earliest$&latest=$search.timeRange.latest$&autoRun=True">$rawSearchLinkText$</a></h2>
+
+                                                  ]]></param>
+                                              </module>
+                                            </module>
+
+
+                                            <module name="Pulldown" layoutPanel="graphArea">
+                                              <param name="name">charting.chart</param>
+                                              <param name="label">Chart type</param>
+                                              <param name="clear">left</param>
+                                              <param name="staticOptions">
+                                                <list>
+                                                  <param name="value">column</param>
+                                                  <param name="label">Column</param>
+                                                </list>
+                                                <list>
+                                                  <param name="value">line</param>
+                                                  <param name="label">Line</param>
+                                                </list>
+                                                <list>
+                                                  <param name="value">area</param>
+                                                  <param name="label">Area</param>
+                                                </list>
+                                                <list>
+                                                  <param name="value">bar</param>
+                                                  <param name="label">Bar</param>
+                                                </list>
+                                                <list>
+                                                  <param name="value">scatter</param>
+                                                  <param name="label">scatter</param>
+                                                </list>
+                                              </param>
+                                  
+                                  
+
+                                              <module name="Pulldown">
+                                                <param name="name">charting.chart.stackMode</param>
+                                                <param name="label">Stack mode</param>
+                                                <param name="staticOptions">
+                                                  <list>
+                                                    <param name="value">default</param>
+                                                    <param name="label">None</param>
+                                                  </list>
+                                                  <list>
+                                                    <param name="value">stacked</param>
+                                                    <param name="label">Stacked</param>
+                                                  </list>
+                                                  <list>
+                                                    <param name="value">stacked100</param>
+                                                    <param name="label">100% Stacked</param>
+                                                  </list>
+                                                </param>
+                                                <param name="customBehavior">stackModePulldown</param>
+                                                
+                                                <module name="Pulldown">
+                                                  <param name="name">charting.chart.nullValueMode</param>
+                                                  <param name="label">Null Values</param>
+                                                  <param name="staticOptions">
+                                                    <list>
+                                                      <param name="value">zero</param>
+                                                      <param name="label">Treat as zero</param>
+                                                    </list>
+                                                    <list>
+                                                      <param name="value">gaps</param>
+                                                      <param name="label">Omit</param>
+                                                    </list>
+                                                    <list>
+                                                      <param name="value">connect</param>
+                                                      <param name="label">Connect</param>
+                                                    </list>
+                                                  </param>
+                                                  <param name="customBehavior">nullValueModePulldown</param>
+
+                                                  <module name="Pulldown">
+                                                    <param name="name">charting.chart.showMarkers</param>
+                                                    <param name="label">Display markers</param>
+                                                    <param name="staticOptions">
+                                                      <list>
+                                                        <param name="value">true</param>
+                                                        <param name="label">Yes</param>
+                                                      </list>
+                                                      <list>
+                                                        <param name="value">false</param>
+                                                        <param name="label">No</param>
+                                                      </list>
+                                                    </param>
+                                                    <param name="customBehavior">showMarkersPulldown</param>
+
+                                                    <module name="ZoomLinks">
+
+                                                      <module name="FlashChart">
+
+                                                        <module name="CustomBehavior">
+                                                          <param name="customBehavior">bounceUpToFilter</param>
+                                                        </module>
+
+                                                      </module>
+                                                    </module>
+                                                  </module>
+                                                </module>
+                                              </module>
+                                            </module>
+
+                                            <module name="Paginator" layoutPanel="graphArea">
+                                              <param name="entityName">results</param>
+                                              <param name="count">10</param>
+                                              
+                                              <module name="SimpleResultsTable">
+                                                <param name="displayRowNumbers">False</param>
+                                                <param name="entityName">results</param>
+                                                <param name="drilldown">all</param>
+                                                
+                                                <module name="CustomBehavior">
+                                                  <param name="customBehavior">bounceUpToFilter</param>
+                                                </module>
+                                              
+                                              </module>
+                                            </module>
+                                          </module>
+                                        </module>
+                                      </module>
+                                    </module>
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

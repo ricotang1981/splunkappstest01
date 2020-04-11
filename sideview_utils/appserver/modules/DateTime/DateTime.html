@@ -1,0 +1,16 @@
+<%page args="module"/>
+
+<link rel="stylesheet" href="${make_url('/static/app/sideview_utils/datetime/jquery-ui.css')}"></script>
+
+<link rel="stylesheet" href="${make_url('/static/app/sideview_utils/datetime/jquery-ui-timepicker-addon.min.css')}"></script>
+
+
+% if 'label' in module:
+  <label for="${module['id']}_input">${_(module['label'])|h}</label>
+% endif
+  <input type="text" id="${module['id']}_input"/>
+
+
+
+
+

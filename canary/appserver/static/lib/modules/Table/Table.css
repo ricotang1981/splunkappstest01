@@ -1,0 +1,75 @@
+
+div.Table {
+    clear:both;
+    margin-bottom:15px;
+}
+div.Table div.resultsContainer {
+    overflow-x:auto;
+}
+.Table tr.columnRow th {
+    white-space: nowrap;
+    padding:0px 5px;
+    text-align:left;
+}
+.Table tr.columnRow th.sortable {
+    cursor:pointer;
+}
+
+.Table tr.columnRow th.sortable span.sortArrow {
+    display:inline-block;
+    min-width:15px;
+    min-height:10px;
+    background-image: url(../../../images/arrow_sort.gif);
+    background-position:7px 0px;
+    background-repeat:no-repeat;
+} 
+.Table tr.columnRow th.activeSort span.sortArrow {
+    background-image: url(../../../images/arrow_sort_asc.gif);
+    background-position:7px 4px;
+    background-repeat:no-repeat;
+}
+
+.Table tr.columnRow th.descending  span.sortArrow {
+    background-image: url(../../../images/arrow_sort_desc.gif);
+    background-position:7px 4px;
+    background-repeat:no-repeat;
+}
+
+
+.Table tr.selected td {
+    background-color:#DCD28B;
+}
+
+.Table .drilldownEnabled td {
+    cursor:pointer;
+    color:#1a7996;
+}
+.Table tr td {
+    vertical-align: top;
+}
+
+.Table p.emptyResults {
+    border-radius:4px;
+    color:#666;   
+    background-color:#edede7;
+    padding:10px;
+    text-align:center;
+}
+.Table p.emptyResults .hidden {
+    display:none;
+}
+.Table p.emptyResults p.details {
+    text-align:left;
+}
+
+.Table .splTable {
+    width:100%;
+}
+
+
+.Table .drilldownEnabled tr.mouseoverHighlight td {
+    background-color:#fdf4bb;
+}
+.Table .drilldownEnabled td {
+
+}

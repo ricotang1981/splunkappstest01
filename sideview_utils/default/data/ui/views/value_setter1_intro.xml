@@ -1,0 +1,194 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the ValueSetter module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>ValueSetter</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      The ValueSetter module seems so basic that at first glance it may seem useless.   <br>
+      <br>
+      In the simplest case, you give it a "name" param and a "value".param, and it will set that $$foo$$ key to that value for all downstream modules.<br>
+      <br>
+      For example, if you give it a name of "foo"   and a value of "ZOMG",  then downstream from the ValueSetter,   you can add $$foo$$ into your HTML and into your searches and it will evaluate to "ZOMG". <br>
+      <br>
+      Sounds lame. It gets a little more interesting when you see that both the name and the value params will do $$foo$$ substitution. <br>
+      <br>
+      Beyond that, it has a weird little toolbox of optional params that make it a very versatile little tool.  Each optional param can come in very handy in unusual circumstances.   "allowClobber", "requiredKeys", "delim". "if.*"<br>
+      <br>
+      If you put it all together it's sort of like Harvey Keitel from Pulp Fiction.  Not always pretty but practical and a crucial guy to call on when you have little tweaky requirements in your custom dashboards.
+      <br>
+      <br>
+      Once you've hit a few of these "weird" circumstances, you'll like it.  And it's also a bit of a gateway drug to the "ResultsValueSetter" module.
+      ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h2>Prepopulating things</h2>
+        Valuesetter is how you prepopulate dynamic Pulldown modules, and in exactly the same manner, how you prepopulate dynamic elements in the Tabs, Checkboxes, and Radio modules.    You simply put in a ValueSetter,  set the 'name' param to the same value as the Pulldown, and put the ValueSetter upstream from that Pulldown.   If the Pulldown has the given value in its options, it will then select that value when it loads.  Here is an example where we use a ValueSetter to select "splunkd" in the dynamic Pulldown.
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN --> 
+  <module name="ValueSetter" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">sourcetype</param>
+    <param name="value">splunkd</param>
+
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+      
+      <module name="Pulldown">
+        <param name="name">sourcetype</param>
+        <param name="label">Sourcetype</param>
+        <param name="valueField">series</param>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      (Note that for statically-defined Pulldown defaults we don't need this because you can set the 'selected' flag right on the defined options)
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h2>Only create a key when one or more other keys exist</h2>
+      The "requiredKeys" param allows the ValueSetter to look for the one or more $$foo$$ tokens specified therein,  and if those keys are not present,   it will back off and not set the given key to the given value.   This comes in handy in a range of cases where you need an additional search clause *sometimes* or where you want additional HTML to show up in an HTML module *sometimes*.   Often this sort of logic will be wired up to ResultsValueSetter instead of the ValueSetter,  but the principle is the same. 
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h2>Set a whole bunch of keys at once</h2>
+      Instead of using the "name" and "value" param, you can create params like "arg.foo" and "arg.bar" and set them to "fooValue" and "barValue".    In a practical sense this allows ValueSetter to replace HiddenChartFormatter, and in general it helps the few cases where you have to set a whole bunch of keys and chaining ValueSetters together is too ugly. 
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row5_col1">
+    <param name="html"><![CDATA[
+      <h2>Set a key to different values depending on one or more upstream values</h2>
+      This is fancy.   Instead of setting the "value" param,  you can set one or more "if.*" params, and an optional "default" param. After the "if.", you can set a simple "foo=bar" condition, doing $foo$ replacement anywhere in either the left hand or the right hand side of the equals sign.  If the given condition matches, the value in that param node becomes the value sent downstream. Note that right now you can only do simple comparisons with "=".<br>
+      <br>
+      If you set more than one "if.*" param, then you need to also set a priority flag on the end.    With some ingenuity, you can use this feature to do advanced things like run one search language string against summary index data for some cases, and run against the real raw event data for other cases.  Examples coming soon.
+          
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row6_col1">
+    <param name="html"><![CDATA[
+      <h2>Setting fallback defaults with "allowClobber"</h2>
+        ValueSetter has an optional 'allowClobber' param.  When it's set to 'False', the given name will only be set to the value if there is no value set by anyone further upstream.    As a typical example let's say you have a URLLoader module at the top, and most of the time there will be a ?user=mildred   argument up there.    But let's say some of the time you wont have any user argument, and you want to make sure the view uses "*" as the argument only in those cases.     It's too simple to warrant a working example but you would simply have a ValueSetter downstream from the URLLoader, with name "user", value "*" and set the allowClobber param to "False". 
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row7_col1">
+    <param name="html"><![CDATA[
+      <h2>URL-encoding keys with the "urlEncodeKeys" param</h2>
+        We freely admit that the HTML module needs a way to do this itself.   However if you need to take a value and URLEncode it so that it can be safely combined into a URL or into a querystring argument *for* a URL, you can use the urlEncodeKeys param. <br>
+        <br>
+        By far the most common use case is when you are creating a dynamic link in an HTML module, and you need to make one or more keys safe for such inclusion.  Here is an example where we redirect a search to flashtimeline. 
+        
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row7_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">sourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+  
+      <module name="ValueSetter">
+        <param name="name">encodedURL</param>
+        <param name="urlEncodeKeys">series</param>
+        <param name="value"><![CDATA[
+          flashtimeline?q=search (index=* OR index=_*) sourcetype="$sourcetype$"&earliest=-15min&latest=now
+        ]]></param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <a href='$encodedURL$'>see recent events for sourcetype=$sourcetype.rawValue$</a></b></div>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+  <module name="HTML" layoutPanel="panel_row8_col1">
+    <param name="html"><![CDATA[
+      <h2>Creating multivalue defaults with the "delim" param</h2>
+        You saw above that you can use ValueSetter can be used to prepopulate dynamic form elements with a single selection.   With the optional "delim" param you can tell ValueSetter that it's "value" param should be split on the character specified in "delim" param. Thus instead of setting a simple string value, it will be setting an array-valued value, and when a multiple-selection Pulldown or a Checkboxes module sees this, it will make those values selected. 
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row9_col1">
+    <param name="html"><![CDATA[
+      <h2>Making your HTML more dynamic</h2>
+      Since the HTML module does not html-escape $$foo$$ tokens, this means that you can create tokens that are themselves snippets of HTML.   Combine this with other tools like ValueSetter, ResultsValueSetter (also Switcher, Multiplexer, Gate, PostProcess),  and you can do some strange things making simple dynamic HTML.   For instance if you want a link to dissappear,  then you can make the text of the link populate from a $foo$ token,   use the 'requiredKeys' param so that there is only a link label when one or more other tokens are set, and thus your link will effectively vanish when those other tokens are not set.   .
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row9_col1">
+    <param name="html"><![CDATA[
+      <h2>Mix and match</h2>
+      <p>
+        For that tiny 0.1% of use cases out there when things are really weird and tweaky,  you can often compose two or more ValueSetter modules together to make quite complex logic.  Often this is a great way to go.   However note that if you have Javascript expertise on your team, at some point you should be looking at the <a href="custom_behavior1_overview">CustomBehavior module</a>. 
+    ]]></param>
+  </module>
+
+  
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Remember that any key that you can set with a ValueSetter module, can be set with a ResultsValueSetter module.  So any of these prepopulations can be done using values that are themselves pulled from search results.  Note that if you want to use ResultsValueSetter but also use ValueSetter logic like requiredKeys or allowClobber, you will have to chain a ValueSetter downstream from a ResultsValueSetter.
+        </li>
+        <li>
+          If you are using requiredKeys, with 2 or more keys and you want the ValueSetter to run when <em>any one</em> of the keys is present,  set the optional "requiredKeysMode" param to "OR".  
+        </li>
+        <li>
+          If you are using arg.* to set values, you cannot also use the "name" and "value" params. The module will sternly tell you this if you try.  
+        </li>
+        <li>
+          Likewise if you're using one or more "if.*" params, those implicitly only work when the "name" param is set, and they are incompatible with the "arg.*" syntax.  Also when you're using "if.*" params, the "value" param drops out and you use the "default" param if and when you want to set a default value should all the conditional cases fail.  Again the module will sternly warn you with red error messages if you configure params in the wrong combinations.
+        </li>
+        <li>
+          If you want to use linebreaks as the delim param,  you must use \n as the value.  No other indicator of vertical whitespace will work besides \n, but that one will indeed work. 
+        </li>
+        <li>
+          After a certain point in complexity it can be better to use a CustomBehavior module, but for simple cases a ValueSetter module, or a couple chained together can really do a lot of simple useful stuff right in the XML.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.ValueSetter" target="_blank">ValueSetter and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+
+</view>

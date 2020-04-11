@@ -1,0 +1,63 @@
+<view template="dashboard.html" isVisible="False">
+  <label>Hello World</label>
+
+
+  <module name="SideviewUtils" layoutPanel="viewHeader" />
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    <!-- DP 1 -->
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+      
+      <module name="Search">
+        <param name="search">index=_* sourcetype=$selectedSourcetype$ | stats count by sourcetype</param>
+        
+
+        <!-- DP 2 -->
+
+        <module name="Table" />
+      </module>
+      
+    </module>
+    
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      This is an HTML module.
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      and a second html module in the same panel
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col3">
+    <param name="html"><![CDATA[
+      and a third html module in the same panel
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      This is the second row, first column.  It's pretty tall. 
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      and another much taller html module in the same panel. and another much taller html module in the same panel. and another much taller html module in the same panel. and another much taller html module in the same panel. and another much taller html module in the same panel. and another much taller html module in the same panel. 
+    ]]></param>
+  </module>
+
+</view>

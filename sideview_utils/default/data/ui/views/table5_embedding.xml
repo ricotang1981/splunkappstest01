@@ -1,0 +1,224 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Table - embedding examples</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Table - embedding examples</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+    <p>
+      In addition to what we call the "custom rendering" options of the Table module, centered on the "rowClass" and "rowStyle" params,  the Table module also has an amazing ability that we call "custom embedding". 
+    </p>
+    <p>
+      This means that you can embed practically any combination of other Splunk and Sideview modules, such that a copy of that entire module config will be rendered <em>inside</em> a particular set of table cells.
+    </p>
+    <p>
+      A simple example is for when you want to custom-format the appearance of the text.  Maybe you want some of the table cells to have some bold text, and then the value.  Or maybe you want to make some of the fields URL's.  For this kind of thing you generally just "embed" an HTML module. 
+    </p>
+    <p>
+      Stepping up from that to more complicated examples, the sky is the limit.  You can embed JSChart modules, or you can embed Button modules and Search modules and HTML modules such that the tables can have a "see full details" button and when clicked, more searches run, and/or more information appears... 
+    </p>
+    <b>OK. How?</b>
+    <p>
+      Let's say you want to custom embed one or more modules into a given field, and that field is called "foo".  You give the Table module ONE direct child and give that child a "group" attribute of "row.fields.foo".   That one child can then have any number of downstream modules, but at the top level right under the Table there can be only one.  (In corner cases you can use a CustomBehavior or NullModule to act as the single common parent.)   Then inside that config,  you can refer to $row.fields.foo$ or $row.fields.bar$ to refer to any field present in the given row. note that you can reference any field value from that row, not just the field into whose cells you're doing the embedding.
+    </p>
+    <p>
+      Here are some examples.
+    </p>
+    ]]></param>
+  </module>
+  
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+    <h3>Embedding an HTML module, for simple formatting</h3>
+    <p>
+      Here we make one cell display both the sourcetype field and the index field, and we make those field values themselves appear in bold. Pretty simple. Note that we use the "hiddenFields" param to keep the "index" field from getting its own column as well.
+    </p>
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_* OR index=* | head 10000 | stats count by sourcetype index
+    ]]></param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+    <module name="Pager">
+      <param name="count">5</param>
+
+      <module name="Table">
+        <param name="hiddenFields">index</param>
+
+        <module name="HTML" group="row.fields.sourcetype">
+          <param name="html"><![CDATA[
+          sourcetype = <b>$row.fields.sourcetype$</b><br>
+          index = <b>$row.fields.index$</b><br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+    <h3>More fun with HTML</h3>
+    <p>
+      Although often your HTML needs are pretty simple sometimes there are opportunities to have more fun.  Here we use an HTML module to build a simple 'filler gauge' visualization. 
+    </p>
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row3_col1" group="filler gauges" autoRun="True">
+    <param name="search">| stats count | fields - count | eval combined=split("test1,1500,3000;test2,800,900;test3,50,500",";") | mvexpand combined | eval combined=split(combined,",") | eval name=mvindex(combined,0) | eval value=mvindex(combined,1) | eval limit=mvindex(combined,2) | fields name value limit
+    | eval widthPercent=100*value/limit
+    </param>
+    
+    <module name="Pager">
+
+      <module name="Table">
+        
+        <module name="HTML" group="row.fields.widthPercent">
+          <param name="html"><![CDATA[
+            <div style="border:1px solid #090">
+              <div style="background-color:#090;height:10px;width:$row.fields.widthPercent$%"> </div>
+            </div>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+    <h3>As crazy as you need to be</h3>
+    <p>
+      Here we show that you can actually embed a JSChart module AND even have the embedded config for each row actually run a postProcess search against the existing search results.  Specifically we use this trick to have the base search be a datacube,  render the main table from one set of dimensions, and use an HTML module and a JSChart to render details from the other dimensions,  <b>per table row</b>.  This combines <a href="post_process_intro">some advanced postprocess thinking</a> with table-embedding for a bit of showing-off. After all you have made it pretty far down the rabbithole of these docs if you're reading this page.
+    </p>
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal source=*metrics.log group="per_*_thruput" | head 1000 | stats sum(kb) as totalKB by group series | eval values="PLACEHOLDER"
+    ]]></param>
+
+    
+    <module name="PostProcess">
+      <param name="search">stats count by group values | table group values</param>
+      
+      <!-- because the chart formatting is STATIC,  AND shared across all 
+      table rows, we can factor it up to where it's above the Table. This 
+      just means we can avoid cloning it into every table row. -->
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">bar</param>
+          
+        <module name="Table">
+           
+          <module name="PostProcess" group="row.fields.values">
+            <param name="search">search group="$row.fields.group$" | stats sum(totalKB) as totalKB by series</param>
+            <module name="HTML">
+              <param name="html"><![CDATA[
+
+              <h3>Detail chart for: $row.fields.group$</h3>
+              ]]></param>
+            </module>
+            <module name="JSChart">
+            </module>
+          </module>             
+        </module>
+      </module>
+    </module>
+  </module>
+      
+      
+  <module name="HTML" layoutPanel="panel_row5_col1">
+    <param name="html"><![CDATA[
+    <h3>Embedding a Button and other modules into each row, to hit a custom controller when clicked</h3>
+    <p>
+      Here we create an "actions" column and put a Button into each row. Downstream from each of those Buttons is a Redirector module that will submit certain arguments from the given row, to a custom controller that we have written in Python. 
+    </p>
+    
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row5_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal source=*metrics.log group="per_sourcetype_thruput" | head 1000 | stats sum(kb) as totalKB by series | eval actions="PLACEHOLDER"
+    ]]></param>
+
+    <module name="Pager">
+      
+      <module name="Table">
+        
+        <!-- with this group="row.fields.actions", we tell the Table module 
+        to render clones of this sub-branch of modules in place of it's 
+        "actions" cells.  If we wanted to display the field value itself we 
+        would just use $row.fields.actions$ somewhere, but in this case it's 
+        just "PLACEHOLDER" so we don't need it.  We just used it to get a 
+        new cell rendered.  -->
+        <module name="Button" group="row.fields.actions">
+          <!-- this prevents the autoRun push from actually triggering all 
+          our scripts. -->
+          <param name="allowAutoSubmit">False</param>
+          
+          <module name="Redirector">
+            <param name="url">../../custom/sideview_utils/example_controller/do_something</param>
+            <param name="target">hiddenIframe</param>
+            <param name="arg.series">$row.fields.series.rawValue$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+      <iframe name="hiddenIframe" style="width:100%;border:0px;"></iframe>
+      ]]></param>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+        
+
+
+   <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>if you don't like the "row" convention in $row.fields.foo$, you can change it to anything else using the Table module's "name" param, which just defaults to "row"</li>
+
+        <li>Often you need to abuse the search language a little to create a given column, fill it with placeholder value, and then override that placeholder value with your embedded config.</li>
+
+        <li>Note that while JSChart can be embedded, but the FlashChart as of this writing can not.</li>
+
+        <li>You can do anything you like in here.  Implement drilldowns to other views.  Implement inline drilldowns where clicking an embedded chart shows even more detail!</li>
+
+        <li>If you are excited by this feature of the Table module, you may want to also take a look at <a href="multiplexer1_intro">the Multiplexer module</a>, since it does something very similar but without any surrounding table.</li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Table" target="_blank">Table and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+</view>

@@ -1,0 +1,140 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Link module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Button - Testcases</h1>
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="autoSubmit and softSubmit both False">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+
+      <module name="Link">
+        <param name="label">click to run downstream search...</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$selectedSourcetype$" | chart min(eps) avg(eps) max(eps) over series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <module name="Table"/> 
+          </module>
+
+          <module name="JSChart" />
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True" group="autoSubmit true and softSubmit False">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+
+      <module name="Link">
+        <param name="label">click to RERUN downstream search...</param>
+        <param name="allowAutoSubmit">True</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$selectedSourcetype$" | chart min(eps) avg(eps) max(eps) over series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <module name="Table"/> 
+          </module>
+
+          <module name="JSChart" />
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True" group="autoSubmit False and softSubmit True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+
+      <module name="Link">
+        <param name="label">click to RERUN downstream search...</param>
+        <param name="allowSoftSubmit">True</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$selectedSourcetype$" | chart min(eps) avg(eps) max(eps) over series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <module name="Table"/> 
+          </module>
+
+          <module name="JSChart" />
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True" group="autoSubmit True and softSubmit True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+
+      <module name="Link">
+        <param name="label">click to RERUN downstream search...</param>
+        <param name="allowSoftSubmit">True</param>
+        <param name="allowAutoSubmit">True</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$selectedSourcetype$" | chart min(eps) avg(eps) max(eps) over series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <module name="Table"/> 
+          </module>
+
+          <module name="JSChart" />
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

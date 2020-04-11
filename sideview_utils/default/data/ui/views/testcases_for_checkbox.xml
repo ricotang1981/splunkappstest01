@@ -1,0 +1,380 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Checkbox</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Checkbox</h1>
+    ]]></param>
+  </module>
+
+  
+
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="Checkbox" group="S/B checked">
+      <param name="name">test1</param>
+      <param name="label">should be checked by default</param>
+      <param name="onValue">value_when_checked</param>
+      <param name="offValue">value_when_unchecked</param>
+      <param name="checked">True</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test1$
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="Checkbox" layoutPanel="panel_row1_col2" group="S/B unchecked">
+      <param name="name">test2</param>
+      <param name="label">should be unchecked by default</param>
+      <param name="onValue">value_when_checked</param>
+      <param name="offValue">value_when_unchecked</param>
+      <param name="checked">False</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test2$
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="Checkbox" layoutPanel="panel_row1_col3" group="prepopulation">
+      <param name="name">test3</param>
+      <param name="label">populated from URL</param>
+      <param name="onValue">value_when_checked</param>
+      <param name="offValue">value_when_unchecked</param>
+      <param name="checked">False</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test3$
+
+         <br>
+         <br>
+          Set up a testcase: <br>
+          <a href="testcases_for_checkbox?test3=value_when_unchecked">hard link, offValue</a><br>
+          <a href="testcases_for_checkbox?test3=value_when_checked">hard link, onValue</a><br>
+          <a href="testcases_for_checkbox?test3=true">hard link, literal "true"</a><br>
+          <a href="testcases_for_checkbox?test3=false">hard link, literal "false"</a><br>
+
+          <a href="testcases_for_checkbox#test3=value_when_unchecked">soft link, offValue</a><br>
+          <a href="testcases_for_checkbox#test3=value_when_checked">soft link, onValue</a><br>
+          <a href="testcases_for_checkbox#test3=true">soft link, literal true</a><br>
+          <a href="testcases_for_checkbox#test3=false">soft link, literal false</a><br>
+      
+      
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="Checkbox" layoutPanel="panel_row2_col1" group="S/B displaying a red error">
+      <param name="name">test4</param>
+      <param name="label">has neither onValue nor offValue</param>
+      <param name="checked">False</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test4$
+        ]]></param>
+      </module>
+    </module>
+
+
+    
+
+
+    <module name="Checkbox" layoutPanel="panel_row3_col1" group="S/B showing label on the left">
+      <param name="name">test5</param>
+      <param name="label">left-side label</param>
+      <param name="onValue">FAIL. THIS IS THE CHECKED VALUE</param>
+      <param name="offValue">Yep. All is well.</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         'checked' param not specified.  So this should default to unchecked:  <br>
+         $test5$
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="Checkbox" layoutPanel="panel_row3_col2" group="S/B showing label on the right">
+      <param name="name">test6</param>
+      <param name="label">right-side label</param>
+      <param name="labelPosition">right</param>
+      <param name="onValue">FAIL</param>
+      <param name="offValue">=)</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test6$
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="Checkbox" layoutPanel="panel_row4_col1" group="S/B displaying no label">
+      <param name="name">test7</param>
+      <param name="onValue">hello</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test7$
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="Checkbox" layoutPanel="panel_row4_col2" group="S/B displaying no label">
+      <param name="name">test8</param>
+      <param name="onValue">hello</param>
+      <param name="label"></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test8$
+        ]]></param>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row5_col1" group="race condition between POST and subsequent pushes">
+      <param name="search">index=_internal source=*metrics.log group="per_sourcetype_thruput" | stats count by series</param>
+      <param name="earliest">-3h</param>
+      <param name="latest">now</param>
+
+      <module name="Pulldown">
+        <param name="name">sourcetypePulldown</param>
+        <param name="label">sourcetype</param>
+        <param name="template">series="$value$"</param>
+        <param name="valueField">series</param>
+
+        <module name="Checkbox">
+          <param name="name">epsCheckbox</param>
+          <param name="label">show EPS</param>
+          <param name="checked">False</param>
+          <param name="onValue">avg(eps)</param> 
+
+          <module name="Checkbox">
+            <param name="name">kbCheckbox</param>
+            <param name="label">show sum(KB)</param>
+            <param name="checked">True</param>
+            <param name="onValue">sum(kb)</param> 
+
+            
+
+            <module name="Search">
+              <param name="search">index=_internal source=*metrics.log group="per_sourcetype_thruput" $sourcetypePulldown$ | stats first(series) as series count $epsCheckbox$ $kbCheckbox$</param>
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                 sourcetypePulldown = $sourcetypePulldown$<br>
+                 epsCheckbox = $epsCheckbox$<br>
+                 kbCheckbox = $kbCheckbox$<br>
+                 <br>
+                 search = $search$<br>
+
+                ]]></param>
+              </module>
+              <module name="SimpleResultsTable">
+              </module>
+            </module>
+          </module>
+          
+
+        </module>
+      </module>
+    </module>
+
+    <module name="Checkbox" layoutPanel="panel_row6_col1" group="many many checkboxes">
+      <param name="name">multiball_01</param>
+      <param name="onValue">hello</param>
+
+      <module name="Checkbox">
+        <param name="name">multiball_02</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_03</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_04</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_05</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_06</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_07</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_08</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_09</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_10</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_11</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_12</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_13</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_14</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_15</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_16</param>
+        <param name="onValue">hello</param>
+        <param name="customBehavior">onlyAllowFiveSelected</param>
+        <module name="Checkbox">
+        <param name="name">multiball_17</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_18</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_19</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_20</param>
+        <param name="onValue">hello</param>
+
+
+        <module name="Checkbox">
+        <param name="name">multiball_21</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_22</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_23</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_24</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_25</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_26</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_27</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_28</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_29</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_30</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_31</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_32</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_33</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_34</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_35</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_36</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_37</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_38</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+        <param name="name">multiball_39</param>
+        <param name="onValue">hello</param>
+        <module name="Checkbox">
+          <param name="name">multiball_40</param>
+          <param name="onValue">hello</param>
+        
+      
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             $multiball_01$
+            ]]></param>
+          </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+        </module>
+    
+    </module>
+
+  </module>
+    
+
+</view>

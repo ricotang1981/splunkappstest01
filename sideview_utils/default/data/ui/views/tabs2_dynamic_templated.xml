@@ -1,0 +1,82 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Tabs - dynamic config</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Tabs - Dynamic Config</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: dynamic tabs">
+    <param name="html"><![CDATA[
+      Here we've changed our tabs module to a dynamic configuration from a static one.  We've also gone ahead and used the recommended "template" param.  
+      <br>
+      <br>
+      Specifically, we use a search that will basically create us 4 rows: Sourcetypes, Sources, Indexes and Hosts.  We also create different fields for values ("per_sourcetype_thruput") as opposed to the labels ("Sourcetype").
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_*_thruput" | dedup group | sort group | fields group | eval label=case(group="per_sourcetype_thruput","Sourcetypes",group="per_index_thruput", "Indexes", group="per_source_thruput", "Sources", group="per_host_thruput", "Hosts")</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+    <module name="Tabs">
+      <param name="name">group</param>
+      <param name="valueField">$name$</param>
+      <param name="labelField">label</param>
+      <param name="template">$name$="$value$"</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" $group$ | stats min(eps) avg(eps) max(eps) by series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h3>Showing $group.label$</h3>
+          ]]></param>
+        </module>
+        
+        <module name="ProgressIndicator" />
+
+        <module name="Pager">
+
+          <module name="Table" />
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetype is: <b>$selectedSourcetype$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          This example is very similar to these two corresponding examples for the Pulldown module: <a href="pulldown2_dynamic">example1</a>, <a href="pulldown3_dynamic_templated">example 2</a>. You should read through those Pulldown examples, because Tabs has essentially the same param list, so all of the comments there apply to the Tabs module as well. 
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Tabs" target="_blank">Tabs and its params</a>.
+        </li>
+      </ol>
+
+      ]]></param>
+  </module>
+</view>

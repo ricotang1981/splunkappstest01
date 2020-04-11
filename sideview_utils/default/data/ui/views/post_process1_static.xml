@@ -1,0 +1,99 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>PostProcess - static config</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>PostProcess - reusing one set of search results for more than one purpose</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: static config">
+    <param name="html"><![CDATA[
+      Here we show how you can configure static postProcess arguments to hang several different elements off of a single search.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_*_thruput" | stats count avg(eps) as avgEps sum(kb) as sumKB by group,series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="ProgressIndicator" />
+      
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h3>Total index size for each source</h3>
+      ]]></param>
+    </module>
+
+    <module name="PostProcess">
+      <param name="search">search group="per_source_thruput" | sort - sumKB | fields series, sumKB | rename series as source | rename sumKB as "Total KB"</param>
+
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">pie</param>
+
+        <module name="JSChart">
+          <param name="height">200px</param>
+        </module>
+      </module>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row3_col1">
+      <param name="html"><![CDATA[
+        <h3>Top 10 sourcetypes, sorting by Average EPS</h3>
+      ]]></param>
+    </module>
+
+    <module name="PostProcess" layoutPanel="panel_row3_col1">
+      <param name="search">search group="per_sourcetype_thruput" | sort - avgEps | head 10 |  fields series, avgEps | rename series as sourcetype | rename avgEps as "Events Per Second"</param>
+
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">bar</param>
+
+        <module name="JSChart">
+          <param name="height">300px</param>
+        </module>
+      </module>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row3_col2">
+      <param name="html"><![CDATA[
+        <h3>Total Size in MB</h3>
+      ]]></param>
+    </module>
+
+    <module name="PostProcess" layoutPanel="panel_row3_col2">
+      <param name="search">stats sum(sumKB) as Total | eval Total=round(Total/(1024),3) | eval Total=Total + " MB"</param>
+      
+      <module name="Table"></module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Although we're only running one search on this page, we're using postProcess so that we can use those search results in three different ways.   (As with other views, you should view the XML source of this page to see how it's done.)
+        </li>
+        <li>
+          If you have not already read our <a href="post_process_intro">Introduction to Post process searches</a>,  do so now.
+        </li>
+        <li>
+          The Paginator module is not smart enough to account for the presence of the postProcess arg.  Use the Sideview "Pager" module instead.
+        </li>
+        <li>
+          Likewise, if you want to use the ResultsHeader to report the filtered count it cannot do that; it will report the unfiltered count instead.  And even the SimpleResultsHeader module (using $$count$$ in the headerFormat param) will also report the unfiltered count.   Use an HTML module with a $$results.count$$ token instead.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+</view>

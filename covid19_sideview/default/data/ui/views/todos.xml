@@ -1,0 +1,89 @@
+<view>
+  <label>working list (todos)</label>
+  <module name="TopNav" layoutPanel="appHeader" />
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <!-- this legacy Sideview Utils module is only here as a workaround since Splunk has not yet released
+any mechanism whereby Sideview XML views can specify what URI should handle Users who to to the legacy
+Advanced XML views. This is also why the "Sideview Utils" app is still required, incidentally. -->
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML" layoutPanel="panel_row1_col1">
+      <param name="html"><![CDATA[
+      <h2>TODOs, things to fix/add next</h2>
+
+
+
+      <ul>
+
+        <li>avg percent rise per day - deaths, confirmed.  list it in the forecast.<br>
+          create a view/statistic of whether this number is trending up or down or staying level
+        </li>
+
+        <li>recovery by country uses a datacube search.  Each multiplexed country then has charts for:
+          <ol>
+            <li>new cases per day over time.
+            <li>cumulative deaths over time, log axis.
+            <li>expected rise in deaths over time
+            <li>case fatality rate.
+            <li>Simple 'plain english' summary statements (text)</li>
+            <li>blue sky - cluster with one of the 'top 10 ones in the news', pick the closest, and then maybe "X is following Y's track but is roughly N days behind".</li>
+          </ol>
+          and ok maybe that's too many. =/
+        </li>
+
+
+
+        <li>a proper homepage with a version of mmccul's copy and some suggestions for starting points.<br>
+          -- read the log axis primer<br>
+          -- link sending user to total deaths since the 30th death (and note 'reset selection to' in the top)<br>
+          -- link sending user to total Sick since the 100th confirmed case.
+        </li>
+
+        <li>add ICU-CCB beds to countries.csv (from here - https://en.wikipedia.org/wiki/List_of_countries_by_hospital_beds ) </li>
+
+        <li>canary - make the ValueSetter conditional logic not require priority flags if the conditionals are mutually exclusive, or maybe now we CAN just leverage document order.</li>
+
+        <li>Scripted input (or modinput if you're an insane masochist), to periodically pull data directly from JHU CSSE github page. (the tricky part of this is that you can't index the data, since the space of things that JHU can and does change retroactively includes basically everything that you might think you can dedup by.   You don't believe me now but go ahead and try it - it's fun.<br>
+          <br>
+         So such an input will regularly do a git pull and if there are changes, parse the daily report CSV's and then marshal the rows into a single large lookup</li>
+
+        <li> redo the (now removed) `unshift_china` macro, but with clever math, so it works with the newly parametrized x-axis definition.  And make it unshift other ones that spring into life with a day 0 that's way too high - eg NY,NJ,MI</li>
+
+
+
+
+        <li>add control with which you can rewind time by n days</li>
+
+        <li>Make the legend work properly.
+          <ol>
+            <li>drilldown detail for the per-country viz and per-province/state viz,  that shows the 'recovery by country' detail chart for a start.  apparent doubling time based on recent 4 days of data.</li>
+          </ol>
+        </li>
+
+        <li>Add form elements to allow the user to game out "What if &lt;Pulldown:Country X&gt; is undercounting such that hypothetically perfect testing would increase these counts by &lt;pulldown:percentage&gt; then what would be the effect".  (granted.. the 'percentage' part there is a pretty poor assumption  - it's unlikely to be a linear effect).  But the goal is to show how the net effect of undercounting in these charts is unintuitive - it doesn't move "up" at all on a log-axis scale. instead it extends the line longer to the right, by moving them into the "past 100th day" cohort N days earlier.  Which, if the recent points are tracking an exponential curve, means the timescale of the shape you're tracing out is larger. which is bad, but in an unexpected way</li>
+
+        <li>yaxis - new option percent of total population and not raw numbers. (cannot be log axis)</li>
+
+        <li>make the checkboxpulldown push/pull to/from prefs (so it will preserve the user's selected countries)</li>
+
+        <!--
+        <li>framework nerdery - mouseover on a legend item should make all the other lines/areas in the chart fade back</li>
+        <li>framework nerdery - implement a real legend drilldown (likely to display further detail in supplemental panel below)</li>
+        <li>framework nerdery - give Search module a way to clear postprocess.  clearPostProcess=True|False</li>
+        -->
+
+      </ul>
+
+
+
+
+      ]]></param>
+    </module>
+
+  </module>
+</view>

@@ -1,0 +1,31 @@
+
+/** from what I can tell,  because Splunk committed the cardinal sin of 
+messing with core jquery ui css, and core jquery datepicker css, 
+then we have to continue the sin. SVU packages jquery-ui.css, 
+and then we have to set this width. 
+*/
+.ui-datepicker-next {
+    left:179px !important;
+}
+/**
+Then because we have to set the width there we have to set this one 
+too or else there is drift onmouseover.  Slippery slope we're on...
+*/
+.ui-datepicker-next-hover {
+    left:178px !important;
+}
+.DateTime {
+    min-height: 27px;
+}
+.DateTime input {
+    height: 17px;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    vertical-align: middle;
+}
+
+.ui-datepicker-header a {
+    background-image: none !important;
+}

@@ -1,0 +1,246 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="True" onunloadCancelJobs="true" template="dashboard.html" stylesheet="custom.css">
+  <label>Metrics Explorer</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customJavascript">sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/dashboard_tabs.css</param>
+  </module>
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader"> 
+    <param name="html"><![CDATA[
+    <h1>Sideview Metrics Explorer</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    <module name="TimeRangePicker" layoutPanel="mainSearchControls">
+      <param name="default">Last 24 hours</param>
+      <param name="searchWhenChanged">True</param>
+      
+      <module name="TextField">
+        <param name="name">searchterms</param>
+        <param name="label">misc search terms</param>
+        <param name="width">250px</param>
+
+        <module name="Search">
+          <param name="search"><![CDATA[
+  | mcatalog values(metric_name) as metric_name where index=* $searchterms$ by host | mvexpand metric_name | eval sg=split(metric_name,".") | eval sg0=mvindex(sg,0) | eval sg1=sg0+"."+mvindex(sg,1) | eval sg2=sg1+"."+mvindex(sg,2) | eval sg3=sg2+"."+mvindex(sg,3) | eval sg4=sg3+"."+mvindex(sg,4) | eval all=mvappend(sg0,sg1,sg2,sg3,sg4) | table host sg0 sg1 sg2 sg3 sg4 | fillnull sg1 sg2 sg3 sg4 | stats count by host sg0 sg1 sg2 sg3 sg4
+          ]]></param>
+
+          <module name="CheckboxPulldown">
+            <param name="name">sg0</param>
+            <param name="label">metrics</param>
+            <param name="float">left</param>
+            <param name="clear">left</param>
+            <param name="valueField">$name$</param>
+            <param name="labelField">label</param>
+            <param name="template">metric_name="$value$*"</param>
+            <param name="selectAllOptimization">omit</param>
+            <param name="postProcess">search $name$!="0" | stats count by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+            <module name="CheckboxPulldown">
+              <param name="name">sg1</param>
+              <param name="float">left</param>
+              <param name="valueField">$name$</param>
+              <param name="labelField">label</param>
+              <param name="template">metric_name="$value$*"</param>
+              <param name="selectAllOptimization">omit</param>
+              <param name="postProcess">rename sg0 as metric_name | search $sg0$ $name$!="0" | stats count by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+              <module name="CheckboxPulldown">
+                <param name="name">sg2</param>
+                <param name="float">left</param>
+                <param name="width">250px</param>
+                <param name="valueField">$name$</param>
+                <param name="labelField">label</param>
+                <param name="template">metric_name="$value$*"</param>
+                <param name="selectAllOptimization">omit</param>
+                <param name="hideOnEmpty">True</param>
+                <param name="postProcess">rename sg0 as metric_name | search $name$!="0" $sg0$ | rename sg1 as metric_name | search * $sg1$ | stats count by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+                <module name="CheckboxPulldown">
+                  <param name="name">sg3</param>
+                  <param name="float">left</param>
+                  <param name="width">300px</param>
+                  <param name="valueField">$name$</param>
+                  <param name="labelField">label</param>
+                  <param name="template">metric_name="$value$*"</param>
+                  <param name="selectAllOptimization">omit</param>
+                  <param name="hideOnEmpty">True</param>
+                  <param name="postProcess">rename sg0 as metric_name | search $name$!="0" $sg0$ | rename sg1 as metric_name | search * $sg1$ | rename sg2 as metric_name | search * $sg2$ | stats count by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+                  <module name="Button">
+                    <param name="allowSoftSubmit">True</param>
+
+                    <module name="Search">
+                      <param name="search"><![CDATA[
+| mcatalog values(metric_name) as kthxbai where index=* $sg0$ $sg1$ $sg2$ $sg3$ $searchterms$ by host metric_name [ 
+    | mcatalog values(_dims) as search | mvexpand search | format " " " " "" "" "" " "] 
+| fields - kthxbai 
+| stats dc(*) as * 
+| fields metric_name * 
+| transpose 12 
+| rename column as field "row 1" as count 
+| eval label=case(field=="metric_name","metrics",match(field,"ch|sh|ss|x|zz$$"),field+"es",true(),field+"s") + " ("+count+")"
+                      ]]></param>
+                      <module name="Tabs" layoutPanel="panel_row1_col1">
+                        <param name="name">field</param>
+                        <param name="valueField">$name$</param>
+                        <param name="labelField">label</param>
+                        
+                        <module name="ValueSetter" layoutPanel="panel_row1_col1_grp1">
+                          <param name="name">customReport</param>
+                          <param name="if.$field$=metric_name[priority=1]">
+| mcatalog values(metric_name) as kthxbai where index=* $sg0$ $sg1$ $sg2$ $sg3$ $searchterms$ by metric_name 
+                          </param>
+
+                          <param name="default">
+| mcatalog values(metric_name) as kthxbai where index=* $sg0$ $sg1$ $sg2$ $sg3$ $searchterms$ by host metric_name [ 
+    | mcatalog values(_dims) as search 
+    | mvexpand search 
+    | format " " " " "" "" "" " "] 
+| fields - kthxbai 
+| eval sg=split(metric_name,".") 
+| eval sg0=mvindex(sg,0) 
+| stats dc(metric_name) as count by sg0 $field$ 
+| eval prefix=sg0+"("+count+")" 
+| stats values(prefix) as prefix by $field$
+                          </param>
+
+
+                          <module name="Search">
+                            <param name="search"><![CDATA[
+                            $customReport$
+                            ]]></param>
+
+                            <module name="ValueSetter">
+                              <param name="name">visualization</param>
+                              <param name="if.$field$=metric_name">metric_name</param>
+                              <param name="default">all_other_fields</param>
+
+                              <module name="Switcher" group=" ">
+                                <param name="selectedGroup">$visualization$</param>
+
+                                <module name="ValueSetter" group="metric_name">
+                                  <param name="arg.charting.chart">line</param>
+                                  <param name="arg.charting.axisTitleX.visibility">collapsed</param>
+                                  <param name="arg.charting.chart.nullValueMode">connect</param>
+
+                                  <module name="HTML"> 
+                                    <param name="html"><![CDATA[
+                                      <h3>$results.count$ metrics found $search.timeRange.label$</h3>
+                                    ]]></param>
+                                  </module>
+
+                                  <module name="Pager">
+                                    <param name="count">10</param>
+
+                                    <module name="Multiplexer">
+                                      <param name="fields">metric_name</param>
+
+                                      <module name="Search">
+                                        <param name="search">
+| mstats avg(_value) where metric_name="$metric_name$" span=1min prestats=t BY plugin_instance 
+| rename _value as $metric_name$ 
+| timechart bins=300 avg(_value) as $metric_name$ by plugin_instance
+                                        </param>
+
+                                        <module name="HTML">
+                                          <param name="html"><![CDATA[
+                                          
+                                          <h3 style="border-top:1px solid #ccc;padding-top:5px">average $metric_name$ over time split by plugin_instance</h3>
+                                          ]]></param>
+                                        </module>
+                                        <module name="JSChart">
+                                          <param name="enableResize">False</param>
+                                          <param name="height">160px</param>
+                                        </module>
+                                      </module>
+                                    </module>
+                                    <module name="Pager" />
+                                  </module>
+                                </module>
+                                
+                                <module name="Pager" group="all_other_fields">
+                                  <module name="Table">
+                                    <module name="CustomBehavior">
+                                      <param name="customBehavior">bouncer</param>
+                                    </module>
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+<module name="HTML" layoutPanel="viewHeader"> 
+  <param name="html"><![CDATA[
+
+  <style type="text/css">
+.Link.floatRight {
+    float:right;
+}
+.mainSearchControls .TimeRangePicker {
+  float:left;
+}
+.multiplexedBlock {
+  width:49%;
+  float:left;
+}
+</style>
+<script type="text/javascript">
+if (typeof(Sideview)!="undefined") {
+
+    var currentSplunkVersion = Splunk.util.getConfigValue("VERSION_LABEL");
+    if (Sideview.utils.compareVersions(currentSplunkVersion,"7.0") == -1) {
+        $$("body").html("<div style=\"padding:10px;\"><h2>Sorry but this view requires at least Splunk 7.0</h2><p>Download and install Splunk 7.0, learn about their new metrics indexes, and ingest some metrics data.</p></div>");
+    }
+    Sideview.utils.declareCustomBehavior("bouncer",
+        function(module) {
+            module.onContextChange = function() {
+                var context = this.getContext();
+                var field=context.get("field");
+                if (field=="metric_name") return context;
+                console.error("row.fields." + field);
+
+                var selectedValue = context.get("row.fields." + field);
+                
+                var upwardContext = new Splunk.Context();
+                // reset the tab to Searches
+                upwardContext.set("field","metric_name");
+
+                if (["user","app","dashboard"].indexOf(field)!=-1) {
+                    upwardContext.set(field,selectedValue);
+                } else {
+                    var searchterms = context.get("searchterms.rawValue") || "";
+                    searchterms = field + "=\"" + selectedValue + "\" " + searchterms;
+                    upwardContext.set("searchterms",searchterms);
+                }
+                this.passContextToParent(upwardContext);
+            }
+        }
+    );
+}
+</script>
+  ]]></param>
+</module>
+
+
+</view>

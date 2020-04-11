@@ -1,0 +1,406 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - drilldown defaults</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - drilldown defaults</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="Search" layoutPanel="panel_row1_col1" group="drilldown, selectedIndex 0">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype date_second
+      ]]></param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        test this case by going to page 2.   The downstream modules should close up and not re-request.
+        ]]></param>
+      </module>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Pager">
+          <module name="Table">
+            <param name="selectedIndex">0</param>
+            
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                sourcetype = $row.fields.sourcetype$<br>
+                sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+                count = $row.fields.count$<br>
+                count (raw)= $row.fields.count.rawValue$<br>
+                <br>
+                row.searchTerms = $row.searchTerms$<br>
+                <br>
+                row.cell0.name = $row.cell0.name$<br>
+                row.cell0.value = $row.cell0.value$<br>
+                row.cell0.rawValue = $row.cell0.rawValue$<br>
+                <br>
+                row.cell1.name = $row.cell1.name$<br>
+                row.cell1.value = $row.cell1.value$<br>
+                row.cell1.rawValue = $row.cell1.rawValue$<br>
+                <br>
+                row.value = $row.value$<br>
+                row.rawValue = $row.rawValue$<br>
+                row.name = $row.name$<br>
+                <br>
+                row.modifierKey = $row.modifierKey$<br>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row1_col2" group="drilldown, selectedIndex 2">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype
+      ]]></param>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Pager">
+          <module name="Table">
+            <param name="selectedIndex">2</param>
+            
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                sourcetype = $row.fields.sourcetype$<br>
+                sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+                count = $row.fields.count$<br>
+                count (raw) = $row.fields.count.rawValue$<br>
+                <br>
+                row.searchTerms = $row.searchTerms$<br>
+                <br>
+                row.cell0.name = $row.cell0.name$<br>
+                row.cell0.value = $row.cell0.value$<br>
+                row.cell0.rawValue = $row.cell0.rawValue$<br>
+                <br>
+                row.cell1.name     = $row.cell1.name$<br>
+                row.cell1.value    = $row.cell1.value$<br>
+                row.cell1.rawValue = $row.cell1.rawValue$<br>
+                <br>
+                row.value = $row.value$<br>
+                row.rawValue = $row.rawValue$<br>
+                row.name = $row.name$<br>
+                <br>
+                row.modifierKey = $row.modifierKey$<br>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="drilldown, 0 matching defaults in table">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype
+      ]]></param>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Table">
+          <param name="default.sourcetype">sourcetypeThatIsNotPresent</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              sourcetype = $row.fields.sourcetype$<br>
+              sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+              count = $row.fields.count$
+              <br>
+              row.searchTerms = $row.searchTerms$<br>
+              <br>
+              row.cell0.name = $row.cell0.name$<br>
+              row.cell0.value = $row.cell0.value$<br>
+              row.cell0.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              row.cell1.name = $row.cell0.name$<br>
+              row.cell1.value = $row.cell0.value$<br>
+              row.cell1.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              row.value = $row.value$<br>
+              row.rawValue = $row.rawValue$<br>
+              row.name = $row.name$<br>
+              <br>
+              row.modifierKey = $row.modifierKey$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row2_col2" group="drilldown, 1 matching default in table">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype
+      ]]></param>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Table">
+          <param name="default.sourcetype">splunkd</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              sourcetype = $row.fields.sourcetype$<br>
+              sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+              count = $row.fields.count$
+              <br>
+              row.searchTerms = $row.searchTerms$<br>
+              <br>
+              row.cell0.name = $row.cell0.name$<br>
+              row.cell0.value = $row.cell0.value$<br>
+              row.cell0.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              row.cell1.name = $row.cell0.name$<br>
+              row.cell1.value = $row.cell0.value$<br>
+              row.cell1.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              row.value = $row.value$<br>
+              row.rawValue = $row.rawValue$<br>
+              row.name = $row.name$<br>
+              <br>
+              row.modifierKey = $row.modifierKey$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col3" group="drilldown, 2 matching defaults in table">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype | eval user="my sourcetype is " + sourcetype | fields sourcetype user count
+      ]]></param>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Table">
+          <param name="default.sourcetype">splunkd</param>
+          <param name="default.user">my sourcetype is splunkd</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              sourcetype = $row.fields.sourcetype$<br>
+              sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+              user = $row.fields.user$<br>
+              user (raw) = $row.fields.user.rawValue$<br>
+              count = $row.fields.count$<br>
+              <br>
+              row.searchTerms = $row.searchTerms$<br>
+              <br>
+              row.cell0.name = $row.cell0.name$<br>
+              row.cell0.value = $row.cell0.value$<br>
+              row.cell0.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              row.cell1.name = $row.cell1.name$<br>
+              row.cell1.value = $row.cell1.value$<br>
+              row.cell1.rawValue = $row.cell1.rawValue$<br>
+              <br>
+              row.cell2.name = $row.cell2.name$<br>
+              row.cell2.value = $row.cell2.value$<br>
+              row.cell2.rawValue = $row.cell2.rawValue$<br>
+              <br>
+              row.value = $row.value$<br>
+              row.rawValue = $row.rawValue$<br>
+              row.name = $row.name$<br>
+              <br>
+              row.modifierKey = $row.modifierKey$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="no row highlighted - one default not present">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype | eval user="my sourcetype is " + sourcetype
+      ]]></param>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Table">
+          <param name="default.sourcetype">splunkd</param>
+          <param name="default.user">my sourcetype is splunkd</param>
+          <param name="default.not_present">zomg</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              sourcetype = $row.fields.sourcetype$<br>
+              sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+              count = $row.fields.count$  (should not be present since there was no row matched)<br>
+              user = $row.fields.user$<br>
+              not_present = $row.fields.not_present$<br>
+              
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    
+    <module name="Search" layoutPanel="panel_row4_col1" group="with 2 defaults set upstream">
+      <param name="search"><![CDATA[
+        index=_internal source=*scheduler* OR source=*splunkd* OR source=*metrics* | head 1000 | stats count by sourcetype source
+      ]]></param>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="ValueSetter">
+          <param name="arg.sourcetype">splunkd_access</param>
+          <param name="arg.source">C:\Program Files\Splunk\var\log\splunk\splunkd_access.log</param>
+
+          <module name="Table">
+            <param name="default.sourcetype">$sourcetype$</param>
+            <param name="default.source">$source$</param>
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                sourcetype = $row.fields.sourcetype$<br>
+                sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+                source = $row.fields.source$<br>
+                source (raw) = $row.fields.source.rawValue$<br>
+                <br>
+                row.searchTerms = $row.searchTerms$<br>
+                <br>
+                row.cell0.name = $row.cell0.name$<br>
+                row.cell0.value = $row.cell0.value$<br>
+                row.cell0.rawValue = $row.cell0.rawValue$<br>
+                <br>
+                row.cell2.name = $row.cell2.name$<br>
+                row.cell2.value = $row.cell2.value$<br>
+                row.cell2.rawValue = $row.cell2.rawValue$<br>
+                <br>
+                row.value = $row.value$<br>
+                row.rawValue = $row.rawValue$<br>
+                row.name = $row.name$<br>
+                <br>
+                row.modifierKey = $row.modifierKey$<br>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+  
+    <module name="Search" layoutPanel="panel_row4_col2" group="_time - defaults (FAILS)">
+      <param name="search"><![CDATA[
+        | stats count | eval _time=1325404920 | timechart count
+      ]]></param>
+      <param name="earliest">1325404800</param>
+      <param name="latest">1325408400</param>
+
+      <module name="Button">
+
+        <module name="Table">
+          <param name="count">5</param>
+          <param name="default.time">1325404920</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h2>S/B dictated by timebucket</h2>
+              $$row.fields._time$$ = $row.fields._time$<br>
+              $$row.fields._span$$ = $row.fields._span$<br>
+              <br>
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              $$search.timeRange.label$$ = $search.timeRange.label$<br>
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row5_col1" group="selectedIndex with downstream dispatch">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | stats count by sourcetype date_second
+      ]]></param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        test this case by going to page 2 with firebug open.   The search for the downstream modules should not dispatch.  On returning to page 1, the downstream modules shoudl reppear and their search should redispatch
+        ]]></param>
+      </module>
+      
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Pager">
+          <module name="Table">
+            <param name="selectedIndex">0</param>
+
+            <module name="Search">
+              <param name="search"><![CDATA[
+                index=_* OR index=*  sourcetype=$row.fields.sourcetype$ | stats count by sourcetype
+              ]]></param>
+
+              <module name="Table" />
+            </module>
+          </module>
+          
+          
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row5_col2" group="selectedIndex overrides default.* selection">
+      <param name="search"><![CDATA[
+        index=_internal source=*scheduler* OR source=*splunkd* OR source=*metrics* | head 1000 | stats count by sourcetype | sort sourcetype
+      ]]></param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        default.sourcetype specifies splunkd_access.   selectedIndex specifies "1".  selectedIndex should win.
+        ]]></param>
+      </module>
+      
+      <module name="Button">
+        <param name="label">reset</param>
+
+        <module name="Pager">
+          <module name="Table">
+            <param name="selectedIndex">1</param>
+            <param name="default.sourcetype">splunkd_access</param>
+            
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                
+                sourcetype = $row.fields.sourcetype$<br>
+              
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+  </module>
+
+</view>

@@ -1,0 +1,11 @@
+<% 
+# Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+% if "html" in module :
+    ${replace_tokens(_(module["html"]), qs)}
+% elif "src" not in module or not module["src"] :
+    <div class="error">
+        ERROR: HTML module present but no value was found for either the "html" param or the "src" param. This is a configuration error. 
+    </div>
+% endif

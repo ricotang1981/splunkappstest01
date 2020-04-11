@@ -1,0 +1,87 @@
+<module name="Search">
+                        <param name="search"><![CDATA[
+| `covid_19_all_data`
+| `standard_cleanup_and_normalization`
+| search Province_State!="Recovered" Province_State!="*Princess*" Province_State!="Wuhan Evacuee" Province_State!="US"
+Province_State!="Australia"
+| stats count by Country_Region Province_State
+                        ]]></param>
+                        <module name="CustomBehavior">
+                          <param name="requiresDispatch">True</param>
+                        </module>
+                        <module name="Link" layoutPanel="viewHeader">
+                          <param name="label">reset selection to...</param>
+
+                          <!-- one of the stranger Canary-isms. This just wraps all its downstream modules
+                          into a popup layer, that aligns itself to whatever most-link-like object
+                          upstream just was clicked. -->
+                          <module name="Layer">
+
+                            <module name="Link" layoutPanel="viewHeader">
+                              <param name="label">default</param>
+
+                              <module name="Redirector">
+                                <param name="url">?</param>
+                                <!-- however we do want to preserve a couple things. -->
+                                <param name="arg.breakApartStates">$breakApartStates$</param>
+                                <param name="arg.statistic">$statistic$</param>
+                                <param name="arg.number_of_days">$number_of_days$</param>
+                                <param name="arg.xStatistic">$xStatistic$</param>
+                              </module>
+                            </module>
+
+                            <module name="PostProcess">
+                              <param name="search"><![CDATA[
+| stats dc(Province_State) as provinces by Country_Region
+| search provinces>1
+                              ]]></param>
+
+                              <!-- the other common pattern here would be a Pulldown plus a Button.
+                              but a Multiplexer can make us nice simple blue links to click on.
+                              The plumbing is surprisingly similar although the Pulldoown+Button combination
+                              is almost intuitive whereas the Multiplexer version is :head_explode:
+                              -->
+                              <module name="Multiplexer">
+                                <param name="fields">Country_Region</param>
+
+                                <module name="PostProcess">
+                                  <param name="search"><![CDATA[
+| search ( Country_Region="$Country_Region$" )
+| stats count by Country_Region Province_State
+|  eval terms = "( Country_Region=\"" + Country_Region + "\" Province_State=\"" + Province_State + "\" )"
+| stats values(terms) as terms
+                                  ]]></param>
+
+                                  <module name="ResultsValueSetter">
+                                    <param name="fields">terms</param>
+
+                                    <module name="Link">
+                                      <param name="label">$Country_Region$ - all provinces or states</param>
+
+                                      <module name="Redirector">
+                                        <param name="url">?</param>
+                                        <param name="arg.Country_Or_State">$terms$</param>
+                                        <param name="arg.breakApartStates">yes</param>
+                                        <param name="arg.statistic">$statistic$</param>
+                                        <param name="arg.number_of_days">$number_of_days$</param>
+                                        <param name="arg.xStatistic">$xStatistic$</param>
+                                      </module>
+                                    </module>
+
+                                    <!--
+                                    <module name="HTML">
+                                      <param name="html"><![CDATA[
+                                        DEBUGGING. uncomment this and comment out the redirector <br>
+                                        oh and add | eval terms=mvjoin(terms,",")
+                                        $terms$<br>
+
+                                      ]]></param>
+                                    </module>
+                                    -->
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>

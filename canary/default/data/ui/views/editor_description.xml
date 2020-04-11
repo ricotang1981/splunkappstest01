@@ -1,0 +1,28 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view stylesheet="lib/editor/editor.css" isVisible="False">
+  <label>Sideview Editor - editor description panel</label>
+  <module name="SideviewUtils" layoutPanel="viewHeader" />
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+
+    <module name="ValueSetter">
+      <param name="name">text</param>
+      <param name="allowClobber">False</param>
+      <param name="value">this panel will generally try and describe where you are and what you're doing</param>
+
+      <module name="ValueSetter">
+        <param name="name">title</param>
+        <param name="allowClobber">False</param>
+        <param name="value">Description panel</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2 class="title">$title$</h2>
+            <p class="text">$text$</p>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

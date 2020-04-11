@@ -1,0 +1,319 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - embedding</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - embedding</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Search">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_*_thruput" | head 1000 | stats sum(kb) as totalKB by group series | eval values="foo"
+      ]]></param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          Each row should have a bar chart, as well as a Pulldown and Button, which when clicked run a search that just displays "success"
+        ]]></param>
+      </module>
+
+      <module name="Button">
+      
+        <module name="PostProcess">
+          <param name="search">stats count by group values | table group values | eval foo="placeholder"</param>
+          
+          <!-- because the chart formatting is STATIC,  AND shared across all 
+          table rows, we can factor it out here and avoid cloning it. -->
+          <module name="ValueSetter">
+            <param name="arg.charting.chart">bar</param>
+              
+            <module name="Table">
+              
+              <module name="PostProcess" group="row.fields.values">
+                <param name="search">search group="$row.fields.group$" | stats sum(totalKB) as totalKB by series</param>
+                <module name="JSChart">
+                </module>
+              </module>             
+              <module name="Pulldown" group="row.fields.foo">
+                <param name="name">foo</param>
+                <param name="label"></param>
+                <param name="staticOptions">
+                  <list>
+                    <param name="value">foo</param>
+                  </list>
+                  <list>
+                    <param name="value">bar</param>
+                  </list>
+                  <list>
+                    <param name="value">baz</param>
+                  </list>
+                </param>
+                <module name="Button">
+                  <param name="allowSoftSubmit">False</param>
+                  <param name="allowAutoSubmit">False</param>
+                  <module name="Search">
+                    <param name="search">| stats count | eval message="success!"</param>
+                    <module name="HTML">
+                      <param name="loadingText">...</param>
+                      <param name="html"> $results[0].message$ </param>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="Sourcetype field S/B bold.">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index
+      ]]></param>
+
+      <module name="Button">
+        
+        <module name="Pager">
+          <module name="Table">
+            
+            <module name="HTML" group="row.fields.sourcetype">
+              <param name="html"><![CDATA[
+              zomg the sourcetype is <b>$row.fields.sourcetype$</b>....and the index is <b>$row.fields.index$</b>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+        
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="arrow icons">
+      <param name="search"><![CDATA[
+        * | head 1000 | timechart count | delta count as change | eval rises=if(change>0,"sort_asc",if(change<0,"sort_desc","sort_none"))
+      ]]></param>
+
+      <module name="Table">
+        <module name="HTML" group="row.fields.rises">
+          <param name="html"><![CDATA[
+            <img src="/static/app/sideview_utils/images/arrow_$row.fields.rises$.gif">
+          ]]></param>
+        </module>
+      </module>        
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col2" group="arrow icons when field name has space">
+      <param name="search"><![CDATA[
+        * | head 1000 | timechart count | delta count as change | eval rises=if(change>0,"sort_asc",if(change<0,"sort_desc","sort_none")) | rename rises as "Rises By"
+      ]]></param>
+
+      <module name="Table">
+        <module name="HTML" group="row.fields.Rises By">
+          <param name="html"><![CDATA[
+            <img src="/static/app/sideview_utils/images/arrow_$row.fields.Rises By$.gif">
+          ]]></param>
+        </module>
+      </module>        
+    </module>
+
+    <module name="Search" layoutPanel="panel_row4_col1" autoRun="True" group="Redirector inside an embedded Button">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_sourcetype_thruput" | head 1000 | stats sum(kb) as totalKB by series | eval actions="PLACEHOLDER"
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+          
+          <module name="Button" group="row.fields.actions">
+            <param name="allowAutoSubmit">False</param>
+            <param name="customBehavior">confirmationPopup</param>
+
+            <module name="Redirector">
+              <param name="popup">True</param>
+              <param name="url">http://google.com</param>
+            </module>
+          </module>             
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row4_col2" autoRun="True" group="Buttons only show for some rows">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_sourcetype_thruput" | head 1000 | stats sum(kb) as totalKB by series | eval actions="PLACEHOLDER" | streamstats count | eval showme=if(count=="2","true","false")
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+          
+          <module name="ValueSetter" group="row.fields.actions">
+            <param name="name">foo</param>
+            <param name="if.$row.fields.showme$=true">1</param>
+            
+            <module name="Gate">
+              <param name="requiredKeys">foo</param>
+
+              <module name="Button">
+                <param name="allowAutoSubmit">False</param>
+                <param name="customBehavior">confirmationPopup</param>
+
+                <module name="Redirector">
+                  <param name="popup">True</param>
+                  <param name="url">http://google.com</param>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row5_col1" autoRun="True" group="Prepopulated Pulldowns">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_*_thruput" | head 1000 | stats dc(series) as seriesCount by group | eval pulldownTest=group
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+
+          <module name="ValueSetter" group="row.fields.pulldownTest">
+            <param name="name">embeddedPulldown</param>
+            <param name="value">$row.fields.pulldownTest$</param>
+            
+            <module name="Pulldown">
+              <param name="name">embeddedPulldown</param>
+              <param name="label">Show </param>
+              <param name="staticOptions">
+                <list>
+                  <param name="value">per_sourcetype_thruput</param>
+                </list>
+                <list>
+                  <param name="value">per_source_thruput</param>
+                </list>
+                <list>
+                  <param name="value">per_host_thruput</param>
+                </list>
+                <list>
+                  <param name="value">per_index_thruput</param>
+                </list>
+                
+              </param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row6_col1" autoRun="True" group="postprocess hackery for dynamic pulldowns">
+      <param name="search"><![CDATA[
+        index=_internal sourcetype=splunk_web_access | head 1000 | stats count by clientip | eval actions="foo" | rename clientip as ip
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+
+          <module name="Pulldown" group="row.fields.actions">
+            <param name="valueField">value</param>
+            <param name="labelField">label</param>
+            <param name="postProcess">
+              search ip="$row.fields.ip$" | eval label=split("Action 1 for " + ip + ",Action 2 for " + ip,",") | mvexpand label | rename ip as value</param>
+                
+            <param name="staticOptions">
+              <list>
+                <param name="label">Additional Actions</param>
+                <param name="value">*</param>
+                <param name="selected">True</param>
+              </list>
+            </param>
+
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" autoRun="True" layoutPanel="panel_row7_col1">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_*_thruput" | head 1000 | stats sum(kb) as kb max(eps) as maxEps by group | eval stats="placeholder"
+      ]]></param>
+
+      <module name="PostProcess">
+        <param name="search"><![CDATA[ 
+        | reverse | append [| stats count | eval group="" | fields - count] | reverse | fields group stats kb maxEps | eval kb=if(group=="","<b>kb</b>",kb) | eval maxEps=if(group=="","<b>maxEps</b>", maxEps)
+        ]]></param>
+
+        <module name="Pager">
+          
+          <module name="Table">
+            <param name="hiddenFields">kb, maxEps</param>
+
+            <module name="HTML" group="row.fields.stats">
+              <param name="html"><![CDATA[
+                <table>
+                  <tr>
+                    <td style="border-bottom:0px;width:100px;">$row.fields.kb$</td>
+                    <td style="border-bottom:0px;">$row.fields.maxEps$</td>
+                  </tr>
+                </table>
+              ]]></param>
+            </module>
+            
+
+              
+
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+    <module name="Search" autoRun="True" layoutPanel="panel_row8_col1">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_sourcetype_thruput" | rename series as sourcetype | table sourcetype | fillnull google bing value="value not used"
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+
+          <module name="HTML" group="row.fields.google">
+            <param name="html"><![CDATA[
+              <a href="http://google.com?q=$row.fields.sourcetype$">Google it</a>
+            ]]></param>
+          </module>
+
+          <module name="HTML" group="row.fields.bing">
+            <param name="html"><![CDATA[
+              <a href="http://www.bing.com/search?q=$row.fields.sourcetype$">Bing it</a>
+            ]]></param>
+          </module>
+
+        </module>
+      </module>
+    </module>
+
+
+
+
+  </module>
+  
+        
+
+</view>

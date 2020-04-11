@@ -1,0 +1,35 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+## if the label begins and ends with $, we do $foo$ substitution, 
+## straight from the URL
+<%def name="buildLabel(module)">\
+    <%
+    staticLabel  = _(module.get("label", ""))
+    %>
+    % if len(staticLabel)>2 and staticLabel[0]=="$" and staticLabel[-1]=="$" :
+        <label for="${module['id']}_input">${cherrypy.request.params.get(staticLabel[1:-1],"") | h}</label>
+    % elif (len(staticLabel)>0):
+        <label for="${module['id']}_input">${staticLabel|h}</label>
+    % endif
+</%def>\
+
+<%def name="buildCheckbox(module)">\
+<input type="checkbox" id="${module['id']}_input" 
+    % if (module.get("checked").lower()=="true") :
+        checked="checked"
+    % endif
+/>
+</%def>\
+
+% if (module.get("labelPosition").lower()=="left") :
+<%self:buildLabel module="${module}" />
+% endif
+<%self:buildCheckbox module="${module}" />
+% if (module.get("labelPosition").lower()=="right") :
+<%self:buildLabel module="${module}" />
+% endif
+
+

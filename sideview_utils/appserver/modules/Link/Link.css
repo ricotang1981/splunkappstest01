@@ -1,0 +1,20 @@
+.Link.severe a {
+    color: #FF1F24;
+}
+.Link.high a {
+    color: #FF7E00;
+}
+.Link.elevated a {
+    color:  #FFB800;
+}
+.Link.guarded a {
+    color: #4DA6DF;
+}
+.Link.low a{
+    color: #00B932;
+}
+
+/* see [param:hideUntilPushReceived */
+.Link {
+    display:none;
+}

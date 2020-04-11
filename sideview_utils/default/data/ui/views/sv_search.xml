@@ -1,0 +1,250 @@
+<view>
+  <label>Sideview Search</label>
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customJavascript">sideview_utils/report.js sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/report.css</param>
+  </module>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="URLLoader" layoutPanel="appHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useAssistant">true</param>
+      <param name="useTypeahead">true</param>
+      <param name="useOwnSubmitButton">False</param>
+      
+      <module name="TimeRangePicker">
+        <param name="selected">Last 4 hours</param>
+        <param name="searchWhenChanged">True</param>
+
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="CustomBehavior">
+            <param name="customBehavior">hideDownstreamUntilSearchSubmitted</param>
+          </module>
+
+          <module name="SearchControls" layoutPanel="graphArea"></module>
+
+          <module name="ZoomLinks"  layoutPanel="graphArea">
+            
+            <module name="Timeline">
+
+              <module name="FieldPicker" layoutPanel="sidebar">
+                <param name="fields">sourcetype source host</param>
+                <param name="link">
+                  <param name="view">report_builder_format_report</param>
+                </param>
+
+                
+   
+
+                <module name="ButtonSwitcher" layoutPanel="pageControls">
+                  <param name="mode">independent</param>
+                  <param name="hideChildrenOnLoad">True</param>
+                  <param name="selected">splIcon-events-list</param>
+                  <param name="disableOnNull">True</param>
+                  
+                  
+                  <module name="Checkbox" layoutPanel="resultsOptions" group="splIcon-events-list" altTitle="Events List">
+                    <param name="name">results.softWrap</param>
+                    <param name="label">Wrap results</param>
+                    <param name="onValue">True</param>
+                    <param name="checked">True</param>
+                                      
+                    <module name="HTML" layoutPanel="resultsHeaderPanel">
+                      <param name="html"><![CDATA[
+                        <h3>$results.eventCount$ results $search.timeRange.label$</h3>
+                      ]]></param>
+                    </module>
+
+                    <module name="Pulldown">
+                      <param name="name">results.maxLines</param>
+                      <param name="label">Lines per event</param>
+                      <param name="staticOptions">
+                        <list>
+                          <param name="value">5</param>
+                        </list>
+                        <list>
+                          <param name="value">10</param>
+                        </list>
+                        <list>
+                          <param name="value">20</param>
+                        </list>
+                        <list>
+                          <param name="value">50</param>
+                        </list>
+                        <list>
+                          <param name="value">100</param>
+                        </list>
+                        <list>
+                          <param name="value">200</param>
+                        </list>
+                        <list>
+                          <param name="value">500</param>
+                        </list>
+                        <list>
+                          <param name="value">0</param>
+                          <param name="label">all</param>
+                        </list>
+                      </param>
+
+                      <module name="Pulldown">
+                        <param name="name">results.segmentation</param>
+                        <param name="label">Event Segmentation</param>
+                        <param name="staticOptions">
+                          <list>
+                            <param name="label">inner</param>
+                            <param name="selected">True</param>
+                            <param name="value">inner</param>
+                          </list>
+                          <list>
+                            <param name="label">outer</param>
+                            <param name="value">outer</param>
+                          </list>
+                          <list>
+                            <param name="label">full</param>
+                            <param name="value">full</param>
+                          </list>
+                          <list>
+                            <param name="label">raw</param>
+                            <param name="value">raw</param>
+                          </list>
+                        </param>
+
+                        <module name="Events" layoutPanel="resultsAreaLeft">
+                          <param name="resizeMode">custom</param>
+                          <param name="customBehavior">endlessScrollerResize</param>
+                        </module>
+
+                      </module>
+
+                    </module>
+                  </module>
+                    
+                  <module name="Pager" layoutPanel="pageControls" group="splIcon-results-table" altTitle="Results Table">
+                    <module name="ResultsHeader" layoutPanel="resultsHeaderPanel" >
+                      <param name="entityLabel">results</param>
+                      <param name="entityName">results</param>
+                    </module>
+                    <module name="EnablePreview" group="show" layoutPanel="resultsOptions" >
+                      <param name="enable">True</param>
+                    </module>
+
+                    <module name="ValueSetter">
+                      <param name="name">results.fields</param>
+                      <param name="value"></param>
+                      <module name="Table" layoutPanel="resultsAreaLeft">
+
+                        <module name="Redirector">
+                          <param name="url">sv_search</param>
+                          <param name="generalSearchTermField">searchBar</param>
+                          <param name="autoDrilldown">True</param>
+
+                          <param name="arg.searchBar">$searchBar.rawValue$</param>
+                          
+                          <param name="arg.earliest">$search.timeRange.earliest$</param>
+                          <param name="arg.latest">$search.timeRange.latest$</param>
+
+                          <param name="arg.autoRun">True</param>
+                        </module>
+                      </module>
+                      <module name="Pager" layoutPanel="resultsAreaLeft" />
+                    </module>
+                  </module>
+
+
+
+                  <module name="ShowHideHeader" group="splIcon-results-chart" layoutPanel="panel_row1_col1">
+                    <param name="label">Formatting options</param>
+                    <param name="mode">serializeAll</param>
+                    <param name="headerType">secondary</param>
+                    <param name="hideChildrenOnLoad">True</param>
+
+
+                    <!--  still need to circle back and replace ALL these with straight Pulldown/TextField modules -->
+                    <module name="ChartTypeFormatter" group="show" layoutPanel="panel_row1_col1">
+                      <param name="ensureCompatibleType">true</param>
+
+                      <module name="LinkSwitcher" layoutPanel="panel_row1_col2">
+                        <param name="mode">serializeAll</param>
+                        <param name="hideChildrenOnLoad">True</param>
+                        <param name="label">Format</param>
+                        <module name="ChartTitleFormatter" group="General"
+                          layoutPanel="panel_row2_col1">
+                          <param name="label">Chart title</param>
+
+                          <module name="StackModeFormatter" layoutPanel="panel_row2_col2">
+                            <module name="SplitModeFormatter" layoutPanel="panel_row2_col2">
+                              <module name="NullValueFormatter">
+                                <module name="LegendFormatter" layoutPanel="panel_row2_col3"></module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                        
+                        <module name="XAxisTitleFormatter" group="X-axis"
+                          layoutPanel="panel_row2_col1">
+                        </module>
+                        <module name="YAxisTitleFormatter" group="Y-axis"
+                          layoutPanel="panel_row2_col1">
+                          <module name="YAxisRangeMinimumFormatter"
+                            layoutPanel="panel_row2_col2">
+                            <module name="YAxisRangeMaximumFormatter"
+                              layoutPanel="panel_row2_col2">
+                              <module name="AxisScaleFormatter"
+                                layoutPanel="panel_row2_col3"></module>
+                            </module>
+                          </module>
+                        </module>
+                        <!-- last switcher child in serializeAll mode is always 
+                          visible. -->
+                        <module name="NullModule" layoutPanel="panel_row2_col1"></module>
+                      </module>
+                    </module>
+
+                    <!-- last switcher child in serializeAll mode is always visible. -->
+                    <module name="JSChart" layoutPanel="resultsAreaLeft">
+                      <param name="height">300px</param>
+                      <param name="width">100%</param>
+                      <param name="maxRowsForTop">20</param>
+
+                      <module name="ConvertToDrilldownSearch">
+                        <module name="ViewRedirector">
+                          <param name="viewTarget">flashtimeline</param>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+
+                <module name="MultiFieldViewer">
+                  <param name="link">
+                    <param name="view">report_builder_format_report</param>
+                  </param>
+                </module>
+                <module name="SuggestedFieldViewer">
+                  <param name="minDistinctCount">1</param>
+                  <param name="minFrequency">0.5</param>
+                  <param name="maxFields">50</param>
+                  <param name="exclude">
+                    <list>^date_.*</list>
+                  </param>
+                  <param name="link">
+                    <param name="view">report_builder_format_report</param>
+                  </param>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+</view>

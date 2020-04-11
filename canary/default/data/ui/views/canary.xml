@@ -1,0 +1,205 @@
+<view template="dashboard.html" isVisible="False">
+  <label>Hello World</label>
+
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+  
+    <h1>Welcome to the main testcase view for the Canary UI</h1>
+
+    ]]></param>
+  </module>
+
+
+
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+  
+    This is some text.  It is relatively happy with its lot in life.
+
+    ]]></param>
+  </module>
+
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <a href="/en-US/custom/canary/view/canary/canary">switch to the canary UI </a> | <a href="/en-US/app/canary/canary">switch to the old UI</a>.
+    ]]></param>
+  </module>
+  
+  
+
+
+  <module name="URLLoader" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series </param>
+      <param name="earliest">-4h@m</param>
+      <param name="latest">now</param>
+
+      <module name="TimePicker">
+        <param name="default">Last 60 minutes</param>
+
+        <module name="Pulldown">
+          <param name="name">selectedReport</param>
+          <param name="label">Show </param>
+          <param name="float">left</param>
+          <param name="staticOptions">
+            <list>
+              <param name="label">timechart with splitby</param>
+              <param name="value">timechart bins=200 count by sourcetype limit=8</param>
+            </list>
+
+            <list>
+              <param name="label">timechart with no splitby</param>
+              <param name="value">timechart bins=200 count</param>
+            </list>
+            <list>
+              <param name="label">chart with a splitby</param>
+              <param name="value">chart count over sourcetype by date_minute</param>
+            </list>
+            <list>
+              <param name="label">top values</param>
+              <param name="value">stats count by sourcetype | sort - count</param>
+            </list>
+          </param>
+        
+          <module name="Pulldown">
+            <param name="name">selectedSourcetype</param>
+            <param name="label">Sourcetype</param>
+            <param name="float">left</param>
+            <param name="valueField">series</param>
+
+            <module name="Button">
+              <param name="allowSoftSubmit">True</param>
+              <param name="label">Search</param>
+
+              <module name="TextField" layoutPanel="panel_row3_col2">
+                <param name="name">misc</param>
+                <param name="label">misc terms</param>
+
+                <module name="Radio">
+                  <param name="name">test1</param>
+                  
+                  <param name="staticRadios">
+                    <list>
+                      <param name="label">first12313213StaticLabel</param>
+                      <param name="value">staticValue1</param>
+                      <param name="selected">true</param>
+                    </list>
+                    <list>
+                      <param name="label">secondStaticLabel</param>
+                      <param name="value">staticValue2</param>
+                    </list>
+                    <list>
+                      <param name="label">thirdStaticLabel</param>
+                      <param name="value">staticValue3</param>
+                    </list>
+                  </param>
+                  <param name="template">myField="$value$"</param>
+
+                  <module name="Checkbox">
+                    <param name="name">optionalExtraFields</param>
+                    <param name="label">a test checkbox</param>
+                    <param name="onValue">$extraFields$</param>
+
+                    <module name="Search" layoutPanel="panel_row3_col1">
+                      <param name="search">(index=_* OR index=*) sourcetype=$selectedSourcetype$ $misc$
+                      | $selectedReport$</param>
+
+                      <module name="ProgressIndicator" />
+
+                      <module name="Pulldown">
+                        <param name="name">charting.chart</param>
+                        <param name="label">chart type</param>
+                        <param name="staticOptions">
+                          <list>
+                            <param name="value">column</param>
+                          </list>
+                          <list>
+                            <param name="value">bar</param>
+                          </list>
+                          <list>
+                            <param name="value">line</param>
+                          </list>
+                          <list>
+                            <param name="value">area</param>
+                          </list>
+                        </param>
+
+                        <module name="SearchControls" />
+
+                        <module name="HTML">
+                          <param name="html">
+                          $search.timeRange.label$
+                          </param>
+                        </module>
+
+                        <module name="Pulldown"  layoutPanel="panel_row4_col1">
+                          <param name="name">charting.chart.stackMode</param>
+                          <param name="label">Stack mode</param>
+                          <param name="staticOptions">
+                            <list>
+                              <param name="value">stacked</param>
+                              <param name="label">stacked</param>
+                            </list>
+                            <list>
+                              <param name="value">default</param>
+                              <param name="label">not stacked</param>
+                            </list>
+                          </param>
+                          
+                          <module name="Chart"> 
+                          
+                            <module name="Search">
+                              <param name="search">(index=_* OR index=*) $chart.searchTerms$ | head 10</param>
+                              <module name="HTML">
+                                <param name="html"><![CDATA[
+                                  search.timeRange.label = $search.timeRange.label$<br>
+                                  search = $search$
+                                
+                                ]]></param>
+                              </module>
+                              <module name="Table" />
+                            </module>
+                          </module>
+                        </module>
+
+                        <!-- 
+                        <module name="Pager" layoutPanel="panel_row4_col2">
+                          <module name="Table" />
+                        </module>
+                        -->
+
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+
+          <!-- 
+          <module name="Search">
+            <param name="search">(index=_* OR index=*) | head 100</param>
+
+            <module name="Events" />
+          </module>
+
+          -->
+
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+</view>

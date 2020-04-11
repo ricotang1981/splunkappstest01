@@ -1,0 +1,58 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+.Pager {
+    height: 22px;
+}
+.Pager ul {
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+.Pager ul li {
+    padding:0px;
+    display:inline;
+}
+.Pager a {
+    padding: 3px 6px;
+}
+.Pager li.disabled a {
+    cursor:text;
+    color:#999;
+}
+.Pager a,
+.Pager li.disabled a:hover {
+    border-style: solid;
+    border-width: 1px;
+    border-color: transparent;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    _border-width:0px;
+}
+
+.Pager .active a,
+.Pager .active a:hover {
+    background-color: #999;
+    border-color: #999;
+    color: #fff;
+}
+
+.Pager a:hover {
+    border-color: #ccc;
+    text-decoration:none;
+}
+
+.Pager .first, 
+.Pager .last {
+    display:none;
+}
+.Pager .prev,
+.Pager .next {
+    color:#999;
+}
+
+/** fixing less-than-responsible changes Splunk made in 4.3 around default 
+ * module padding...  
+ */
+.splVersion-4_3 .dashboardCell .Pager {
+    padding-top:7px !important;
+}

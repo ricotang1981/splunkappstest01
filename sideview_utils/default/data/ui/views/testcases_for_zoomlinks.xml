@@ -1,0 +1,47 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for ZoomLinks</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for ZoomLinks</h1>
+    ]]></param>
+  </module>
+  
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="TimeRangePicker" layoutPanel="viewHeader">
+    
+      <module name="Search" layoutPanel="panel_row1_col1" >
+        <param name="search">foo NOT foo</param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <a href="?earliest=1302159600&amp;latest=1302246000">April 7th</a><br>
+            <a href="?earliest=1302159600&amp;latest=1302242000">April 7th, ragged right side</a><br>
+            <a href="?earliest=1302159800&amp;latest=1302246000">April 7th, ragged left side</a>
+            <br>
+            <b>$results.count$ events during $search.timeRange.label$</b>
+          ]]></param>
+        </module>
+        <module name="ZoomLinks">
+          <module name="JSChart"></module>
+        </module>
+      </module>
+
+      
+
+      
+    </module>
+  </module>
+
+      
+
+</view>

@@ -1,0 +1,99 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<%namespace name="shared" file="/sideview_utils:/templates/shared.html" import="*"/>
+<%
+
+
+from mako import exceptions
+from splunk.appserver.mrsparkle.lib.i18n import path_to_i18n_paths
+
+
+###############################################################################
+# this is a straight port from replaceTokensFromContext() in SideviewUtils.js
+# We use it here so that if a $foo$ token is present in the URL, we will load 
+# it initially with the value we see there.  Then later at runtime it may be 
+# replaced again, usually by URLLoader.  But this prevents the HTML from 
+# flashing the unreplaced "$foo$" briefly.
+# And if there is no matching foo in the args this function will simply 
+# replace them with "".
+###############################################################################
+def replaceTokens(s) :
+    args = cherrypy.request.params
+    within = False
+    currentTokenName = []
+    currentTokenValue = ""
+    out = []
+    for i in range(len(s)) :
+        ch = s[i]
+        if (ch=="$") :
+            within = not within
+            # check for '$$' to handle all those cases correctly.
+            if (not within and i>0 and s[i-1]=="$") :
+                out.append("$")
+                continue
+            # we just finished the token.
+            if (not within) :
+                currentTokenValue = args.get("".join(currentTokenName), "")
+                
+                # only do the replacement for simple alphanumeric string values
+                # or lists of simple alphanumeric string values.
+                if (isinstance(currentTokenValue,list)) :
+                    if (("".join(currentTokenValue)).isalnum()) :
+                        out.append(",".join(currentTokenValue))
+                elif (str(currentTokenValue).isalnum()) :
+                    out.append(currentTokenValue)
+
+                currentTokenName = []
+        elif (within) :
+            currentTokenName.append(ch)
+        else :
+            out.append(ch)
+        
+    return "".join(out)
+
+def getHTMLContent() :
+    return replaceTokens(_(module["html"]))
+
+
+def getSrcContent() :
+    srcPath = "/APP/%s/appserver/static/%s" % (APP["id"], module["src"])
+
+    src = None
+
+    # we check for "foo-en-GB.html" before checking for "foo.html"
+    for i18nsrc in path_to_i18n_paths(srcPath):
+        try:
+            src = capture(self.include_file, i18nsrc)
+            break
+        except exceptions.TemplateLookupException as e:
+            continue
+        except Exception as e:
+            traceback = exceptions.RichTraceback()
+            src = "<pre>%s</pre>" % e
+
+    return _(src)
+    
+    
+
+%>
+% if "html" in module and module["html"] :
+    ${getHTMLContent()}
+% elif "src" in module and module["src"] :
+    <%
+    module["src"] = replaceTokens(module["src"])
+    srcContent = getSrcContent()
+    %>
+    ${replaceTokens(srcContent)}
+
+    <%call expr="shared.inline_script()">
+        Splunk.Module.loadParams.${module['id']}.html = ${jsonify(srcContent)};
+    </%call>
+    
+% else :
+    <div class="error">
+        ERROR: HTML module present but no value was found for either the "html" param or the "src" param. This is a configuration error. 
+    </div>
+% endif
+

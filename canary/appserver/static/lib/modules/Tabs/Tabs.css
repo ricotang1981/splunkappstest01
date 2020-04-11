@@ -1,0 +1,80 @@
+/* Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. */
+
+.Tabs {
+    float:none !important;
+    /*  OK now I have no idea why I thought it was a good idea to do this on the gateways page or anywhere..
+    margin-bottom: 10px;
+    */
+}
+.dashboardCell .Tabs {
+    padding-bottom:0px !important;
+}
+.mainSearchControls .Tabs {
+    padding-bottom:0px !important;
+    position:relative;
+    top:4px;
+    z-index:1;
+}
+.Tabs ul {
+    margin: 0px 0px 0px 0px;
+    padding: 0;
+    list-style: none outside none;
+}
+.Tabs li {
+    margin-bottom:0px;
+    padding-bottom:0px;
+}
+.Tabs ul li {
+    float: left;
+    padding-left: 20px;
+    height: 27px;
+    line-height: 27px;
+    margin-right: 5px;
+    margin-top: 5px;
+    padding:0px;
+    border-radius:8px 8px 0px 0px;
+    border-radius:8px 8px 0px 0px;
+    background-color:#aaa;
+}
+.Tabs ul li a {
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    min-width: 75px;
+    background:none;
+    padding-left:10px;
+    padding-right:10px;
+    color:#000;
+}
+.Tabs ul li.selected {
+    background-color: #f5f5f5;
+    border:1px solid #aaa;
+    border-bottom-width:0px;
+    margin-top: 2px;
+    height:29px;
+    position:relative;
+    top:1px;
+}
+.Tabs ul li.selected a {
+    color:#000;
+}
+
+.mainSearchControls .Tabs ul li.selected,
+.graphArea .Tabs ul li.selected  {
+    background-color:#fff;
+}
+
+
+.Tabs ul li.disabled {
+    opacity:0.25;
+}
+
+.firstChildIsTabsModule {
+    margin-top:38px;
+}
+.firstChildIsTabsModule .Tabs {
+    margin-bottom:10px;
+}
+.firstModuleInDashboardPanel {
+    margin-top:-38px;
+}

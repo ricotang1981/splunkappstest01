@@ -1,0 +1,116 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for the Back Button 2</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for the Back Button 2</h1>
+    
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <a href="?">reset URL</a>
+      ]]></param>
+    </module>
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useOwnSubmitButton">False</param>
+
+      <module name="TimeRangePicker">
+        <param name="selected">Last 15 minutes</param>
+        <param name="searchWhenChanged">True</param>
+        
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+
+          <module name="Pulldown" layoutPanel="panel_row1_col1">
+            <param name="name">staticpulldown1</param>
+            <param name="label">$name$</param>
+            <param name="staticOptions">
+              <list>
+                <param name="value">foo0</param>
+              </list>
+              <list>
+                <param name="value">foo1</param>
+              </list>
+              <list>
+                <param name="value">foo2</param>
+              </list>
+              <list>
+                <param name="value">foo3</param>
+              </list>
+            </param>
+            <module name="Search">
+              <param name="search">index=_internal source=*metrics.log group=per_*_thruput | head 5000 | stats count by group,series</param>
+
+              <module name="Pulldown">
+                <param name="name">group</param>
+                <param name="label">$name$</param>
+                <param name="postProcess">dedup $name$ | sort $name$</param>
+                <param name="valueField">$name$</param>
+                
+                <module name="Pulldown">
+                  <param name="name">series</param>
+                  <param name="label">$name$</param>
+                  <param name="postProcess">search group=$group$ | dedup $name$ | sort $name$</param>
+                  <param name="valueField">$name$</param>
+
+                  <module name="TextField" >
+                    <param name="name">textfield1</param>
+                    <param name="label">$name$</param>
+
+                    <module name="Checkbox">
+                      <param name="name">checkbox</param>
+                      <param name="label">is this thing on?</param>
+                      <param name="onValue">checkboxIsOn</param>
+                      <param name="offValue">checkboxIsOff</param>
+                    
+                      <module name="CustomBehavior">
+                        <param name="customBehavior">countPushes</param>
+                      </module>
+                      <module name="HTML">
+                        <param name="html"><![CDATA[
+                        
+                        staticpulldown1=$staticpulldown1$
+                        group=$group$<br>
+                        series=$series$<br>
+                        textfield1=$textfield1$<br>
+                        checkbox=$checkbox$<br>
+                        <br>
+                        search:<br>
+                        $searchBar$<br>
+                        <br>
+                        timerange: <br>
+                        $search.timeRange.label$<br>
+                        $search.timeRange.earliest$<br>
+                        $search.timeRange.latest$<br>
+                        ]]></param>
+                      </module>
+                    </module>
+                  </module>
+                    
+                    
+                  
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

@@ -1,0 +1,45 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+
+
+<%def name="buildMenu(menu)">\
+    <ul>
+    % for i, item in enumerate(menu):
+        <li
+        
+        % if 'submenu' in item:
+          class="hasSubMenu">
+            <a href="#" class="hasSubMenu">${item['label']|h}</a>
+            <%self:buildMenu menu="${item['submenu']}" />
+        % elif item["label"] == "------":
+          >
+          <div class="divider"/>
+        % else :
+          >
+          <a href="${item['uri'] | h}">${item['label'] | h}</a>
+        % endif
+        </li>
+    % endfor
+    </ul>
+</%def>
+
+<div class="appName">
+    <a href="/app/${APP["label"]}">${APP["label"]}</a>
+</div>
+<ul class="svMenu">
+    % for i, topMenu in enumerate(navConfig):
+        <li class="topLevel">
+        % if 'submenu' in topMenu:
+            <a href="#">${topMenu['label']|h}<span class="arrow"> </span></a>
+            
+            <%self:buildMenu menu="${topMenu['submenu']}" />
+        % else:
+            <a href="${topMenu['uri'] | h}">${topMenu['label'] | h}</a>
+        % endif
+        </li>
+    % endfor
+</ul>
+<div style="clear:both;"></div>

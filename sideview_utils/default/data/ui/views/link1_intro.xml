@@ -1,0 +1,184 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="True" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Link module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Link (Prototype module)</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        The Link module is exactly what it sounds like - a module that implements a clickable link.  The text of that link can be dynamic, as can its CSS class, and you can put a Redirector module downstream that will send the user anywhere you want them to go when they click that link.
+      </p>
+      <p>
+        As far as what you're used to in the Splunk core modules, Link module gives you one simple consistent way to do both what SingleValue does, and also what ViewRedirectorLink does.
+      </p>
+      <p>
+        In terms of its behavior it feels like the useful parts of a Button module combined with the useful parts of the HTML module.
+      </p>
+      <p>
+        First we'll show how Link module can incorporate field values from your search results.  We also use the ResultsValueSetter module here to grab one or more field values from the current results so we can pass them as arguments in the final URL.
+      </p>
+
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+
+    <module name="HTML" layoutPanel="panel_row2_col1">
+      <param name="html"><![CDATA[
+        <h3>displaying one or more field values, linking to another view</h3>
+      ]]></param>
+    </module>
+
+    <!-- EXAMPLE BEGIN -->
+    <module name="Search" layoutPanel="panel_row2_col1">
+      <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as sumKB avg(eps) as avgEPS by series | sort - sumKB | head 1</param>
+      <param name="earliest">-15min</param>
+
+      <module name="ResultsValueSetter">
+        <param name="fields">sumKB,series</param>
+
+        <module name="Link">
+          <param name="label">$sumKB$ KB</param>
+          
+          <module name="Redirector">
+            <param name="url">target_view_simple</param>
+            <param name="arg.series">$series$</param>
+          </module>
+        </module>
+      </module>
+
+      
+    </module>
+    <!-- EXAMPLE END -->
+    
+
+    <module name="HTML" layoutPanel="panel_row3_col1">
+      <param name="html"><![CDATA[
+        <h3>using the cssClass param to supply dynamic color. Also using $$results[0].foo$$ syntax in the label.</h3>
+        
+      ]]></param>
+    </module>
+
+
+    
+    <!-- EXAMPLE BEGIN -->
+    <module name="Search" layoutPanel="panel_row3_col1">
+      <param name="search">search that will match nothing at all | stats count | rangemap field=count severe=0-0 high=1-5 elevated=5-10 guarded=11-20 low=21-10000000 default=severe</param>
+      <param name="earliest">-15min</param>
+
+      
+      <module name="Link">
+        <param name="label">$results[0].count$ users</param>
+        <param name="cssClass">$results[0].range$</param>
+        <param name="linkStyle">font-size:28px;</param>
+        
+        <module name="Redirector">
+          <param name="url">http://google.com</param>
+        </module>
+      </module>
+
+    </module>
+    <!-- EXAMPLE END -->
+
+
+    <module name="HTML" layoutPanel="panel_row4_col1">
+      <param name="html"><![CDATA[
+        <h3>Linking to external webapps</h3>
+        This is just a matter of using the Redirector module.
+      ]]></param>
+    </module>
+
+
+    <!-- EXAMPLE BEGIN -->
+    <module name="Search" layoutPanel="panel_row4_col1">
+      <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as sumKB avg(eps) as avgEPS by series | sort - sumKB | head 1</param>
+      <param name="earliest">-15min</param>
+
+      <module name="ResultsValueSetter">
+        <param name="fields">sumKB,series</param>
+
+        <module name="Link">
+          <param name="label">$sumKB$ KB</param>
+          <param name="linkStyle">font-size:28px;</param>
+          
+          <module name="Redirector">
+            <param name="url">http://google.com</param>
+            <param name="arg.q">$series$</param>
+          </module>
+        </module>
+      </module>
+
+    </module>
+    <!-- EXAMPLE END -->
+
+
+
+    <module name="HTML" layoutPanel="panel_row5_col1">
+      <param name="html"><![CDATA[
+        <h3>Multiplexing Link modules</h3>
+        Pretty much like Multiplexing any other module.
+      ]]></param>
+    </module>
+
+
+    <!-- EXAMPLE BEGIN -->
+    <module name="Search" layoutPanel="panel_row5_col1" autoRun="True">
+      <param name="search">| metadata type="sourcetypes" index=*</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+
+        <module name="Multiplexer">
+          <param name="fields">sourcetype, totalCount</param>
+
+          <module name="Link">
+            <param name="label">$sourcetype$ ($totalCount$)</param>
+            
+            
+          </module>
+        </module>
+      </module>
+
+    </module>
+    <!-- EXAMPLE END -->
+
+    
+    <module name="HTML" layoutPanel="panel_row6_col1">
+      <param name="html"><![CDATA[
+        TBD - adding smaller text to the left or right of the large link text.
+
+        <br>
+        <br>
+        TBD - example of how to use ResultsValueSetter to get your dynamic field values into the link URL or the link params. 
+      ]]></param>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row6_col2">
+      <param name="html"><![CDATA[
+        <h3>Notes</h3>
+        <ol class="notesList">
+          
+          <li>
+            Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Link" target="_blank">Link and its params</a>.
+          </li>
+        </ol>
+        ]]></param>
+    </module>
+  </module>
+    
+   
+
+
+</view>

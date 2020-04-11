@@ -1,0 +1,301 @@
+<%inherit file="//base.html" />
+    <%
+    #displayTiming()
+    %>
+    ${next.body()}
+
+
+<%def name="body_element_open()">
+<body class="canary splView-${viewId}" s:app="${appId}" s:view="${viewId}" s:user="${user}">
+</%def>
+
+
+<%block name="css">
+    <link rel="stylesheet" href="${canary_static_url_prefix}canary.css" />
+    <link rel="stylesheet" href="${canary_static_url_prefix}lib/jquery/jquery-ui.css" />
+${output_css(files=moduleCSS, prefix=canary_static_url_prefix)}
+${output_css(files=customAppCSS, prefix=local_app_static_url_prefix)}
+</%block>
+
+<%block name="js">
+<script type="text/javascript" src="${canary_static_url_prefix}lib/require.js"></script>
+<!-- TODO - should be moved to require. Note application.js is already in the require call. -->
+${output_js(files=customAppJS, prefix=local_app_static_url_prefix)}
+
+<script type="text/javascript">
+if (!!window.MSInputMethodContext && !!document.documentMode) {
+    alert("We are sorry but Internet Explorer is not supported by the Canary UI.  \n\n(For that matter Microsoft itself seems to be dropping support for Internet Explorer in January 2020.)\n\nTry Firefox or Chrome!")
+}
+window.$C = ${splunkConfig}
+
+require.config({
+    baseUrl: '${canary_static_url_prefix}lib/',
+    paths: {
+        "jquery": "jquery/jquery-3.1.0",
+        "jquery-cookie": "jquery/jquery-cookie-1.4.1",
+        "jquery-ui":   "jquery/jquery-ui",
+        "jquery-multiselect":  "jquery/jquery.multiselect",
+        "jquery-timepicker":  "jquery/jquery-timepicker-addon-1.6.3",
+        "d3": "d3/d3.5.14.2",
+        "twbsPagination":  "jquery/jquery.twbsPagination.min",
+        "svmodule": "module",
+        "moment": "moment/moment_2.24.0",
+        "chartjs" : "chartjs/chartjs_2.8",
+        "twix": "twix/twix.min",
+        "strftime": "strftime/strftime-0.11",
+        "application": "${local_app_static_url_prefix}application"
+    },
+    shim: {
+        "chartjs": {deps: ["moment"]},
+        "jquery-multiselect":  {deps: ["jquery-ui"]},
+        "twbsPagination" : {deps:["jquery"]},
+        "application": {
+            //These script dependencies should be loaded before loading
+            //application.js
+            deps: ["jquery","sideview", "context","api/SplunkSearch","job","job_monitor"],
+            //Once loaded, use the global 'applicationJS' as the
+            //module value.
+            exports: "applicationJS"
+        },
+        "svmodule":{
+            deps: ["jquery","sideview", "context","api/SplunkSearch","job","job_monitor","strftime"]
+        }
+    }
+});
+
+<%
+
+for i, file in enumerate(moduleJSFiles):
+    moduleJSFiles[i] = file.replace(".js","").replace("lib/","")
+
+requiredJSFiles = list(moduleJSFiles)
+classNamesToDeclare = list(moduleClassesRequired)
+if len(jsFiles)>0:
+    requiredJSFiles = requiredJSFiles + ["application"]
+    classNamesToDeclare = classNamesToDeclare + ["applicationJS"]
+
+dynamicJSFilesRequireStr = "\",\n    \"".join(requiredJSFiles)
+
+%>
+require(
+    ["sideview",
+    "job_monitor",
+    "${dynamicJSFilesRequireStr}"
+    ],
+    function(Sideview, jobMinotaur, ${", ".join(classNamesToDeclare)}) {
+
+        Sideview.modules = {
+            % for c in moduleClassesRequired:
+            "${c}" : ${c},
+            % endfor
+        }
+
+        $.ajaxSetup({
+            headers: { "X-Splunk-Form-Key": Sideview.getSplunkCsrfToken() }
+        });
+        jQuery.ajaxSettings.traditional = true;
+
+        var modulesToLoad = ${modulesJSON};
+
+        //var paramsById = Sideview.getModuleParamDict(modulesToLoad);
+        var modules = Sideview.createModules(modulesToLoad, Sideview.modules);
+        Sideview.moduleInstances = modules;
+        Sideview.applyModuleHierarchy(modules);
+
+        // we don't need to keep a reference to them anywhere.
+        // fly my pretties !
+        //window.modules = modules;
+
+        // The preferences call, and the first set of dispatches, will race.
+        // The modules have the responsibility to say whether they can proceed
+        // via isReadyForContextPush.
+        Sideview.loadPagePreferences(modules);
+        Sideview.pushFromTopLevelModules(modules);
+
+        window.setTimeout(function() {Sideview.getTzInfo();},0);
+    }
+);
+
+</script>
+
+
+
+</%block>
+
+
+<%block name="title">${viewLabel|h} - ${appLabels.get(appId)|h}</%block>
+
+
+
+
+<%def name="output_css(files, prefix)">
+    % for f in files:
+    <link rel="stylesheet" href="${prefix + f}"/>
+    % endfor
+</%def>
+
+<%def name="output_js(files, prefix)">
+    % for f in files:
+    <script type="text/javascript" src="${prefix + f}"></script>
+    % endfor
+</%def>
+
+
+<%def name="build_modules_in_panel(panel)">
+  % if panel in layoutPanelsUsed:
+      % if panel in ["viewHeader", "mainSearchControls"]:
+<div class="${panel} floatFormElements">
+      % else:
+<div class="${panel}">
+      % endif
+      % for module in modules:
+          % if module["layoutPanel"] == panel:
+            <%
+            className="Module %s" % module['module']
+
+            if module.get("cssClass"):
+                className += " " + module.get("cssClass")
+            styles = []
+            if not module.get("visible",True):
+                styles.append("display:none")
+            if module.get("float",False):
+                if module["float"] in ["right","left"]:
+                    styles.append("float:" + module["float"])
+                    if module["float"]=="left":
+                        styles.append("margin-right:10px")
+                    elif module["float"]=="right":
+                        styles.append("margin-left:10px")
+                #else:
+                #    print("ERROR: illegal value for float param! --" + module["float"] + "--")
+
+            if "clear" in module:
+                styles.append("clear:"+module["clear"]);
+            if len(styles)>0:
+                style_attribute = " style=\"%s\"" % (";".join(styles))
+            else:
+                style_attribute = ""
+
+            %>
+    <div class="${className|h}" id="${module['moduleId']}"${style_attribute}>
+            % if (module["module"] in moduleTemplates) :
+<%include file="${moduleTemplates[module['module']]}" args="module=module" />
+            % endif
+    </div>
+          % endif
+      % endfor
+      <%
+      groupNumber = 1
+      %>
+      % while groupNumber<4:
+          % for module in modules:
+              % if module["layoutPanel"] == panel + "_grp" + str(groupNumber):
+                <div class="Module ${module['module']|h}" id="${module['moduleId']}">
+                % if (module["module"] in moduleTemplates) :
+                    <%include file="${moduleTemplates[module['module']]}" args="module=module" />
+                % endif
+                </div>
+              % endif
+          % endfor
+        <%
+        groupNumber += 1
+        %>
+      % endwhile
+     <div class="clearFloats"></div>
+</div>
+
+  % endif
+</%def>
+
+<%def name="buildCommonChrome()"><%
+build_modules_in_panel("appHeader")
+build_modules_in_panel("navigationHeader")
+%>
+<div id="messageBar"></div>
+<%
+build_modules_in_panel("viewHeader")
+build_modules_in_panel("mainSearchControls")
+build_modules_in_panel("graphArea")
+%>
+
+  % if list(set(["resultsHeaderPanel","pageControls","resultsAreaLeft"]) & set(layoutPanelsUsed)):
+  <div class="resultsArea"><%
+build_modules_in_panel("resultsHeaderPanel")
+build_modules_in_panel("pageControls")
+build_modules_in_panel("resultsAreaLeft")
+%></div>
+  % endif
+
+</%def>
+
+<%def name="buildGrid(prefix)">
+<%
+    rowCounts = [0] * 50
+    for module in modules:
+        if not module["layoutPanel"].startswith(prefix) : continue
+        components = module["layoutPanel"].split("_")
+
+        try:
+            row = int(components[1].replace("row",""))
+            col = int(components[2].replace("col",""))
+        except ValueError as e:
+            continue
+        rowCounts[row] = max(col,rowCounts[row])
+
+    row = 1
+    col = 1
+%>
+    % while row<50:
+        % if (rowCounts[row]>0) :
+<div class="flexContainer row${row}">
+            <%
+            panelWidth = int(100 / rowCounts[row])
+            %>
+            % while col<=rowCounts[row]:
+<div class="flexItem row${row}col${col}">
+                ${build_modules_in_panel(prefix + "_row" + str(row) + "_col" + str(col))}
+
+                <%
+                col=col+1
+                %>
+</div>
+            % endwhile
+</div>
+
+        % endif
+        <%
+        row = row+1
+        col = 1
+        %>
+    % endwhile
+
+</%def>
+
+
+<%def name="displayTiming()">
+<%
+previous = False
+for dict in timePoints:
+  if previous:
+    dict["took"] = dict["time"] - previous
+  else :
+    dict["took"] = "0"
+  previous = dict["time"]
+timePoints.append({
+   "name": "total",
+   "took": timePoints[-1]["time"] - timePoints[0]["time"],
+   "time":""
+})
+%>
+<table>
+% for dict in timePoints:
+  <tr>
+    <td>${dict["name"]} </td>
+    <td>${round(float(dict["took"]),4)} seconds</td>
+  </tr>
+% endfor
+
+</table>
+</%def>
+
+
+

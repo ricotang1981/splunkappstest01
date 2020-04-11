@@ -1,0 +1,109 @@
+
+
+.SearchControls .inspector,
+.SearchControls .export,
+.SearchControls .print,
+.SearchControls ul.svMenu,
+.SearchControls .jobControls {
+    float:right;
+}
+
+.SearchControls .jobControls a {
+    margin-left: 0 !important;
+}
+
+.export {
+    background-position: 1px -660px;
+}
+.SearchControls a {
+    opacity:0.5;
+    border-left-color: #333;
+    margin-bottom:5px;
+}
+.SearchControls ul a {
+    margin-bottom:0px;
+}
+.SearchControls ul a, 
+.SearchControls a.inspector, 
+.SearchControls a.print, 
+.SearchControls a.save, 
+.SearchControls a.create, 
+.SearchControls .doneState a.export, 
+.SearchControls .progressState a.pause,
+.SearchControls .progressState a.finalize,
+.SearchControls .progressState a.cancel,
+.SearchControls .progressState a.background,
+.SearchControls .pausedState a.unpause,
+.SearchControls .pausedState a.finalize,
+.SearchControls .pausedState a.cancel,
+.SearchControls .pausedState a.background {
+    opacity:1.0;
+    border-left-color:#333;
+}
+
+.SearchControls .nullState a.inspector, 
+.SearchControls .nullState a.print {
+.SearchControls .nullState a.save, 
+.SearchControls .nullState a.create, 
+    opacity:0.5;
+    border-left-color: #333;
+}
+.SearchControls .nullState a {
+    opacity:0.5;
+}
+
+
+
+
+.svMenu a.buttonPrimary, 
+.svMenu a.smallButton {
+    float:none;
+    display: block;
+}
+
+.canary .SearchControls .background .svIcon {
+    background-position: -1px -67px;
+}
+.canary .SearchControls .pause .svIcon {
+    background-position: -18px -163px;
+}
+.canary .SearchControls .unpause .svIcon {
+    background-position: -1px -163px;
+}
+.canary .SearchControls .finalize .svIcon {
+    background-position: -98px -163px;
+}
+.canary .SearchControls .cancel .svIcon {
+    background-position: -82px -131px;
+}
+.canary .SearchControls .inspector .svIcon {
+    background-position: -241px -131px;
+}
+.canary .SearchControls .export .svIcon {
+    background-position: -225px -51px;
+}
+.canary .SearchControls .print .svIcon {
+    background-position: -161px -99px;
+}
+
+
+.canary .SearchControls .save .svIcon {
+    background-position: -97px -115px;
+}
+.canary .SearchControls .create .svIcon {
+    background-position: -209px -131px;
+}
+
+.canary .SearchControls .save, 
+.canary .SearchControls .create {
+    color: #333;
+    font-weight:bold;
+    text-shadow: none;
+}
+.canary .SearchControls .svButton {
+    margin-left: 5px;
+}
+.canary .SearchControls .svButton span.menuIcon {
+    background-position: 0 -300px;
+    min-width:0px;
+}

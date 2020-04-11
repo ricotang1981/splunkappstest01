@@ -1,0 +1,356 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>Home</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML">
+      <param name="src">error_messages.html</param>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row1_col1">
+      <param name="html"><![CDATA[
+      <h1>Welcome to Canary 1.2.6</h1>
+
+      This app is owned and developed by Sideview and is distributed under the <a href="https://sideviewapps.com/sideview-free-internal-license-agreement/">Sideview Free Internal Use License</a>.  <br>
+      Note that other licensing options are available and that you can <a href="mailto:sales@sideviewapps.com">contact us</a> for details.
+
+      <p>Canary is its own search and reporting front-end to Splunk.  Meaning that you can design and build your own custom dashboards and custom interactive views and reporting tools, without writing any Javascript or python or in most cases even knowing HTML or CSS.  To learn far more about Canary, check out <a href="https://sideviewapps.com/apps/canary/" target="_blank">its homepage on our website</a>.
+      </p>
+
+      <p>And please <a href="https://sideviewapps.com/contact?">reach out to us</a> with any and all questions, feedback, bug reports and issues of any kind</a>.</p>
+      ]]></param>
+    </module>
+
+
+
+    <module name="Tabs" layoutPanel="panel_row2_col1">
+      <param name="name">selectedTab</param>
+      <param name="staticTabs">
+        <list>
+          <param name="label">Migration</param>
+          <param name="value">migration</param>
+        </list>
+        <list>
+          <param name="label">Page types by app</param>
+          <param name="value">view_types</param>
+        </list>
+        <list>
+          <param name="label">Module gallery</param>
+          <param name="value">module_gallery</param>
+        </list>
+        <list>
+          <param name="label">Disclaimers</param>
+          <param name="value">disclaimers</param>
+        </list>
+      </param>
+
+      <module name="Switcher">
+        <param name="selectedGroup">$selectedTab$</param>
+
+        <module name="NullModule" group="migration">
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            <h3>Legacy Advanced XML and Sideview XML views, and whether they can be converted to Canary.</h3>
+            <p>This chart shows both "Advanced XML" views meaning those that don't use any Sideview modules at all,  and "Sideview XML" views meaning those that have at least some Sideview modules and conventions going on. (Note that it does not show any Simple XML views or other kind of views at all).
+            <br>
+            <br>The "Sideview XML" views are then subdivided further into those that can be run in Canary, and those that cannot.</p>
+            <p>Click anything in this chart to read details about whether each view in that app can or cannot be migrated, and why.</p>
+            ]]></param>
+          </module>
+
+
+          <!--
+          the poor Chart code can't follow the xyseries so we have to
+          leave it a hint as to what the splitByField is in the SPL
+          -->
+          <module name="ValueSetter">
+            <param name="arg.sideview.splitByField">type</param>
+            <param name="arg.charting.chart">bar</param>
+            <param name="arg.charting.chart.stackMode">stacked</param>
+
+
+            <module name="Search">
+              <param name="search"><![CDATA[
+| rest /servicesNS/-/-/data/ui/views
+| fields eai:acl.app title eai:acl.owner eai:data
+| rename eai:acl.app as app, title as view
+| search * view!="testcases_for_*" view!="testcase_for_*"
+| checkxml
+| stats dc(warnings) as warnings dc(errors) as errors by type app view
+| search type="Advanced XML" OR type="Sideview XML"
+| eval migratable=if(warnings>0 OR errors>0,type + " not migratable",type + " migratable")
+| stats count by app type migratable
+| xyseries app migratable count
+| fillnull
+              ]]></param>
+
+              <module name="JSChart">
+
+                <module name="ValueSetter">
+                  <param name="name">selectedApp</param>
+                  <param name="value">app="$chart.xValue$"</param>
+                  <param name="requiredKeys">chart.xValue</param>
+
+                  <module name="ValueSetter">
+                    <param name="name">selectedMigrationType</param>
+                    <param name="value">type="$chart.splitByValue$"</param>
+                    <param name="requiredKeys">chart.splitByValue</param>
+
+
+                    <module name="Search">
+                      <param name="search"><![CDATA[
+| rest /servicesNS/-/-/data/ui/views
+| fields eai:acl.app title eai:acl.owner eai:data
+| rename eai:acl.app as app, title as view
+| search view!="testcases_for_*" view!="testcase_for_*"
+| checkxml
+| stats dc(warnings) as warning_count dc(errors) as error_count values(warnings) as warnings values(errors) as errors values(infos) as infos by type app view
+| eval type=if(warning_count>0 OR error_count>0,type + " not migratable",type + " migratable")
+| search $chart.searchTerms$
+| fields view errors warnings infos
+                      ]]></param>
+
+                      <module name="HTML">
+                        <param name="html"><![CDATA[
+                          <h3>Showing $results.count$ views for $chart.searchTerms$ </h3>
+                        ]]></param>
+                      </module>
+                      <module name="ProgressIndicator" />
+                      <module name="Pager">
+                      <module name="Table">
+                          <module name="Link" group="row.fields.view">
+                            <param name="label">$row.fields.view$</param>
+                            <module name="Redirector">
+                              <param name="url">../$chart.xValue$/$row.fields.view$</param>
+                              <param name="target">_blank</param>
+                            </module>
+                          </module>
+
+                        </module>
+                      </module>
+                      <!--
+                      <module name="HTML">
+                        <param name="html"><![CDATA[
+                          <br>
+                          <br>
+                          <pre>$search$</pre>
+                        ]]></param>
+                      </module>
+                      -->
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+
+        <module name="Search" group="view_types">
+          <param name="search"><![CDATA[
+| rest /servicesNS/-/-/data/ui/views
+| fields eai:acl.app title eai:acl.owner eai:data
+| rename eai:acl.app as app, title as view
+| search view!="testcases_for_*" view!="testcase_for_*"
+| checkxml
+| stats count by type app
+          ]]></param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            <h3>Let's look at what kinds of views we have across all currently loaded apps.</h3>
+            ]]></param>
+          </module>
+
+
+          <module name="PostProcess">
+            <param name="search">dedup app</param>
+
+            <module name="CheckboxPulldown">
+              <param name="name">app</param>
+              <param name="label">apps</param>
+              <param name="template">$name$="$value$"</param>
+              <param name="valueField">$name$</param>
+
+              <module name="PostProcess">
+                <param name="search">dedup type</param>
+
+                <module name="CheckboxPulldown">
+                  <param name="name">type</param>
+                  <param name="label">view type</param>
+                  <param name="template">$name$="$value$"</param>
+                  <param name="valueField">$name$</param>
+
+                  <module name="PostProcess">
+                    <param name="search"><![CDATA[
+| search * $type$ $app$
+| xyseries type app count
+                    ]]></param>
+
+                    <module name="Chart">
+                      <param name="charting.chart">bar</param>
+                      <param name="charting.chart.stackMode">stacked</param>
+
+                      <module name="Search">
+                        <param name="search"><![CDATA[
+| rest /servicesNS/-/-/data/ui/views
+| fields eai:acl.app title eai:acl.owner eai:data
+| rename eai:acl.app as app, title as view
+| search view!="testcases_for_*" view!="testcase_for_*"
+| checkxml
+| search type="$chart.xValue$" app="$chart.splitByValue$"
+| stats values(warnings) as warnings values(errors) as errors by view
+                        ]]></param>
+                        <module name="PostProcess">
+                          <param name="search"><![CDATA[ ]]></param>
+
+                          <module name="HTML">
+                            <param name="html"><![CDATA[
+                            <h3>$results.count$ $chart.xValue$ views found within the "$chart.splitByValue$" app.</h3>
+                            <!--
+                            $chart.searchterms$<br>
+                            $chart.xField$<br>
+                            $chart.xValue$<br>
+                            $chart.splitByField$<br>
+                            $chart.splitByValue$<br>
+                            -->
+                            ]]></param>
+                          </module>
+
+                          <module name="ProgressIndicator" />
+
+                          <module name="Pager">
+                            <module name="Table">
+
+                              <module name="Redirector">
+                                <param name="url">/app/$chart.splitByValue$/$row.fields.view$</param>
+                                <param name="target">_blank</param>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+
+                    <!--
+
+                    <module name="Pager">
+                      <module name="Table" />
+                    </module>
+
+                    -->
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+
+
+        <module name="Search" group="module_gallery">
+          <param name="search">| inputlookup module_gallery | eval module=split(module,",") | eval area=split(area,",") | mvexpand module | mvexpand area | stats count by module area</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h2>What problems are you looking to solve?</h2>
+            ]]></param>
+          </module>
+
+          <module name="Pulldown">
+            <param name="name">area</param>
+            <param name="label">Solution Area:</param>
+            <param name="template">$name$="*$value$*"</param>
+            <param name="valueField">area</param>
+            <param name="postProcess">dedup $name$ | sort $name$</param>
+            <param name="float">left</param>
+            <param name="staticOptions">
+              <list>
+                <param name="label">All</param>
+                <param name="value"></param>
+              </list>
+            </param>
+
+            <module name="Pulldown">
+              <param name="name">module</param>
+              <param name="label">Canary Module:</param>
+              <param name="template">$name$="*$value$*"</param>
+              <param name="valueField">module</param>
+              <param name="postProcess">search $area$ | dedup $name$ | sort $name$</param>
+              <param name="float">left</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="label">All</param>
+                  <param name="value"></param>
+                </list>
+              </param>
+
+              <module name="TextField">
+                <param name="name">searchterms</param>
+                <param name="label">Search:</param>
+                <param name="template">| eval _raw=problem+" "+module+" "+solution_description+" "+area+" "+page |
+       search $value$ | fields - _raw | sort 0 - value</param>
+
+
+                <module name="Search">
+                  <param name="search">| inputlookup module_gallery $searchterms$ | search * $area$ $module$ | table problem description area *</param>
+
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                      <h2>$results.count$ problems and solutions found</h2>
+                    ]]></param>
+                  </module>
+
+                  <module name="Pager">
+
+                    <module name="Table" group=" ">
+                      <param name="hiddenFields">solution_description,module,page,value</param>
+
+                      <module name="HTML" group="row.fields.description">
+                        <param name="html"><![CDATA[
+                          $row.fields.solution_description.rawValue$<br><br>
+                          <b>Modules:</b> $row.fields.module.rawValue$<br>
+                          <b>Docs and Examples:</b> $row.fields.page.rawValue$<br>
+                        ]]></param>
+                      </module>
+
+                      <module name="Redirector">
+                        <param name="url">$row.fields.page.rawValue$</param>
+                      </module>
+                    </module>
+                    <module name="Pager"></module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+        <module name="HTML" group="disclaimers">
+          <param name="html"><![CDATA[
+
+            <h2>Disclaimers</h2>
+            <ol>
+              <li>There are certainly some known bugs in this release. If you find one there is a good chance that we know about it, however we're always happy to take all bug reports and all feedback at <a href="mailto:support@sideviewapps.com">support@sideviewapps.com</a>.
+
+              <li>The documentation pages here are still largely copied over from Sideview Utils and have not been updated/edited to make sense in the Canary world.
+
+              <li>Yes there is no Sideview Editor. It or some cousin thereof will most likely return.
+
+              <li>There is also no general purpose Search/Reporting UI, or any examples of general-purpose interfaces like that. These will definitely return so check back regularly.
+            </ol>
+
+          ]]></param>
+        </module>
+
+
+      </module>
+    </module>
+  </module>
+
+
+</view>

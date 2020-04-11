@@ -1,0 +1,121 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pager - using postprocess</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pager</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Now we come to the reason why there is a Pager module -- accounting for the postProcess searches.  In the example below you see a search and also a postProcess. Feel free to change both and watch the page numbers update correctly. 
+      </p>
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="TextField" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">searchString</param>
+    <param name="default">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | head 10000 | table _time series kb</param>
+    <param name="label">Search</param>
+    <param name="width">350px</param>
+
+    <module name="Button">
+      <param name="allowSoftSubmit">True</param>
+      <param name="label">Search</param>
+
+      <module name="Search">
+        <param name="search">$searchString$</param>
+        <param name="earliest">-4h</param>
+        <param name="latest">now</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $results.count$ search results found
+          ]]></param>
+        </module>
+
+        <module name="ProgressIndicator" />
+
+        <module name="TextField">
+          <param name="name">postProcessString</param>
+          <param name="default">bucket _time bins=100 | stats sum(kb) by series, _time</param>
+          <param name="label">Post Process</param>
+          <param name="width">300px</param>
+
+          <module name="Button">
+            <param name="allowSoftSubmit">True</param>
+            <param name="label">Filter</param>
+
+            <module name="PostProcess">
+              <param name="search">$postProcessString$</param>
+
+              <module name="Pulldown">
+                <param name="name">results.count</param>
+                <param name="label">results per page</param>
+                <param name="float">right</param>
+                <param name="staticOptions">
+                  <list><param name="value">10</param></list>
+                  <list><param name="value">20</param></list>
+                  <list><param name="value">50</param></list>
+                  <list><param name="value">100</param><param name="selected">True</param></list>
+                </param>
+
+                <module name="PostProcess">
+                  <param name="search">$postProcess$ | stats count</param>
+                  
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                      $results[0].count$ postprocessed results found
+                    ]]></param>
+                  </module>
+                </module>
+
+                <module name="Pager">
+
+                  <module name="Table"></module>
+
+                  <module name="Pager"></module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>The Pager module will notice whenever there is a 'postProcess' argument being specified.  It will do the extra work to figure out how many page links to draw.  (Note that Splunk's default Paginator module does not do this.) </li>
+
+        <li>This example also shows an <a href="html1_static">HTML module</a> being used to display a count.  The astute reader will notice that the count displayed by that module is <b>also</b> accounting for postProcess.  This is not through any special-cased magic, but just through a clever reuse of the HTML's normal functionality. (There is another postProcess module that wraps just the HTML module, and that tacks a " |stats count" onto whatever postProcess was already used. From there it's just a dash of $$results[0].count$$ in the HTML module to display that number.) </li>
+
+        <li>
+          Clicking the Search button causes a new search to get kicked off.   However, kicking the 'Filter' button does not.  This may look like magic but it's simply due to the presence of a ProgressIndicator module right underneath the first button.   Understanding this is one of the important pieces of understanding the Splunk module framework.  -- Given a push proceeding through the tree downstream, the presence of a so-called "dispatching module" at a certain level in the tree forces the search to get kicked off at that point, just before the pushed data gets handed to that level.  Then when further downstream, we initiate a push at the "Filter" button, as long as no module changes any of the data that would modify the search, no further dispatch will be triggered.   Yes, this is totally weird and unintuitive, but it's how the Splunk module framework works.  
+        </li>
+
+        <li>
+          Note that views that expose BOTH the search string and the postProcess string may end up with some unusual interactivity that may confuse users a little.  For example, change the search string, but don't hit return and don't hit the 'search' button.  Instead hit the 'filter' button.  You'll see that it appears to ignore the change you made to the search.   The UI is still showing you the filtered results from the previous job.    Now hit the search button or hit return in the top input,  and you'll see it get blown away and become consistent again.   In complex configurations make sure to test thoroughly so you know what you're getting into.
+        </li>
+        <li>
+          Just like Splunk's Paginator module, you can tuck a second paginator below your items. Make sure the second paginator is downstream from the first.  And make sure if you use a Pager for one, you use a Pager for the other.  Mixing Pagers and Paginators in the same config won't work.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Pager" target="_blank">Pager and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+</view>

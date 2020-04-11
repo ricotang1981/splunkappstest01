@@ -1,0 +1,279 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Pulldown prepopulation</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Pulldown prepopulation</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">False</param>
+    
+    <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+
+        <p>
+          Set up a testcase: <br>
+          <a href="testcases_for_timerangepicker_prepopulation">Clear</a><br>  
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=1305820200&latest=1305820260">8:50AM 5/19/2011</a><br>
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=all&latest=all">all,all</a><br>
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=1305820200&latest=">since 8:50AM 5/19/2011</a><br>
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=&latest=1305820200">before 8:50AM 5/19/2011</a><br>
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=1305820200&latest=all">since 8:50AM 5/19/2011, with 'all'</a><br>
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=all&latest=1305820200">before 8:50AM 5/19/2011, with 'all'</a><br>
+          <a href="testcases_for_timerangepicker_prepopulation?earliest=-7d@h&latest=now">-7d@h,now</a><br>
+        </p>
+
+      ]]></param>
+    </module>
+
+    
+    <module name="TimeRangePicker">
+      <param name="selected">last 24 hours</param>
+      <param name="searchWhenChanged">True</param>
+
+      
+      <module name="Search">
+        <param name="search">search * | head 1000 | timechart count</param>
+
+        <module name="ZoomLinks"></module>
+
+        <module name="ProgressIndicator" />
+        <module name="Pager">
+          <param name="count">5</param>
+          
+          <module name="SimpleResultsTable">
+            <param name="displayRowNumbers">False</param>
+          </module>
+        </module>
+        <module name="Button">
+          <module name="Redirector">
+            <param name="url">testcases_for_timerangepicker_prepopulation</param>
+            <param name="arg.earliest">$search.timeRange.earliest$</param>
+            <param name="arg.latest">$search.timeRange.latest$</param>
+          </module>
+        </module>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           
+            <p>
+              $search.timeRange.label$<br>
+              <br>
+              $search.timeRange.earliest$<br>
+              $search.timeRange.latest$<br>
+            </p>
+           
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="TimeRangePicker" layoutPanel="panel_row2_col1">
+      <param name="selected">last 4 hours</param>
+      <param name="searchWhenChanged">True</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          THE TIMERANGEPICKER ABOVE SHOULD REMAIN AT Last 4 hours, because the implicit 'all time' push from URLLoader should be ignored.
+          <p>
+            $search.timeRange.label$<br>
+            <br>
+            $search.timeRange.earliest$<br>
+            $search.timeRange.latest$<br>
+          </p>
+         
+         
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row2_col2">
+      <param name="earliest"> </param>
+      <param name="latest"> </param>
+
+      <module name="TimeRangePicker">
+        <param name="selected">last 4 hours</param>
+        <param name="searchWhenChanged">True</param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            THIS TIMERANGEPICKER ABOVE SHOULD REMAIN AT Last 4 hours because the empty earliest/latest from Search are an implicit all time, which is ignored.
+            <p>
+              $search.timeRange.label$<br>
+              <br>
+              $search.timeRange.earliest$<br>
+              $search.timeRange.latest$<br>
+            </p>
+           
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col3">
+      <param name="earliest">all</param>
+      <param name="latest">all</param>
+      
+      <module name="Button">
+        <module name="TimeRangePicker">
+          <param name="selected">last 4 hours</param>
+          <param name="searchWhenChanged">True</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              THIS TIMERANGEPICKER SHOULD change to All Time, because the all/all from the Search is an explicit All Time range.
+              <p>
+                $search.timeRange.label$<br>
+                <br>
+                $search.timeRange.earliest$<br>
+                $search.timeRange.latest$<br>
+              </p>
+             
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col1">
+      <param name="search">index=_internal | head 100 | stats count </param>
+
+      <module name="TimeRangePicker">
+        <param name="selected">All time</param>
+        <param name="searchWhenChanged">True</param>
+
+        <module name="Button">
+          <module name="ProgressIndicator" />
+          <module name="SimpleResultsTable"></module>
+       
+          <module name="TimeRangePicker">
+            <param name="selected">last 4 hours</param>
+            <param name="searchWhenChanged">True</param>
+
+            <module name="Search" layoutPanel="panel_row3_col1">
+              <param name="search">index=_internal | head 100 | stats count </param>
+              
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  THIS DOWNSTREAM TIMERANGEPICKER SHOULD stay at last 4 hours.  cause the upstream TimeRangePicker outputs only an 'implicit' all time. 
+                  <p>
+                    $search.timeRange.label$<br>
+                    <br>
+                    $search.timeRange.earliest$<br>
+                    $search.timeRange.latest$<br>
+                  </p>
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    
+    <module name="TimeRangePicker" layoutPanel="panel_row4_col1" group="Using two TRP's without the second absorbing the value from the first">
+      <param name="selected">last 4 hours</param>
+      <param name="searchWhenChanged">True</param>
+      
+      <!-- we use a ValueSetter to turn our timeRange into a plain key that's easier to manipulate.-->
+      <module name="ValueSetter">
+        <param name="name">firstTimeRange</param>
+        <!-- advanced trick - we use a delim to make this an array-valued key. -->
+        <param name="delim">,</param>
+        <param name="value">$search.timeRange.earliest$,$search.timeRange.latest$</param>
+
+        <!-- now we use a pair of ValueSetter modules to whack away the standard SV-style output of the TRP -->
+        <module name="ValueSetter">
+          <param name="name">search.timeRange.earliest</param>
+          <param name="value"></param>
+
+          <module name="ValueSetter">
+            <param name="name">search.timeRange.latest</param>
+            <param name="value"></param>
+
+            <!-- now we take our single array-valued key and we make 2 keys out of it. -->
+            <module name="ValueSetter">
+              <param name="name">firstSearch.timeRange.earliest</param>
+              <param name="value">$firstTimeRange[0]$</param>
+
+              <module name="ValueSetter">
+                <param name="name">firstSearch.timeRange.latest</param>
+                <param name="value">$firstTimeRange[1]$</param>
+
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                    Because of our two ValueSetter modules bleaching away the SV timerange keys, the second TRP will not set itself to that value.  However (and this is a bit confusing), the two keys can still be used in searches and in the HTML module...  because the HTML module regenerates the timerange keys from the underlying timerange object -- (eg: $search.timeRange.earliest$, $search.timeRange.latest$)
+                  ]]></param>
+                </module>
+            
+                <module name="TimeRangePicker">
+                  <param name="selected">last 60 minutes</param>
+                  <param name="searchWhenChanged">True</param>  
+
+                
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                      <h2>First Timerange</h2>
+                      <p>
+                        $$firstSearch.timeRange.earliest$$ = $firstSearch.timeRange.earliest$<br>
+                        $$firstSearch.timeRange.latest$$ = $firstSearch.timeRange.latest$<br>
+                      </p>
+                      <h2>Second timerange</h2>
+                      <p>
+                        $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+                        $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+                      </p>
+                    ]]></param>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+    <module name="TimeRangePicker" layoutPanel="panel_row4_col2" group="Control - no earliest/param on Search. ">
+      <param name="selected">last 4 hours</param>
+      <param name="searchWhenChanged">True</param>
+
+      <module name="Search">
+        <param name="search">index=_internal | head 100 | stats count </param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <p>
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              <br>
+              <br>
+              this should say 100 --- $results[0].count$
+            </p>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+  </module>
+
+
+
+
+
+
+</view>

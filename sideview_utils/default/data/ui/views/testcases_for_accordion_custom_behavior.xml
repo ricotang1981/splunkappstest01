@@ -1,0 +1,52 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - embedding</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - embedding</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="Search" autoRun="True" group="accordion">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_sourcetype_thruput" | head 1000 | stats max(eps) sum(kb) by series | rename series as sourcetype
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+          <param name="hiddenFields">max(eps) sum(kb)</param>
+  
+          <module name="HTML" group="row.fields.sourcetype">
+            <param name="html"><![CDATA[
+              <a href="#" onclick="toggleAccordion(this);return false;">$row.fields.sourcetype$</a>
+              <div class="contents" style="display:none;">
+                <table>
+                  <tr>
+                    <td style="border-width:0px;">Max EPS = $row.fields.max(eps)$</td>
+                    <td style="border-width:0px;">Sum(KB) = $row.fields.sum(kb)$</td>
+                  </tr>
+                </table>
+              </div>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+  </module>
+  
+        
+
+</view>

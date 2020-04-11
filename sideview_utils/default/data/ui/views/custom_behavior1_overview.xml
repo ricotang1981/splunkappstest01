@@ -1,0 +1,163 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isVisible="False" isSticky="False">
+  <label>Custom Behavior</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Custom Behavior</h1>
+    ]]></param>
+  </module>
+  
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <h2>HUGE DISCLAIMER. HIGH VOLTAGE. DO NOT TOUCH. INSTANT DEATH. $$200 FINE.</h2>
+      <p>
+        If and when your app or your deployment needs something a little off the map, or a little peculiar,  like if you want a couple pulldowns to vanish when a certain value is selected somewhere else on the page, these things are usually possible.  I'd bring in a consultant like myself though and even then I may try and talk you out of it. 
+      </p>
+      <p>
+        But you can do quite a lot with custom javascript behavior that you specify over in application.js.   This has always been possible in Splunk, however with a new module called CustomBehavior it is a <b>little</b> easier, more reusable and a lot less brittle.
+      </p>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+
+      <h2>New trick</h2>
+
+      <p>
+        Step 1: You put a "customBehavior" param on any Sideview module or you put a "CustomBehavior" module into the view somewhere specific.  Say we put a CustomBehavior module just upstream from an HTML module, and say that this CustomBehavior module itself has a customBehavior param of "constructCustomHeader".
+      </p>
+      <p>
+        Step 2: In application.js, you have some code that looks like this:
+      </p>
+<pre>
+// a little example that build a $$reportHeader$$ key for use by downstream modules, 
+// where we needed custom logic to write the header text correctly.
+if (typeof(Sideview)!="undefined") {
+    Sideview.utils.declareCustomBehavior("constructCustomHeader", function(module) {
+        module.getModifiedContext = function() {
+            var context = this.getContext();
+            var text = [];
+            text.push(context.get("somePulldown.label"));
+            text.push(context.get("anotherPulldown.label"));
+            if (context.get("optionalThirdPulldown.value")!="*" && context.get("anotherPulldown.value")!="all") {
+                text.push("split by " + context.get("optionalThirdPulldown.value"));
+            }
+            text.push(context.get("search").getTimeRange().toConciseString());
+            context.set("reportHeader", text.join(" "));
+            return context;
+        }
+    });
+}
+</pre>
+       <p>
+         <b>WARNING: NEVER WRAP CUSTOMBEHAVIOR DECLARATIONS IN ANY EVENT HANDLERS LIKE document.ready() OR "allModulesInitialized"</b>.  CustomBehaviors should be declared immediately, as soon as application.js is loaded and run.  Never defer execution of the CustomBehavior declarations until a later point. 
+       </p>
+       <p>
+         NOTE: prior to Sideview Utils 1.3,  there was a slightly different mechanism to apply customBehaviors. With the old mechanism,  you *had* to wrap the code in an event handler.    The old way will continue to work however a) you should plan on converting to the new method someday,  b) new users should always use the new method described above. 
+       </p>
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+
+      <h2>Old trick #1: customizing the behavior of all FooBar modules on the page</h2>
+
+      Drawbacks:  
+      <ul>
+        <li>It's all or nothing. If you want to do one FooBar module on the page, but not the other, you cannot use this trick. </li>
+        <li>You have to closely study the implementation of the module so you don't damage the underlying behavior. </li>
+        <li>You may be creeped out by the idea of subclassing something from itself.</li>
+      </ul>
+
+
+<pre>
+if (Sideview.utils.getCurrentView() == "my_special_view") {
+  /**
+   * Customize the message module so it wont constantly be telling the user that
+   * lookup tables have been loaded and written to.
+   * believe it or not, this is the least evil way I was able to find to
+   * override the message handling.
+   */
+    if (Splunk.Module.Message) {
+        Splunk.Module.Message= $$.klass(Splunk.Module.Message, {
+            getHTMLTransform: function($$super){
+                // Please don't tell me any 'info' about lookups, nor 'error' about entityLabelSingular, etc...
+                // Thank you that is all.
+                var argh = [
+                    {contains:"lookup", level:"info"}, 
+                    {contains:"Results written to", level:"info"}, 
+                    {contains:"entityLabelSingular", level:"error"},
+                    {contains:"auto-finalized", level:"info"},
+                    {contains:"Your timerange was substituted", level:"info"}
+                ];
+                for (var i=0,len=this.messages.length; i&lt;len; i++){
+                    var message = this.messages[i];
+                    for (var j=0,jLen=argh.length;j&lt;jLen;j++) {
+                        if ((message.content.indexOf(argh[j]["contains"])!=-1) && (message.level == argh[j]["level"])) {
+                            this.messages.splice(i,1);
+                            break;
+                        }
+                    }
+                }
+                return $$super();
+            }
+        });
+    }
+}
+</pre>
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+
+      <h2>Old trick #2. Putting NullModule instances into the page overriding particular methods on single instances</h2>
+      Drawbacks: 
+      <ul>
+        <li>The moduleId linkage is incredibly brittle - Any addition, subtraction or change to the modules on the page can easily break the whole thing.</li>
+        <li>Even though NullModule doesn't really 'do' anything, you still have to become familiar with the basic methods of all Module classes.  It's still very possible to shoot your UI in the foot.</li>
+      </ul>
+
+      <p>Example:</p>
+
+<pre>
+$$(document).ready(function() {
+    var m = Splunk.Globals.ModuleLoader;
+    var gnome = m.getModuleInstanceById("NullModule_0_5_0");
+    gnome.onContextChange = function() {
+        var context = this.getContext();
+        // not sure what to actually write here as an example that wouldnt be 
+        // really weird.  Custom behaviors are by definition weird...
+        // go read the application.js file in the discover app maybe...
+    }.bind(gnome);
+});
+</pre>
+    ]]></param>
+  </module>
+
+
+    
+
+  <module name="HTML" layoutPanel="panel_row5_col1">
+    <param name="html"><![CDATA[
+
+      Once again, don't get in over your head.  HUGE DISCLAIMER.  If you're considering something like this, don't. <a href="mailto:nick@sideviewapps.com">Contact Sideview instead</a>. If it's a good idea, it will be vastly more cost effective to bring us in to do it for you. And if it's a bad idea we'll tell you.
+
+    ]]></param>
+  </module>
+  
+</view>

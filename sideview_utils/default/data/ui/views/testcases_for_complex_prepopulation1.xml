@@ -1,0 +1,200 @@
+ <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>testcase</label>
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+
+  <module name="Pulldown">
+    <param name="name">static1</param>
+    <param name="label">static 1</param>
+    <param name="staticOptions">
+      <list>
+        <param name="value"></param>
+        <param name="label">(no value)</param>
+      </list>
+      <list>
+        <param name="value">static1A</param>
+      </list>
+      <list>
+        <param name="value">static1B</param>
+      </list>
+      <list>
+        <param name="value">static1C</param>
+      </list>
+      <list>
+        <param name="value">static1D</param>
+      </list>
+    </param>
+
+    <module name="TextField">
+      <param name="name">textfield1</param>
+      <param name="label">TextField1</param>
+
+
+      
+      <module name="Search">
+        <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 200 | fields - date_* | stats dc(*) as * | transpose</param>
+        
+        <module name="Pulldown">
+          <param name="name">dynamic1</param>
+          <param name="label">Dynamic 1</param>
+          <param name="valueField">column</param>
+
+          <module name="Checkbox">
+            <param name="name">checkbox1</param>
+            <param name="label">Checkbox 1</param>
+            <param name="onValue">checkbox1_checked</param>
+            <param name="offValue">checkbox1_UNchecked</param>
+            <param name="checked">False</param>
+
+
+            <module name="Pulldown">
+              <param name="name">static2</param>
+              <param name="label">static 2</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="value"></param>
+                  <param name="label">(no value)</param>
+                </list>
+                <list>
+                  <param name="value">static2A</param>
+                </list>
+                <list>
+                  <param name="value">static2B</param>
+                </list>
+                <list>
+                  <param name="value">static2C</param>
+                </list>
+                <list>
+                  <param name="value">static2D</param>
+                </list>
+              </param>
+
+              <module name="TextField">
+                <param name="name">textfield2</param>
+                <param name="label">TextField 2</param>
+
+                <module name="Search">
+                  <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 200 | fields - date_* | stats dc(*) as * | transpose</param>
+                  
+                  <module name="Pulldown">
+                    <param name="name">dynamic2</param>
+                    <param name="label">Dynamic 2</param>
+                    <param name="valueField">column</param>
+
+                    <module name="Checkbox">
+                      <param name="name">checkbox2</param>
+                      <param name="label">Checkbox 2</param>
+                      <param name="onValue">checkbox2_checked</param>
+                      <param name="offValue">checkbox2_UNchecked</param>
+                      <param name="checked">False</param>
+
+
+
+                      <module name="TimeRangePicker">
+                        <param name="searchWhenChanged">True</param>
+                        <param name="default">Last 60 minutes</param>
+
+                      
+                        <module name="Button">
+                          <param name="label">Search</param>
+                          <param name="allowSoftSubmit">False</param>
+                          
+                          <module name="HTML" layoutPanel="panel_row1_col2">
+                            <param name="html"><![CDATA[
+                            <table class="splTable">
+                              <tr>
+                                <th>key name</th>
+                                <th>$$key$$</th>
+                                <th>$$key.rawValue$$</th>
+                              </tr>
+                              <tr>
+                                <td>static1</td>
+                                <td>$static1$</td>
+                                <td>$static1.rawValue$</td>
+                              </tr>
+                              <tr>
+                                <td>textfield1</td>
+                                <td>$textfield1$</td>
+                                <td>$textfield1.rawValue$</td>
+                              </tr>
+                              <tr>
+                                <td>dynamic1</td>
+                                <td>$dynamic1$</td>
+                                <td>$dynamic1.rawValue$</td>
+                              </tr>
+                              <tr>
+                                <td>checkbox1</td>
+                                <td>$checkbox1$</td>
+                                <td>N/A</td>
+                              </tr>
+
+                              <tr>
+                                <td>static2</td>
+                                <td>$static2$</td>
+                                <td>$static2.rawValue$</td>
+                              </tr>
+                              <tr>
+                                <td>textfield2</td>
+                                <td>$textfield2$</td>
+                                <td>$textfield2.rawValue$</td>
+                              </tr>
+                              <tr>
+                                <td>dynamic2</td>
+                                <td>$dynamic2$</td>
+                                <td>$dynamic2.rawValue$</td>
+                              </tr>
+                              <tr>
+                                <td>checkbox2</td>
+                                <td>$checkbox2$</td>
+                                <td>N/A</td>
+                              </tr>
+
+                              <tr>
+                                <td>search.timeRange.earliest</td>
+                                <td>$search.timeRange.earliest$</td>
+                                <td>N/A</td>
+                              </tr>
+                              <tr>
+                                <td>search.timeRange.latest</td>
+                                <td>$search.timeRange.latest$</td>
+                                <td>N/A</td>
+                              </tr>
+                            </table>
+          
+                            ]]></param>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+    prepopulate :<br>
+    <ul>
+      <li><a href="?textfield1=tf1&textfield2=tf2">textfields</a></li>
+      <li><a href="?static1=static1A&static2=static2A">static pulldowns</a></li>
+      <li><a href="?dynamic1=group&dynamic2=series">dynamic pulldowns</a></li>
+      <li><a href="?checkbox1=true&checkbox2=false">checkboxes (true,false)</a></li>
+      <li><a href="?checkbox1=false&checkbox2=true">checkboxes (false,true)</a></li>
+      <li><a href="?earliest=-24h@h&latest=now">timerange</a></li>
+      
+
+    </ul>
+
+    ]]></param>
+  </module>
+</module>
+
+</view>

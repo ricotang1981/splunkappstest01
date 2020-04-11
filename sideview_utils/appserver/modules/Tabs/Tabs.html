@@ -1,0 +1,49 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+<%def name="buildTab(label, value='', selected='False')">\
+    <% 
+    selectedAttr = (' class="selected"') if selected.lower() == "true" else '' 
+    if (value==None): value=""
+    if (label==None): label=value
+
+    %>
+    <li ${selectedAttr} s:value="${value | h}"><a>${label | h}</a></li>
+</%def>\
+
+<%
+hasSelectedTab = False
+%>
+<ul>
+% if "staticTabs" in module and module["staticTabs"]:
+    <%
+    for i in range(len(module['staticTabs'])):
+        if (module['staticTabs'][i].get('selected',"False")=="True") :
+            hasSelectedTab = True;
+    
+    if (not hasSelectedTab) :
+        module["staticTabs"][0]["selected"]  = "True"
+
+    %>
+    % for field in module['staticTabs']:
+        % if field and field.get('value', False)!=False :
+    <%self:buildTab label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" />
+        % else :
+    <li> tabs.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</li>
+        % endif
+    % endfor
+% endif
+
+%if "valueField" in module:
+    %if (hasSelectedTab):
+    <li class="dynamic" value=""><a>${_("Loading...")|h}</a></li>
+    % else :
+    <li class="dynamic selected" value=""><a>${_("Loading...")|h}</a></li>
+    % endif
+
+% endif
+
+</ul>
+

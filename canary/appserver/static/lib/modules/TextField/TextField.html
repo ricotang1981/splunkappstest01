@@ -1,0 +1,48 @@
+<% 
+# Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+## if the label begins and ends with $, we do $foo$ substitution, 
+## straight from the URL
+<%def name="buildLabel(module)">\
+<%
+    staticLabel  = module.get("label","")
+
+        %>
+% if staticLabel!="": 
+<label for="${module['moduleId']}_input"
+% if module.get("rows","1")!="1": 
+class="forTextarea"
+% endif
+>
+% endif
+%if len(staticLabel)>2 and staticLabel[0]=="$" and staticLabel[-1]=="$" :
+${qs.get(staticLabel[1:-1],"") | h}
+%elif (len(staticLabel)>0) :
+${staticLabel|h}
+%endif
+% if staticLabel!="": 
+</label>
+%endif
+</%def>\
+
+<%self:buildLabel module="${module}" />
+    % if module.get("rows","1")=="1": 
+<input type="text" id="${module['moduleId']}_input" 
+        % if module.get("default",False): 
+            value="${module['default']|h}" 
+        % endif
+        % if module.get("width",False): 
+            style="width:${module['width']|h}" 
+        % endif
+        />
+    % else :
+<textarea id="${module['moduleId']}_textarea" rows="${module['rows']}"
+        % if module.get("width",False): 
+            style="width:${module['width']|h}" 
+        % endif
+    >${module.get("default","")|h}</textarea>
+    % endif
+    
+

@@ -1,0 +1,78 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>TextField - intro</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>TextField - Templated example</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      Here we have a TextField module that allows the user to exclude some events from a given report.  We use the 'template' param to wrap the value in a 'NOT ()'. 
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="TextField" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">exclusion</param>
+    <param name="float">left</param>
+    <param name="template">NOT ( $value$ )</param>
+    <param name="label">exclude events containing:</param>
+    <param name="default">splunkd</param>
+
+    <module name="Button">
+      <param name="allowSoftSubmit">True</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $exclusion$ | stats avg(eps) by series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="ProgressIndicator" />
+
+        <module name="Pager">
+          <param name="entityName">results</param>
+
+          <module name="Table" />
+        </module>
+
+        <!-- this HTML module here is just to show you the token values -->
+        <!-- along with the search string. -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            exclusion is: <b>$exclusion$</b><br>
+            the untemplated value is: <b>$exclusion.rawValue$</b><br>
+            and the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          TextField works very much like the Pulldown module except that of course it has no 'dynamic' behavior, meaning it does not use the current search results to load any values. 
+        </li>
+        <li> 
+          Like Pulldown, TextField actually sends more than just the one $$foo$$ key downstream.  For a full list, <a href="custom_keys">consult this page that lists all $$foo$$ tokens across all modules</a>.  Scroll down to the TextField/Pulldown section.    In short the main key $$foo$$ is to be used in the search language. For human-readable HTML content and for <b>all url's and Redirector arguments</b> you should always use $$foo.rawValue$$ instead.
+        </li>
+        
+        <li>
+          If you're looking for further examples and explanation of something you don't see here, refer to the example pages for the Pulldown module.  Those examples are more extensive and many of the same techniques available on the Pulldown module can be applied using the same params on TextField.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+</view>

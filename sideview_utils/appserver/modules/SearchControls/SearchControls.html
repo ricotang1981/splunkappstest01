@@ -1,0 +1,148 @@
+<%page args="module"/>
+
+<%namespace name="helpers" file="//module/_helpers.html" />
+
+
+
+<%def name="buildJobControl(controlName)">\
+        <a href="#" class="svButton splButton-tertiary ${controlName}" tabindex="-1" title="${controlName}"><span class="svIcon splButtonIcon"></span></a>
+</%def>
+
+<%def name="buildMenu(controlName, controlLabel)">\
+    <li><a href="#" class="${controlName}">${controlLabel}</a></li>
+</%def>
+
+<%
+labelDict = {
+    "saveSearch" : _("Save search..."),
+    "saveResults" : _("Save results"),
+    "saveAndShareResults" : _("Save and share results"),
+    "createDashboardPanel" : _("Dashboard panel..."),
+    "createAlert" : _("Alert..."),
+    "createEventType" : _("Event type..."),
+    "createScheduledSearch" : _("Scheduled search......")
+}
+%>
+<%def name="buildSection(name, module, labelDict)">\
+% if (name=="jobControls") :
+    <div class="svButtonGroup jobControls splButtonGroup">
+    % for controlName in module.get("jobControls").split(" "):
+        <%self:buildJobControl controlName="${controlName}" />
+    % endfor
+    </div>
+
+% elif (name=="info") :
+    <a href="#" class="svButton splButton-tertiary inspector" tabindex="-1" title="Inspect Job"><span class="svIcon splButtonIcon"></span></a>
+% elif (name=="print") :
+    <a href="#" class="svButton splButton-tertiary print" tabindex="-1" title="Print"><span class="svIcon splButtonIcon"></span></a>
+% elif (name=="export") :
+    <a href="#" class="svButton splButton-tertiary export" tabindex="-1" title="${_('Export')}"><span class="svIcon splButtonIcon"></span></a>
+% elif (name=="saveMenu") :
+
+    <ul class="svMenu">
+        <li><a href="#" class="svButton splButton-primary save" title="${_('Save')}"><span class="svIcon splButtonIcon"></span><span>${_("Save")}</span><span class="svMenuIcon splMenuIcon"></span></a>
+            <ul>
+    % for controlName in module.get("saveMenu").split(" "):
+        <%
+        
+        if (controlName not in labelDict) :
+            controlLabel="undefined saveMenu value: " + controlName
+        else :
+            controlLabel=labelDict[controlName]
+        %>
+            <%self:buildMenu controlName="${controlName}" controlLabel="${controlLabel}" />
+    % endfor
+            </ul>
+        </li>
+   </ul>
+% elif (name=="createMenu") :
+
+    <ul class="svMenu">
+        <li><a href="#" class="svButton splButton-primary create" title="${_('Create')}"><span class="svIcon splButtonIcon"></span><span>${_("Create")}</span><span class="svMenuIcon splMenuIcon"></span></a>
+            <ul>
+    % for controlName in module.get("createMenu").split(" "):
+        <%
+        
+        if (controlName not in labelDict) :
+            controlLabel="undefined createMenu value: " + controlName
+        else :
+            controlLabel=labelDict[controlName]
+        %>
+            <%self:buildMenu controlName="${controlName}" controlLabel="${controlLabel}" />
+    % endfor
+                
+            </ul>
+        </li>
+   </ul>
+% else :
+    <div>unknown section specified:  ${name}</div>
+% endif
+</%def>\
+
+
+<div class="stateWrapper nullState">
+<%
+sections = module.get("sections").split(" ")
+sections.reverse()
+%>
+% for section in sections:
+    <%self:buildSection name="${section}" module="${module}" labelDict="${labelDict}" />
+% endfor
+    <div style="clear:both;"></div>
+</div>
+
+<div class="eventtypeForm"></div>
+<div class="pdfPopup"></div>
+<div class="savedsearchpopup"></div>
+<div style="display:none">
+<%self:export className="exportPopup" />
+<%helpers:share />
+</div>
+<div class="clearFloats"></div>
+
+
+<%def name="export(className)">
+<div class="${className}">
+    <div class="exParamsContainer">
+    <form class="exForm entityEditForm" method="GET">
+        <!-- <input type="hidden" name="timeFormat" value="%FT%T.%Q%:z"/> -->
+        <input type="hidden" name="sid"/>
+        <input type="hidden" name="search"/>
+        <div class="fieldsetWrapper">
+        <fieldset>
+            <label class="exParam" for="filename">
+                ${_("File name")} 
+            </label>
+            <div>
+                <input name="filename" class="exFilename" type="text" id="filename">
+            </div>
+            <label class="exParam" for="exFormat">
+                ${_("Format")} 
+            </label>
+            <div>
+                <select name="outputMode" class="exOutputModeSelect" id="exFormat">
+                    <option value="csv">CSV</option>
+                    <option value="raw">${_("Raw events")}</option>
+                    <option value="xml">XML</option>
+                    <option value="json">JSON</option>
+                </select>
+            </div>
+
+            <p>${_("Max # of results to export")}</p>
+            <div>
+                <input type="radio" name="spl_ctrl-limit" value="unlimited" class="radio" checked="checked" id="exMaxExportsNoLimit" style="float:none;clear:none;display:inline;" />
+                <label class="exParam" for="exMaxExportsNoLimit" style="display:inline">${_('Unlimited')}</label>
+            </div>
+            <div>
+                <input type="radio" name="spl_ctrl-limit" value="limit" class="radio" style="float:none;clear:none;display:inline;">
+                <input name="spl_ctrl-count" class="exMaxcount" value="10000" type="text" id="exMaxExports" onfocus="$(this).prev().prop('checked', true);">
+            </div>
+
+        </fieldset>
+        </div>
+        <input type="submit" class="visuallyhidden" />
+    </form>
+    </div>
+</div>
+</%def>
+

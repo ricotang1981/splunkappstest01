@@ -1,0 +1,39 @@
+<%page args="module"/>
+<%
+def stripTokens(s) :
+    within = False
+    out = []
+    for i in range(len(s)) :
+        ch = s[i]
+        if (ch=="$") :
+            within = not within
+            # check for '$$' to handle all those cases correctly.
+            if (not within and i>0 and s[i-1]=="$") :
+                out.append("$")
+                continue
+        elif (within) :
+            pass
+        else :
+            out.append(ch)
+        
+    return "".join(out)
+
+
+def getLabel() :
+    return stripTokens(_(module["label"]))
+%>
+
+
+
+
+
+
+% if 'label' in module:
+  <a 
+% if 'linkCSS' in module:
+	style="${_(module['linkSize'])|h}"
+% endif
+    href="#">${getLabel()|h}</a>
+% else :
+  ERROR - Link module has no 'label' param
+% endif

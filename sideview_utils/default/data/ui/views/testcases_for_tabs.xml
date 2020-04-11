@@ -1,0 +1,352 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Tabs module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Tabs - Testcases</h1>
+    ]]></param>
+  </module>
+  
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="double replacements">
+    <param name="search">index=_internal source="*metrics.log" group="*_thruput" | head 10000 | stats count by group</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">group</param>
+      <param name="label">group</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="valueField">$name$</param>
+
+      <module name="Tabs">
+        <param name="name">selectedTab</param>
+        <param name="staticTabs">
+          <list>
+            <param name="label">eps</param>
+            <param name="value">index=_internal source="*metrics.log" $group$ | head 10000 | stats avg(eps) by series</param>    
+          </list>
+
+          <list>
+            <param name="label">KB</param>
+            <param name="value">index=_internal source="*metrics.log" $group$ | head 10000 | stats sum(kb) by series</param>    
+          </list>
+        </param>
+          
+        <module name="Search">
+          <param name="search">$selectedTab$</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              search: $search$</b><br>
+              selectedTab:  <b>$selectedTab$</b><br>
+              selectedTab:  <b>$selectedTab.rawValue$</b><br>
+            ]]></param>
+            <param name="customBehavior">highlightPassesAndFails</param>
+          </module>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <param name="entityName">results</param>
+            <module name="SimpleResultsTable">
+              <param name="displayRowNumbers">False</param>
+              <param name="entityName">results</param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  
+  <module name="Search" layoutPanel="panel_row1_col2" autoRun="True" group="literal $ chars in dynamic tabs">
+    <param name="search">| stats count | eval foo="$$5 is less than $$10,$$100 is less than $$1000" | eval foo=split(foo,",") | mvexpand foo | table foo | eval label=foo+" (label)"</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Tabs">
+      <param name="name">foo</param>
+      <param name="valueField">$name$</param>
+      <param name="labelField">label</param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          foo is <b>$foo$</b>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+
+
+      
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True" group="postprocess cases">
+    <param name="search">index=_internal source="*metrics.log" group="*_thruput" | head 10000 | stats count by group, series | eval groupLabel=case(group="per_sourcetype_thruput","Sourcetype",group="per_index_thruput", "Indexes", group="per_source_thruput", "Sources", group="per_host_thruput", "Hosts")</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+    
+    <module name="Tabs">
+      <param name="name">group</param>
+      <param name="valueField">$name$</param>
+      <param name="labelField">groupLabel</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="postProcess">dedup $name$ | sort $name$</param>
+
+
+      <module name="Pulldown">
+        <param name="name">series</param>
+        <param name="label">series</param>
+        <param name="template">series="$value$"</param>
+        <param name="postProcess">search $group$ | dedup $name$ | sort $name$</param>
+        <param name="valueField">$name$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" $group$ $series$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <param name="entityName">results</param>
+            <module name="SimpleResultsTable">
+              <param name="displayRowNumbers">False</param>
+              <param name="entityName">results</param>
+            </module>
+          </module>
+    
+    
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              group term is: <b>$group$</b><br>
+              series term is: <b>$series$</b><br>
+              the entire search is: <b>$search$</b>
+            ]]></param>
+          </module>
+        </module>
+
+      </module>
+    </module>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row2_col2" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_*_thruput" | head 10000 | stats count by group | fields group | eval label=case(group="per_sourcetype_thruput","Sourcetype",group="per_index_thruput", "Indexes", group="per_source_thruput", "Sources", group="per_host_thruput", "Hosts") </param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+    
+    <module name="Tabs">
+      <param name="name">group</param>
+      <param name="valueField">$name$</param>
+      <param name="labelField">label</param>
+      <param name="template">$name$="$value$"</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" $group$ | stats min(eps) avg(eps) max(eps) by series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h3>Showing $group.label$</h3>
+          ]]></param>
+        </module>
+        <module name="ProgressIndicator" />
+        <module name="Pager">
+          <param name="count">5</param>
+          <module name="SimpleResultsTable">
+            <param name="displayRowNumbers">False</param>
+            <param name="entityName">results</param>
+          </module>
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetype is: <b>$selectedSourcetype$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+
+      </module>
+    </module>
+
+  </module>
+
+
+
+
+  <module name="Tabs" layoutPanel="panel_row3_col1" autoRun="True" group="switcher testcases">
+    <param name="name">selectedSection</param>
+    <param name="staticTabs">
+      <list>
+        <param name="label">section 1</param>
+        <param name="value">section1</param>
+      </list>
+      <list>
+        <param name="label">section 2</param>
+        <param name="value">section2</param>
+      </list>
+    </param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        This should simply print the selected section: <br>
+        $$selectedSection$$ = $selectedSection$<br>
+        $$selectedSection.label$$ = $selectedSection.label$<br>
+      ]]></param>
+    </module>
+
+
+    <module name="Switcher">
+      <param name="selectedGroup">$selectedSection$</param>
+
+      <module name="HTML" group="section1">
+        <param name="html"><![CDATA[
+          This is the content for section 1<br>
+          $$selectedSection$$ = $selectedSection$<br>
+        ]]></param>
+      </module>
+
+      <module name="HTML" group="section2">
+        <param name="html"><![CDATA[
+          This is the content for section 2<br>
+          $$selectedSection$$ = $selectedSection$<br>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+
+
+
+  <module name="URLLoader" layoutPanel="panel_row4_col1_grp1" autoRun="True" group="static switcher with url preselection">
+    <module name="Tabs">
+      <param name="name">selectedSection</param>
+      <param name="staticTabs">
+        <list>
+          <param name="label">section 1</param>
+          <param name="value">section1</param>
+        </list>
+        <list>
+          <param name="label">section 2</param>
+          <param name="value">section2</param>
+        </list>
+      </param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          This should simply print the selected section: <br>
+          $$selectedSection$$ = $selectedSection$<br>
+          $$selectedSection.label$$ = $selectedSection.label$<br>
+        ]]></param>
+      </module>
+
+
+      <module name="Switcher">
+        <param name="selectedGroup">$selectedSection$</param>
+
+        <module name="HTML" group="section1">
+          <param name="html"><![CDATA[
+            This is the content for section 1<br>
+            $$selectedSection$$ = $selectedSection$<br>
+          ]]></param>
+        </module>
+
+        <module name="HTML" group="section2">
+          <param name="html"><![CDATA[
+            This is the content for section 2<br>
+            $$selectedSection$$ = $selectedSection$<br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row4_col1_grp2">
+      <param name="html"><![CDATA[
+        Click this:  <a href="?selectedSection=section2&amp;group=per_source_thruput">Setup test case</a><br>
+        And then after the page loads, 'section2' should be selected to the left.
+      ]]></param>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row5_col1_grp1">
+      <param name="search">index=_internal source="*metrics.log" group="per_*_thruput" | head 10000 | stats count by group | fields group | eval label=case(group="per_sourcetype_thruput","Sourcetype",group="per_index_thruput", "Indexes", group="per_source_thruput", "Sources", group="per_host_thruput", "Hosts") </param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+
+      
+      <module name="Tabs">
+        <param name="name">group</param>
+        <param name="valueField">$name$</param>
+        <param name="labelField">label</param>
+        <param name="template">$name$="$value$"</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" $group$ | stats min(eps) avg(eps) max(eps) by series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h3>Showing $group.label$</h3>
+            ]]></param>
+          </module>
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <param name="count">5</param>
+            <module name="SimpleResultsTable">
+              <param name="displayRowNumbers">False</param>
+              <param name="entityName">results</param>
+            </module>
+          </module>
+          
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              selectedSourcetype is: <b>$selectedSourcetype$</b><br>
+              the entire search is: <b>$search$</b>
+            ]]></param>
+          </module>
+
+        </module>
+      </module>
+
+
+
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row5_col1_grp2">
+      <param name="html"><![CDATA[
+        Click this:  <a href="?selectedSection=section2&amp;group=per_source_thruput">Setup test case</a><br>
+        And then after the page loads, 'Sources' should be selected to the left.
+      ]]></param>
+    </module>
+
+
+
+
+
+
+
+  
+
+  </module>
+
+
+
+
+
+
+
+</view>

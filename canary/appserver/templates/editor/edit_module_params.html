@@ -1,0 +1,379 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="//base.html" />
+<link type="text/css" href="${canary_static_url_prefix}lib/editor/editor.css" rel="stylesheet" />
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/jquery/jquery-3.1.0.js"></script>
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/editor/forms.js"></script>
+<%
+import json
+
+paramValues = {}
+
+
+def isListParam(moduleClass,param) :
+    for d in listParams:
+        if (d["module"] == moduleClass and d["param"] == param) :
+            return True
+    return False
+
+def parseParamValue(moduleParamName) :
+    try:
+        value = currentParamValues.get(moduleParamName)
+        if (value=="true" or value=="false") :
+            return value
+        return json.loads(value)
+    except:
+        return currentParamValues.get(moduleParamName)
+
+##  Yikes.  This needs a rewrite. It works but it's becoming a frankenstein.
+for moduleParamName, moduleParam in sorted(module['params'].items()):
+    if (moduleParamName[-2:]==".*") :
+        for currentParamName in currentParamValues:
+            if (currentParamName.find(moduleParamName[:-1]) ==0) :
+                if (isListParam(className,moduleParamName)) :
+                    paramValues[currentParamName] = parseParamValue(currentParamName)
+                else :
+                    paramValues[currentParamName] = currentParamValues.get(currentParamName)
+
+
+    if (currentParamValues.get(moduleParamName) and currentParamValues[moduleParamName]!="" ) :
+        paramValues[moduleParamName] = parseParamValue(moduleParamName)
+
+
+
+moduleClass = module['class'].replace("Splunk.Module.","")
+
+
+if (moduleId=="_new"):
+    action = "add_module"
+else:
+    action = "edit_module"
+
+%>
+<script language="javascript" type="text/javascript">
+var moduleClass = "${moduleClass}";
+var moduleId = "${moduleId}";
+
+$(document).ready(function() {
+    $("#moduleParamsForm").submit(function() {
+        $("div.fail").remove();
+        var editor = window.parent.getEditor();
+        var payload = getFormValues();
+        var csrf_token = $("input[name='splunk_form_key']").val();
+        payload.push("splunk_form_key=" + csrf_token);
+
+        var controlWindow = editor.getControlWindow();
+
+        var app  = $("input[name='app']").val();
+        var view = $("input[name='view']").val();
+
+        var url = controlWindow.Sideview.utils.make_url("/splunkd/__raw/sv_view/${app}/${view}/${action}");
+
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+            if (options['type'] && options['type'].toUpperCase() == 'GET') return;
+            jqXHR.setRequestHeader("X-Splunk-Form-Key", csrf_token);
+        });
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: payload.join("&"),
+            success: function(response) {
+                if (response.success) {
+                    editor.getViewWindow().document.location.reload();
+
+                    if ($("#parentModuleId").length>0) {
+                        var newSelectedNode = $("#parentModuleId").val();
+                        editor.reloadSchematic("${app}", "${view}", newSelectedNode);
+                    }
+                    editor.success(app,view);
+                }
+                else if (response.message) {
+                    editor.fail(response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                message = jqXHR.responseJSON["message"];
+                editor.fail(message)
+            },
+            dataType: "json"
+        });
+        return false;
+    });
+
+
+// dealing with irritating browser behavior where it remembers the old
+// selections on manual page refreshes.
+% if (moduleId=="_new") :
+        $("input[name='showWhichParams'][value=all]")
+% else :
+        $("input[name='showWhichParams'][value=setValues]")
+% endif
+        .attr('checked', 'checked')
+        .change();
+});
+
+
+</script>
+
+
+<%
+def isBigParam(module,param) :
+    for pair in bigParams :
+        if (pair["module"] == module and pair["param"]==param) :
+            return True
+    return False
+
+def isListParam(module,param) :
+    for paramDict in listParams :
+        if (paramDict["module"] == module and paramDict["param"]==param) :
+            return True
+    return False
+
+def getListParamKeys(moduleClass, param) :
+    for paramDict in listParams :
+        if (paramDict["module"] == moduleClass and paramDict["param"]==param) :
+            return paramDict["keys"]
+
+def isWildcardParam(module,param) :
+    if param[-2:] == ".*" :
+        return True
+    else :
+        return False
+def noWildcardValuesExist(paramValues, pname) :
+    for submittedParamName in paramValues :
+        if (submittedParamName.find(pname[:-1])==0) :
+            return False;
+    return True;
+
+def isDeprecated(param) :
+    label = param.get('label',False)
+    if (label and label.find("DEPRECATED") !=-1) :
+        return True;
+    return False;
+%>
+
+<%def name="buildWildcardRow(pname, paramValues)">
+    % if (noWildcardValuesExist(paramValues,pname)):
+    <tr class="noValueSet hidden">
+        <td class="labelCell">${pname}</td>
+        <td>
+            (no ${pname} params are currently saved for this module)
+        </td>
+        <td class="clearCell"></td>
+    </tr>
+        % endif
+        % for submittedParamName in paramValues :
+            % if (submittedParamName.find(pname[:-1])==0) :
+
+    <tr>
+        <td class="labelCell"><label>${submittedParamName | h}</label></td>
+        <td>
+            <input type="text" class="param"  name="${submittedParamName|h}" id="${submittedParamName|h}" value="${paramValues.get(submittedParamName,'')|h}"
+            />
+        </td>
+        <td class="clearCell"><a href="#" class="clearParam">[x]</a></td>
+    </tr>
+            % endif
+        % endfor
+    <tr
+    % if (noWildcardValuesExist(paramValues,pname)):
+        class="noValueSet hidden"
+    % endif
+    >
+        <td></td>
+        <td class="addNewLink"><a href="#" class="addNewWildCardParam" prefix="${pname[:-1]|h}">Add new ${pname[:-2]}.* param</a></td>
+    </tr>
+</%def>
+
+
+
+<%def name="buildTextarea(pname, param, paramValues)">
+    <textarea class="param" name="${pname}" id="${pname}" spellcheck="false"
+    % if (param.get('default')) :
+        default="${param.get('default')|h}"
+    % endif
+    % if (paramValues.get(pname,None)!=None) :
+        >${paramValues.get(pname,'')|h}</textarea>
+    % else :
+        ></textarea>
+    % endif
+</%def>
+
+
+<%def name="buildListControl(pname, param, paramValues)">
+<table class="listParam" s:name="${pname}">
+    <tr>
+    % for key in getListParamKeys(moduleClass, pname):
+        <td>${key}</td>
+    % endfor
+    </tr>
+    % if (paramValues.get(pname,None)!=None) :
+        % for i,pair in enumerate(paramValues[pname]) :
+    <tr>
+            % for key in getListParamKeys(moduleClass, pname):
+        <td><input class="listParam" type="text" name="${pname}_${i}_${key}" id="${pname}_${i}_${key}" value="${pair.get(key,'')|h}"/></td>
+            % endfor
+        <td><a href="#" class="clearListParam">[x]</a></td>
+        % endfor
+
+    </tr>
+    % else :
+    <tr>
+        % for i,key in enumerate(getListParamKeys(moduleClass, pname)):
+        <td><input class="listParam" type="text" name="${pname}_0_${key}" id="${pname}_0_${key}" /></td>
+        % endfor
+        <td><a href="#" class="clearListParam">[x]</a></td>
+    </tr>
+    % endif
+    <tr>
+        <td colspan="${len(getListParamKeys(moduleClass, pname))}" class="addNewLink">
+            <a href="#" class="addNewListParam" name="${pname}">Add new</a>
+        </td>
+    </tr>
+</table>
+</%def>
+
+
+<%def name="buildTextField(pname, param, paramValues)">
+    <input type="text" class="param"  name="${pname}" id="${pname}"
+    % if (param.get('default')) :
+        default="${param.get('default')|h}"
+    % endif
+    % if (paramValues.get(pname,None)!=None) :
+        value="${paramValues.get(pname,'')|h}"
+    % elif (param.get('default')) :
+        value="${param.get('default')|h}"
+    % endif
+    />
+</%def>
+<div class="outerWrapper">
+
+<h2 class="withHelpLink">
+% if (moduleId=="_new") :
+    <a href="/splunkd/__raw/sv_module/add?app=${app}&view=${view}" class="previous">Add New Module</a> :
+% else :
+    <a href="/splunkd/__raw/sv_module/edit?&view=${view}&app=${app}" class="previous">Edit Existing Module</a> :
+% endif
+    ${className|h}
+</h2>
+
+
+<div class="helpLink"><a href="/splunkd/__raw/sv_module/describe?moduleClass=${moduleClass}" class="help" target="description">about this module</a></div>
+
+% if (not isSupported) :
+    <br clear="all">
+    <h4>Sorry -- the Sideview Editor does not currently support editing ${moduleClass} modules.</h4>
+% else:
+<form id="moduleParamsForm" >
+
+
+
+<table class="editorTable" cellspacing="0">
+    <tr>
+        <td colspan="2">
+            <input type="radio" class="radio" name="showWhichParams" value="setValues" id="showWhichParams0" checked="checked" /><label for="showWhichParams0">Show only params that are currently set</a></label>&nbsp;&nbsp;&nbsp;
+            <input type="radio" class="radio" name="showWhichParams" value="all" id="showWhichParams1"/><label for="showWhichParams1">Show all params</label>
+        </tr>
+    </tr>
+</div>
+
+<%
+showingAtLeastOneParam = False
+%>
+% for pname, param in sorted(module['params'].items()):
+
+    % if isDeprecated(param) and not paramValues.get(pname,False):
+        <% continue %>
+    % endif
+
+    % if (isWildcardParam(moduleClass, pname)) :
+        ${buildWildcardRow(pname, paramValues)}
+
+    % else :
+        % if ((paramValues.get(pname,None)!=None) and param.get('default') != paramValues.get(pname,None)) :
+<%
+showingAtLeastOneParam = True
+%>
+    <tr>
+        % else:
+    <tr class="noValueSet hidden">
+        % endif
+        <td class="labelCell"><label>${pname | h} ${'<span class="required">*</span>' if param.get('required', 'False')=='True' else ''}</label></td>
+        <td>
+        % if (isBigParam(moduleClass, pname)) :
+            ${buildTextarea(pname, param, paramValues)}
+        % elif (isListParam(moduleClass, pname)) :
+            ${buildListControl(pname, param, paramValues)}
+        % else :
+            ${buildTextField(pname, param, paramValues)}
+        % endif
+        </td>
+        <td class="clearCell">
+        % if (not isListParam(moduleClass, pname)) :
+            <a href="#" class="clearParam" tabindex="-1">[x]</a>
+        % endif
+        </td>
+    </tr>
+    % endif
+% endfor
+% for attName,attDict in moduleAttributeMap.items():
+    % if (attDict['value'] and attDict['value']!=attDict['inheritedValue']) :
+<%
+showingAtLeastOneParam = True
+%>
+    <tr>
+    % else :
+    <tr class="noValueSet hidden">
+    % endif
+        <td class="labelCell">${attName}</td>
+        <td><input type="text" class="param" name="${attName}" id="${attName}" value="${attDict['value']}" default="${attDict['inheritedValue']}"/></td>
+        <td class="clearCell"><a href="#" class="clearParam" tabindex="-1">[x]</a></td>
+    </tr>
+% endfor
+
+% if not showingAtLeastOneParam:
+    <tr>
+        <td colspan="3">
+            <div class="noParamsShowingMessage">
+                NOTE: to see all of the available params for this module, change the pulldown above. <br>
+                <br>
+            </div>
+        </td>
+    </tr>
+% endif
+
+
+    <tr>
+        <td colspan="3" class="buttonCell">
+
+
+
+
+% if (parentModuleId):
+            <input type="hidden" class="param" name="parentModuleId" id="parentModuleId" value="${parentModuleId}" />
+% endif
+% if (insertBeforeModuleId):
+            <input type="hidden" class="param" name="insertBeforeModuleId" id="insertBeforeModuleId" value="${insertBeforeModuleId}" />
+% endif
+            <input type="hidden" class="param" name="moduleClass" id="moduleClass" value="${moduleClass}" />
+            <input type="hidden" class="param" name="app" id="app" value="${app}" />
+            <input type="hidden" class="param" name="view" id="view" value="${view}" />
+            <input type="hidden" class="param" name="moduleId" id="moduleId" value="${moduleId}" />
+
+            <input type="hidden" name="splunk_form_key" value="${csrfToken}" />
+            <input type="button" value="cancel" class="cancel"/>
+
+            <input type="submit" class="submit" label="save"/>
+        </td>
+    </tr>
+
+</table>
+
+
+
+</form>
+
+</div>
+%endif
+

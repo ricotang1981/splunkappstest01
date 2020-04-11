@@ -1,0 +1,115 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Multiplexer with charting</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Multiplexer with charting</h1>
+    ]]></param>
+  </module>
+
+  
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True" group="Multiplexer + JSChart">
+    <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top 3 group</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+    
+    <module name="Multiplexer">
+      <param name="field">group</param>
+
+      <module name="CustomBehavior">
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            one module displaying stuff about $group$
+          ]]></param>
+        </module>
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="Search">
+            <param name="search">index=_internal source=*metrics.log group="$group$" | timechart sum(kb) by series | head 10</param>
+            
+            <module name="JSChart"></module>
+            
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" group="testing resizebar" layoutPanel="panel_row1_col2">
+      <param name="search">index=_internal source=*metrics.log | head 1000 | timechart sum(kb) by series</param>
+      
+      <module name="JSChart"></module>
+      
+    </module>
+  
+    <module name="ResultsValueSetter" layoutPanel="panel_row2_col1" group="ResultsValueSetter + JSChart">
+      <param name="fields">group</param>
+
+      <module name="CustomBehavior">
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            one module displaying stuff about $group$
+          ]]></param>
+        </module>
+        
+        <module name="Search">
+          <param name="search">index=_internal source=*metrics.log group="$group$" | timechart sum(kb) by series | head 10</param>
+          
+          <module name="JSChart"></module>
+          
+        </module>
+      </module>
+    </module>
+
+  </module>
+
+
+
+
+
+
+
+
+
+
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True" group="Multiplexer + Search + JSChart">
+    <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top 3 group</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        Slightly different config, where Multiplexer's child is actually a Search module.
+      ]]></param>
+    </module>
+
+
+    <module name="Button">
+      <param name="label">Submit again</param>
+
+      <module name="Multiplexer">
+        <param name="field">group</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source=*metrics.log group="$group$" | timechart sum(kb) by series | head 10</param>
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              one module displaying stuff about $group$
+            ]]></param>
+          </module>
+
+          <module name="JSChart"></module>
+          
+        </module>
+      </module>
+    </module>
+  </module>
+ </view>

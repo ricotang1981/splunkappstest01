@@ -1,0 +1,21 @@
+/* Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. */
+div.Layer {
+    position:absolute;
+    border:1px solid #ccc;
+    display:none;
+    background-color:#fff;
+    min-width:400px;
+    padding:5px 10px;
+}
+
+div.Layer div.closeButton {
+    font-size:20px;
+    float:right;
+    position:relative;
+    left:0px;
+    top:0px;
+    cursor:pointer;
+}
+div.Layer div.HTML {
+    max-width:400px;
+}

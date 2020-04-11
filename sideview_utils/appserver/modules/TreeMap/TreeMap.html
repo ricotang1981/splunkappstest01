@@ -1,0 +1,15 @@
+
+<%page args="module" expression_filter="h"/>
+
+<%namespace name="shared" file="/sideview_utils:/templates/shared.html" import="*"/>
+
+
+% if (not APP.get("sideviewHasAlreadyIncludedD3",False)): 
+    <%
+    APP["sideviewHasAlreadyIncludedD3"] = True
+    %>
+    <%shared:external_script files="${['/static/app/sideview_utils/d3/d3.v3.js']}" />
+% endif
+
+
+

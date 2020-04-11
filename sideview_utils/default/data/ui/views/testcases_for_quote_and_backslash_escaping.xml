@@ -1,0 +1,233 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for quote/backslash escaping </label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for quote/backslash escaping </h1>
+    ]]></param>
+  </module>
+
+  <module name="CustomBehavior" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="customBehavior">testQuoteEscaping</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>Testing escapeQuotes</h2>
+        $output$
+      ]]></param>
+    </module>
+  </module>
+
+  <module name="CustomBehavior" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="customBehavior">testDoubleQuoteValue</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>Testing quoteValue</h2>
+        $output$
+      ]]></param>
+    </module>
+
+  </module>
+
+
+  <module name="CustomBehavior" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="customBehavior">testGetSearchTermsFromFilters</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>Testing quoteValue</h2>
+        $output$
+      ]]></param>
+    </module>
+
+  </module>
+
+  <module name="Search" layoutPanel="panel_row4_col1" group="escaping in Table drilldowns" autoRun="true">
+    <param name="search"><![CDATA[
+      index=_internal | head 1 | streamstats count | table count sourcetype source index | eval quoted="foo \"bar\"" | eval path="C:\\foo\\bar" | eval quotedPath="foo - \"C:\\bar\\\"" | table quoted path quotedPath
+    ]]></param>
+
+    <module name="Table">
+
+      <module name="Search">
+        <param name="search">| stats count | search $row.value$ $row.name$ $row.fields.quoted$ $row.fields.path$ $row.fields.quotedPath$ $row.searchTerms$</param>
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+
+            LEGACY<br>
+            $$row.value$$ =    <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$row.value$</span><br>
+            $$row.rawValue$$ = <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$row.rawValue$</span><br>
+            $$row.name$$ =     <span class="shouldBe" s:shouldBe="quoted">$row.name$</span><br>
+            $$row.rawName$$ =  <span class="shouldBe" s:shouldBe="quoted">$row.rawName$</span><br>
+
+            <br>
+            NEW<br>
+
+            $$row.fields.quoted$$ =              <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$row.fields.quoted$</span><br>
+            $$row.fields.quoted.rawValue$$ =     <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$row.fields.quoted.rawValue$</span><br>
+            
+            $$row.fields.path$$ =                <span class="shouldBe" s:shouldBe="C:\\foo\\bar">$row.fields.path$</span><br>
+            $$row.fields.path.rawValue$$ =       <span class="shouldBe" s:shouldBe="C:\foo\bar">$row.fields.path.rawValue$</span><br>
+            
+            $$row.fields.quotedPath$$ =          <span class="shouldBe" s:shouldBe="foo - \&quot;C:\\bar\\\&quot;">$row.fields.quotedPath$</span><br>
+            $$row.fields.quotedPath.rawValue$$ = <span class="shouldBe" s:shouldBe="foo - &quot;C:\bar\&quot;">$row.fields.quotedPath.rawValue$</span><br>
+
+            $$row.searchTerms$$ =                <span class="shouldBe" s:shouldBe="quoted=&quot;foo \&quot;bar\&quot;&quot;">$row.searchTerms$</span><br>
+            <br>
+            $$search$$ = $search$<br>
+            $$results.sid$$ = $results.sid$<br>
+            results from search = <span class="shouldBe" s:shouldBe="0">0</span> (should be zero)<br>
+
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    <module name="SimpleResultsTable" layoutPanel="panel_row4_col2" group="escaping in SimpleResultsTable drilldowns">
+      <param name="drilldown">row</param>
+      <module name="Search">
+        <param name="search">| stats count | search $click.value$ $click.name$ $click.fields.quoted$ $click.fields.path$ $click.fields.quotedPath$ $click.searchTerms$</param>
+
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            LEGACY<br>
+            $$click.value$$ =    <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$click.value$</span><br>
+            $$click.rawValue$$ = <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$click.rawValue$</span><br>
+            $$click.name$$ =     <span class="shouldBe" s:shouldBe="quoted">$click.name$</span><br>
+            $$click.rawName$$ =  <span class="shouldBe" s:shouldBe="quoted">$click.rawName$</span><br>
+
+            <br>
+            NEW<br>
+
+            $$click.fields.quoted$$ =              <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$click.fields.quoted$</span><br>
+            $$click.fields.quoted.rawValue$$ =     <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$click.fields.quoted.rawValue$</span><br>
+            
+            $$click.fields.path$$ =                <span class="shouldBe" s:shouldBe="C:\\foo\\bar">$click.fields.path$</span><br>
+            $$click.fields.path.rawValue$$ =       <span class="shouldBe" s:shouldBe="C:\foo\bar">$click.fields.path.rawValue$</span><br>
+            
+            $$click.fields.quotedPath$$ =          <span class="shouldBe" s:shouldBe="foo - \&quot;C:\\bar\\\&quot;">$click.fields.quotedPath$</span><br>
+            $$click.fields.quotedPath.rawValue$$ = <span class="shouldBe" s:shouldBe="foo - &quot;C:\bar\&quot;">$click.fields.quotedPath.rawValue$</span><br>
+
+            $$click.searchTerms$$ =                <span class="shouldBe" s:shouldBe="quoted=&quot;foo \&quot;bar\&quot;&quot;">$click.searchTerms$</span><br>
+            <br>
+
+            $$search$$ = $search$<br>
+            $$results.sid$$ = $results.sid$<br>
+            results from search = <span class="shouldBe" s:shouldBe="0">0</span> (should be zero)<br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+  <module name="Search" layoutPanel="panel_row5_col1_grp1" group="escaping in JSChart drilldowns" autoRun="true">
+    <param name="search"><![CDATA[
+      index=_internal | head 1 | streamstats count | table count sourcetype source index | eval quoted="foo \"bar\"" | eval path="C:\\foo\\bar" | eval quotedPath="foo - \"C:\\bar\\\""
+    ]]></param>
+    <module name="PostProcess">
+      <param name="search"> | chart count over quoted by path</param>
+
+      <module name="JSChart">
+
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            click.value    = <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$click.value$</span><br>
+            click.rawValue = <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$click.rawValue$</span><br>
+            
+            click.name2    = <span class="shouldBe" s:shouldBe="C:\\foo\\bar">$click.name2$</span><br>
+            click.rawName2 = <span class="shouldBe" s:shouldBe="C:\foo\bar">$click.rawName2$</span><br>
+            
+            click.searchTerms = <span class="shouldBe" s:shouldBe="path=&quot;C:\\foo\\bar&quot; quoted=&quot;foo \&quot;bar\&quot;&quot;">$click.searchTerms$</span><br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="PostProcess" layoutPanel="panel_row5_col1_grp2">
+      <param name="search"> | chart count over path by quoted</param>
+
+      <module name="JSChart">
+
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            click.value    = <span class="shouldBe" s:shouldBe="C:\\foo\\bar">$click.value$</span><br>
+            click.rawValue = <span class="shouldBe" s:shouldBe="C:\foo\bar">$click.rawValue$</span><br>
+            
+            click.name2    = <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$click.name2$</span><br>
+            click.rawName2 = <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$click.rawName2$</span><br>
+            
+            click.searchTerms = <span class="shouldBe" s:shouldBe="quoted=&quot;foo \&quot;bar\&quot;&quot; path=&quot;C:\\foo\\bar&quot;">$click.searchTerms$</span><br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+
+
+  <module name="Search" layoutPanel="panel_row6_col1_grp1" group="escaping in FlashChart drilldowns" autoRun="true">
+    <param name="search"><![CDATA[
+      index=_internal | head 1 | streamstats count | table count sourcetype source index | eval quoted="foo \"bar\"" | eval path="C:\\foo\\bar" | eval quotedPath="foo - \"C:\\bar\\\""
+    ]]></param>
+    <module name="PostProcess">
+      <param name="search"> | chart count over quoted by path</param>
+
+      <module name="JSChart">
+
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            click.value    = <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$click.value$</span><br>
+            click.rawValue = <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$click.rawValue$</span><br>
+            
+            click.name2    = <span class="shouldBe" s:shouldBe="C:\\foo\\bar">$click.name2$</span><br>
+            click.rawName2 = <span class="shouldBe" s:shouldBe="C:\foo\bar">$click.rawName2$</span><br>
+            
+            click.searchTerms = <span class="shouldBe" s:shouldBe="path=&quot;C:\\foo\\bar&quot; quoted=&quot;foo \&quot;bar\&quot;&quot;">$click.searchTerms$</span><br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="PostProcess" layoutPanel="panel_row6_col1_grp2">
+      <param name="search"> | chart count over path by quoted</param>
+
+      <module name="JSChart">
+
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            click.value    = <span class="shouldBe" s:shouldBe="C:\\foo\\bar">$click.value$</span><br>
+            click.rawValue = <span class="shouldBe" s:shouldBe="C:\foo\bar">$click.rawValue$</span><br>
+            
+            click.name2    = <span class="shouldBe" s:shouldBe="foo \&quot;bar\&quot;">$click.name2$</span><br>
+            click.rawName2 = <span class="shouldBe" s:shouldBe="foo &quot;bar&quot;">$click.rawName2$</span><br>
+            
+            click.searchTerms = <span class="shouldBe" s:shouldBe="quoted=&quot;foo \&quot;bar\&quot;&quot; path=&quot;C:\\foo\\bar&quot;">$click.searchTerms$</span><br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+
+
+</view>

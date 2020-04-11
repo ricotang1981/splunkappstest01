@@ -1,0 +1,51 @@
+
+<view template="dashboard.html">
+  <label>Embedding an iframe in the page</label>
+  
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Embedding an iframe in the page</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="TimeRangePicker" layoutPanel="panel_row1_col1" autoRun="True">
+      <param name="default">Last 4 hours</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+        
+        <module name="CheckboxPulldown">
+          <param name="name">sourcetype</param>
+          <param name="label">Sourcetype</param>
+          <param name="template">series="$value$"</param>
+          <param name="valueField">series</param>
+
+          <module name="Button">
+            <param name="allowSoftSubmit">True</param>
+          
+            <module name="Redirector">
+              <param name="url">iframe_view</param>
+              <param name="target">targetFrame</param>
+              <param name="arg.sourcetype">$sourcetype$</param>
+              <param name="arg.earliest">$search.timeRange.earliest$</param>
+              <param name="arg.latest">$search.timeRange.latest$</param>
+            </module>
+          </module>
+
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      <iframe id="targetFrame" name="targetFrame" src="iframe_view?" height="1000px" width="100%" style="border:0px;"></iframe>
+    ]]></param>
+  </module>
+
+</view>

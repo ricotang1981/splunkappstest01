@@ -1,0 +1,43 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>the Search module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>The Search module</h1>
+    ]]></param>
+  </module>
+  
+
+  
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <p>
+          The Search module will do $$foo$$ token replacement right into the search.   
+      </p>
+      
+      <h3>Notes</h3>
+      <ol>
+        <li>You can set the "search" param, and also the "earliest" and "latest" params.  If the timerange params are omitted, but there is a TimePicker module upstream, it will use that timerange.  You do not need to tell it to use the TimePicker's tokens. 
+ 
+        <li>
+          If you want to turn on "preview" for the job you're dispatching, you can set this directly with the Search module's "preview" param.  Previously you had to use a core Splunk module called EnablePreview which was hidden and difficult to use correctly.
+        </li>
+        
+        <li>
+          If you need an actual "$$" character in your search,   use "$$$$" instead.  Otherwise the single "$$" character will be misinterpreted as one side of a $$foo$$ token.  (This applies to anything in Canary that does $$foo$$ substitution.)
+        </li>
+
+       </ol>
+
+    ]]></param>
+  </module>
+
+</view>

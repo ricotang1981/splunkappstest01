@@ -1,0 +1,151 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>The Multiplexer module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>The Multiplexer module</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      The Multiplexer module is a very advanced module. You should only use it sparingly.  When you need it however, it can do some truly amazing things. <br>
+      <br>
+      Here's the basic idea.  <br>
+      1) You have a search that gives you a set of values for a particular field. <br>
+      2) For <strong>each</strong> of these values,  you want to put some module or combination of modules on the page.  Let's say you want an HTML header and a bar chart to represent each of the values. <br>
+      <br>
+      Let's make it more specific. Say each the number of servers you have to keep track of on a dashboard is different. There might be 5 or there might be 7 or 21.   Nonetheless you need a dashboard to have 5 charts when there are 5 servers and 7 when there are 7 (and you don't want to rewrite the dashboard every day).  <br>
+      <br>
+      This is a case for Multiplexer.<br>
+      <br>
+      
+      <h2>How it works</h2>
+      <ol>
+        <li>You put in a Search module with a search whose results have the field you wish to "multiplex"
+        <li>You put <b>one</b> Multiplexer module downstream from that Search module.   
+        <li>You give Multiplexer a "fields" param that matches the relevant field in those search results. 
+        <li>You give Multiplexer one child module, and then you can give that one child module any number of descendant modules in any configuration.    
+      </ol>
+      Then at runtime the Multiplexer module looks at the values of the field or field you told it to multiplex, and it clones out the modules it sees downstream -- with one set of cloned modules representing the value of the field in each row. 
+      ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h2>Starting out with a simple example - one HTML module as a child...</h2> 
+      <p>Since the following example reuses two CSS classnames that are present in core Splunk CSS files,  we get a bit of "single value" design for free. (The classnames are 'valueDisplay' and 'inner' btw).
+      <br clear="all">
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as totalKB by series | rename series as sourcetype</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="Multiplexer">
+      <param name="fields">sourcetype</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <div class="valueDisplay">
+            <div class="inner">sourcetype <b>$sourcetype$</b></div>
+          </div>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h2>Next example - Multiplexing with more than one field </h2> 
+      You aren't limited to just multiplexing one field.  You can tell Multiplexer to multiplex any number of fields by listing them comma-separated.
+      <br clear="all">
+    ]]></param>
+  </module>
+      
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as totalKB by series | rename series as sourcetype</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="Multiplexer">
+      <param name="fields">sourcetype,totalKB</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <b>$sourcetype$</b> ($totalKB$ KB indexed)
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+
+
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h2>Next example - Multiplexing with more than one field and using CSS to drive dynamc background color</h2> 
+      <br clear="all">
+    ]]></param>
+  </module>
+      
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as KB by series | rename series as sourcetype | rangemap field=KB low=0-100 guarded=100-1000 elevated=1000-10000 high=10000-100000 severe=100000-100000000000000</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="Multiplexer">
+      <param name="fields">sourcetype,totalKB,range</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <div class="valueDisplay">
+            <div class="inner $range$">sourcetype <b>$sourcetype$</b> ($totalKB$ KB indexed)</div>
+          </div>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          On the cloned view XML config, layoutPanel attributes and autoRun attributes will be ignored. For the purposes of layout all modules will be written out inline immediately after the Multiplexer module itself.   For non-trivial layout needs you will have to use custom CSS. 
+        </li>
+        <li>
+          NOTE that you cannot Multiplex a FlashChart module, due to some complexity in the FlashModule's code. Although we might revisit this someday and fix it, in the meantime you should use JSChart instead.
+        </li>
+        <li>
+          In versions 2.6.3 and prior, Multiplexer could only accept a single field in it's "field" param.  These days the "fields" param obsoletes the "field" param, and you can set as many fields as you like. For each search result row and thus for each multiplexed set of modules,   all of the field values for the given search result row will be available as $fieldName$ tokens.  Note that you also have $fieldName.rawValue$ if you don't want certain characters like backslashes and double quotes escaped. 
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Multiplexer" target="_blank">Multiplexer and its params</a>
+        </li>
+
+      </ol>
+    ]]></param>
+  </module>
+
+</view>

@@ -1,0 +1,275 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+div.Events {
+    overflow:auto;
+    position:relative;
+    height:200px;
+}
+.dashboardCell div.Events {
+    padding-left:10px;
+    padding-right:10px;
+    border-top:1px solid #F2F2F2;
+    border-left:1px solid #F2F2F2;
+}
+
+.Events .workflowActionsMenu {
+    position:absolute;
+    z-index:10;
+    left:-2000px;
+}
+.Events .workflowActionsMenu a,
+.Events .workflowActionsMenu em {
+    display:block;
+    font-style:normal;
+    padding: 5px 10px;
+}
+
+.taggingLayer {
+    display: none;
+    width: 400px;
+    padding: 12px;
+}
+.taggingLayer input {
+    width: 384px;
+    margin-bottom: 12px;
+    padding-left:7px !important;
+}
+
+
+.Events .time,
+.Events .audit {
+    color:#666;
+}
+.Events .pos {
+    color:#bbb;
+    font-style:normal;
+}
+.Events .eventLayer {
+    position:absolute;
+    z-index:1;
+}
+.softWrap .event {
+    word-wrap:break-word; /* IE 5.5-7 */
+    white-space:-moz-pre-wrap; /* Firefox 1.0-2.0 */
+    white-space:pre-wrap; /* current browsers */
+    ?white-space:normal;
+}
+
+.Events em.a, 
+.Events em.v:hover, 
+.Events em.tg:hover, 
+.Events em.time:hover {
+    background-color:#f5e998;
+}
+.termClickingDisabled em:hover {
+    background-color:transparent !important;
+}
+
+.Events em.h,
+.Events span.h,
+.Events span.a,
+.Events span.mouseoverHighlight,
+.termClickingDisabled .Events em.h {
+    background-color:#f5e998 !important;
+}
+
+
+.Events ol {
+    list-style:none;
+    margin:0;
+    padding:5px 0 0 0;
+}
+.Events li {
+    list-style:none;
+    margin-left:0px !important;
+}
+
+.Events .item {
+    padding:0px 0px 10px 0px;
+    clear:both;
+}
+
+.Events .tpl {
+    display:none;   
+}
+
+.Events {
+    zoom:1;
+    display:block;
+    margin-bottom:0px;
+    border-bottom:1px solid #F2F2F2;  
+}
+.Events .header {
+    text-align:left;
+}
+.Events td {
+    text-align:left;
+}
+.Events .col1 {
+    padding-top:2px;
+    padding-right:8px;
+    min-width:18px;
+    vertical-align:top; 
+}
+.Events .col2 {
+    padding-top:3px;
+    padding-right:8px;
+    vertical-align:top;    
+}
+.Events .col3 {
+    vertical-align:top;
+}
+.Events .t, 
+.Events .fields .v, 
+.Events .fields .tg, 
+.Events .time {
+    font-style:normal;
+    cursor:pointer;
+    cursor:hand;
+}
+.termClickingDisabled em {
+    cursor:default !important;
+}
+.Events .event {
+    font-family:Consolas, Monaco, Courier New, monospace;
+    font-size:12px;
+    margin:0px 0px 0px 0px;
+    zoom:1;
+    *white-space: pre;
+}
+
+.Events .fields {
+    margin:0px;
+    padding:0px;
+    list-style:none;
+}
+.Events .fields li {
+    padding:0px;
+    margin:0px;
+    display:inline;
+}
+.Events .fields .fm {
+    text-decoration:none;
+    text-indent:-5000px;
+    width:13px;
+    height:12px;
+    
+    display:-moz-inline-box;
+    overflow:hidden;
+    font-size:1px;
+    vertical-align:text-top;
+    
+    vertical-align:middle;
+    display:inline-block;
+}
+.Events .audit {
+    font-style:normal;
+    display:block;
+    padding:2px 0px 4px 20px;
+    color:#666;        
+}
+.Events .decoration_audit_valid {
+    background:url(/static/img/skins/default/audit_valid.gif) no-repeat;    
+}
+.Events .decoration_audit_gap {
+    background:url(/static/img/skins/default/audit_gap.gif) no-repeat;
+}
+.Events .decoration_audit_tampered {
+    background:url(/static/img/skins/default/audit_tampered.gif) no-repeat;
+}
+.Events .decoration_audit_cantvalidate {
+    background:url(/static/img/skins/default/audit_cantvalidate.gif) no-repeat;     
+}
+
+
+
+.Events .showinline {
+    color:#4D9BB3;
+}
+.Events .fields li {
+    color:#778899;
+}
+.Events .fields em {
+    font-style:normal;
+}
+.Events .fields .k {
+    color:#999;
+}
+.Events .fields .v {
+    color:#333;
+}
+.Events .fields .tg {
+    color:#999;
+    font-style:italic;
+}
+.Events .fields .fm {
+    background: url(/static/img/skins/default/splIcons.gif) no-repeat -67px -364px;    
+    color:#FFF;
+}
+
+.Events .actions {
+    padding:3px;
+    opacity:.8;
+    background-position: -23px -323px;
+    background-color:#999; 
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    border: 1px solid #999;
+}
+.Events .fm {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    border:0px;
+    padding:0px;
+}
+.Events .actions:hover {
+    background-color: #666;
+    border-color: #666;
+}
+.Events .fm:hover {
+    background-color: transparent;
+}
+
+
+
+.Events .splMenu-primary {
+    overflow:auto;
+    *overflow:visible;
+}
+.Events .splMenu-primary ul,
+.Events .splMenu-primary ul div.innerMenuWrapper,
+.Events .splMenu-primary ul li,
+.Events .splMenu-primary a {
+    width:auto;
+}
+.Events .splMenu-primary ul div.innerMenuWrapper {
+    _width:160px;
+}
+.Events .splMenu-primary a {
+    _white-space:nowrap;   
+}
+
+
+
+
+.tagfieldpopup {
+    display:none;
+    padding:12px;
+    width:400px;
+    background:#FFF;
+
+}
+.tagfieldpopup input {
+    width: 386px;
+    margin-bottom:12px;
+    font-size:11px;
+    color:#333;
+}
+
+
+li.timeRangeHeader h2 {
+    border-bottom-width:1px;
+    border-bottom-style:solid;
+}

@@ -1,0 +1,36 @@
+.AppNav {
+    padding:0px;
+    background-color: #333;
+    border-top:1px solid #333;
+}
+.canary .AppNav {
+    background-color: #666;
+    border-top:0px;
+}
+.AppNav a {
+    display: inline-block;
+    padding:12px 15px 12px 15px;
+    color:#fff;
+    text-decoration:none;
+    font-weight: 400;
+    font-size:1.1em;
+    font-family: "Splunk Platform Sans","Roboto","Droid","Helvetica Neue",Helvetica,Arial,sans-serif;
+
+}
+.AppNav .appName {
+    float:right;
+    margin-bottom:-4px;
+}
+.AppNav .appName a {
+    display: inline-block;
+    font-size:1.4em;
+    font-weight: 200;
+}
+.AppNav a:hover {
+    background: #414141;
+}
+
+.AppNav ul {
+    margin-left:0px;
+}
+

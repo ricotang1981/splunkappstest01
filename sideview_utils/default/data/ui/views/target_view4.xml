@@ -1,0 +1,111 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Target View 4 (prepopulating TimeRangePicker and Pulldowns)</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Linking - Target view 4</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+   <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+       <h3>$title$</h3>
+      ]]></param>
+    </module>
+
+    <module name="TimeRangePicker">
+      <module name="Pulldown">
+        <param name="name">group</param>
+        <param name="label">type</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">Index</param>
+            <param name="value">per_index_thruput</param>
+          </list>
+          <list>
+            <param name="label">Source</param>
+            <param name="value">per_source_thruput</param>
+          </list>
+          <list>
+            <param name="label">Sourcetype</param>
+            <param name="value">per_sourcetype_thruput</param>
+          </list>
+          <list>
+            <param name="label">Host</param>
+            <param name="value">per_host_thruput</param>
+          </list>
+        </param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" metrics | head 5000 | stats count by group, series | sort series</param>
+          <param name="earliest">-2h</param>
+          
+          <module name="HTML" layoutPanel="panel_row1_col2">
+            <param name="html"><![CDATA[
+              DEBUGGING: Here are the keys that get passed down through the modules from URLLoader:<br>
+              group: <b>$group$</b><br>
+              series: <b>$series$</b><br>
+              report: <b>$report$</b><br>
+              <br>
+              Here's the search that is used to populate the dynamic pulldown: <br>
+              search: <b>$search$</b>
+               
+            ]]></param>
+          </module>
+          <module name="Pulldown">
+            <param name="name">series</param>
+            <param name="label">$group.label$</param>
+            <param name="postProcess">search group="$group$"</param>
+            <param name="valueField">$name$</param>
+        
+            <module name="Search">
+              <param name="search">index=_internal source="*metrics.log" group="$group$" series="$series$" | $report$</param>
+              <param name="earliest">-2h</param>
+
+              <module name="Pager">
+                <module name="Table" />
+              </module>
+
+              <module name="HTML" layoutPanel="panel_row1_col2">
+                <param name="html"><![CDATA[
+                  and here's the overall search that runs when it all gets put together: <br>
+                  search: <b>$search$</b><br>
+                  <br>
+                  earliest time:  <b>$search.timeRange.earliest$</b><br>
+                  latest time:  <b>$search.timeRange.latest$</b><br>
+
+
+
+                  NOTES:
+                  <ol>
+                    
+                    <li>this example shows a static Pulldown, a dynamic Pulldown and a Splunk TimeRangePicker prepopulating themselves using the values passed down by the URLLoader module.</li>
+
+                    
+                  </ol>
+                  ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    
+
+  </module>
+
+  
+
+
+</view>

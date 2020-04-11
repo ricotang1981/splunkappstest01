@@ -1,0 +1,75 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="false" stylesheet="editor.css">
+  <label>Sideview Editor - controls</label>
+  <module name="SideviewUtils" layoutPanel="resultsAreaLeft" />
+  <module name="URLLoader" layoutPanel="resultsAreaLeft" autoRun="True">
+    
+    <module name="Search">
+      <param name="search">| splunkentity apps/local | table name</param>
+
+      <module name="Pulldown">
+        <param name="name">app</param>
+        <param name="label">App</param>
+        <param name="valueField">name</param>
+        <param name="staticOptions"></param>
+
+        <module name="Search">
+          <param name="search">| splunkentity data/ui/views app="$app$" | table name</param>
+
+          <module name="Pulldown">
+            <param name="name">view</param>
+            <param name="label">View</param>
+            <param name="valueField">name</param>
+            <param name="staticOptions">
+              <list>
+                <param name="value">_new</param>
+                <param name="label">Create New View...</param>
+              </list>
+            </param>
+            <param name="customBehavior">don't default to create new</param>
+
+
+            <module name="Pulldown">
+              <param name="name">mode</param>
+              <param name="label">Mode</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="value">Edit</param>
+                </list>
+                <list>
+                  <param name="value">Add</param>
+                </list>
+                <list>
+                  <param name="value">Delete</param>
+                </list>
+                <list>
+                  <param name="value">Reattach</param>
+                </list>
+                <list>
+                  <param name="label">Runtime Debug</param>
+                  <param name="value">Debug</param>
+                </list>
+                
+              </param>
+              <param name="customBehavior">hide if create new is selected</param>
+
+              <module name="Button">
+                <param name="allowSoftSubmit">True</param>
+                <param name="allowAutoSubmit">False</param>
+                <param name="label">go</param>
+
+                <module name="CustomBehavior">
+                  <param name="customBehavior">set app, view and mode</param>
+                </module>
+
+              </module>
+
+            </module>
+          </module>
+        </module>
+      </module>
+
+    </module>
+  </module>
+
+</view>

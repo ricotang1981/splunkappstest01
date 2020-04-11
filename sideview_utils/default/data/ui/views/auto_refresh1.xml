@@ -1,0 +1,110 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>The AutoRefresh module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>The AutoRefresh module</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        AutoRefresh is a utility module that you can use to periodically refresh some or all of the modules on the page. It also has an alternate mode that uses the more brute force method of reloading the entire page.
+      </p>
+
+      <p>
+        In this first example we use an AutoRefresh module to rerun a search and re-render a chart showing its results. Every fifteen seconds the search will re-run and the chart will refresh.
+      
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="AutoRefresh" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="refreshEvery">15</param>
+
+    <module name="Search">
+      <param name="search">index=_internal component=metrics group=per_sourcetype_thruput | timechart span=1min sum(kb) by series</param>
+      <param name="earliest">-15min</param>
+      <param name="latest">now</param>
+      
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">line</param>
+        
+        <module name="JSChart" />
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <p>You can also use $$foo$$ tokens in the refreshEvery param such that the refresh interval is chosen from some upstream module like a Pulldown module or a Checkbox.  And a value of "0" will mean no automatic refreshing.
+      ]]></param>
+  </module>
+
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="name">refreshRate</param>
+    <param name="label">Refresh every:</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">no refresh</param>
+        <param name="value">0</param>
+      </list>
+      <list>
+        <param name="label">5 seconds</param>
+        <param name="value">5</param>
+      </list>
+      <list>
+        <param name="label">10 seconds</param>
+        <param name="value">10</param>
+      </list>
+      <list>
+        <param name="label">30 seconds</param>
+        <param name="value">30</param>
+      </list>
+    </param>
+    <module name="AutoRefresh">
+      <param name="refreshEvery">$refreshRate$</param>
+
+      <module name="Search">
+        <param name="search">index=_internal component=metrics group=per_sourcetype_thruput | timechart span=1min sum(kb) by series</param>
+        <param name="earliest">-15min</param>
+        <param name="latest">now</param>
+        
+        <module name="ValueSetter">
+          <param name="arg.charting.chart">line</param>
+          
+          <module name="JSChart" />
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Note that to trigger the <b>first</b> run of the search on page load you still need to use the "autoRun" mechanism.  And note that autoRun has no relation to and no knowledge of the AutoRefresh module, nor vice versa.  The autoRun="True" attribute will handle the initial load, and the AutoRefresh module will handle the later refreshing.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.AutoRefresh" target="_blank">AutoRefresh and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+</view>

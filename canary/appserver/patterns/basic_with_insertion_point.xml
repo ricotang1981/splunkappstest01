@@ -1,0 +1,45 @@
+
+<module name="URLLoader" layoutPanel="viewHeader">
+  <param name="keepURLUpdated">True</param>
+  
+  <module name="HTML">
+    <param name="html"><![CDATA[
+    <h1 class="doNotPrint">TITLE</h1>
+    ]]></param>
+  </module>
+
+  <module name="Pulldown">
+    <param name="name">numberType</param>
+    <param name="label">find</param>
+    <param name="cssClass">abutRight</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">calls to/from</param>
+        <param name="value">all</param>
+      </list>
+      <list>
+        <param name="label">calls from</param>
+        <param name="value">callingParty</param>
+      </list>
+      <list>
+        <param name="label">calls to</param>
+        <param name="value">calledParty</param>
+      </list>
+    </param>
+
+    <module name="TextField">
+      <param name="name">number</param>
+      <param name="customBehavior">inlineNumberLabel</param>
+      <param name="default">enter number(s)</param>
+      <param name="cssClass">abutLeft</param>
+
+      <module name="TimeRangePicker">
+        <param name="default">Last 4 hours</param>
+        <param name="searchWhenChanged">True</param>
+
+        <insertionPoint />
+
+      </module>
+    </module>
+  </module>
+</module>

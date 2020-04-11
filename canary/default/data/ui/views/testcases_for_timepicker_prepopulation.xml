@@ -1,0 +1,216 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>Testcases for TimePicker prepopulation</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for TimePicker prepopulation</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">False</param>
+    
+    <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+
+        <p>
+          Set up a testcase: <br>
+          <a href="testcases_for_timepicker_prepopulation">Clear</a><br>  
+          <a href="testcases_for_timepicker_prepopulation?earliest=1559199600&latest=1559286000">May 30th 2019</a><br>
+          <a href="testcases_for_timepicker_prepopulation?earliest=1559113200&latest=1559199600">May 29th 2019</a><br>
+
+          <a href="testcases_for_timepicker_prepopulation?earliest=-60m%40m&latest=now">Last 60 minutes</a><br>
+
+          
+          
+          <a href="testcases_for_timepicker_prepopulation?earliest=all&latest=all">all,all</a><br>
+          <a href="testcases_for_timepicker_prepopulation?earliest=all&latest=now">all,now</a><br>
+
+          <a href="testcases_for_timepicker_prepopulation?earliest=1305820200&latest=">since 8:50AM 5/19/2011</a><br>
+          <a href="testcases_for_timepicker_prepopulation?earliest=&latest=1305820200">before 8:50AM 5/19/2011</a><br>
+          <a href="testcases_for_timepicker_prepopulation?earliest=1305820200&latest=all">since 8:50AM 5/19/2011, with 'all'</a><br>
+          <a href="testcases_for_timepicker_prepopulation?earliest=all&latest=1305820200">before 8:50AM 5/19/2011, with 'all'</a><br>
+          <a href="testcases_for_timepicker_prepopulation?earliest=-7d@h&latest=now">-7d@h,now</a><br>
+        </p>
+
+      ]]></param>
+    </module>
+
+    
+    <module name="TimePicker">
+      <param name="default">last 24 hours</param>
+      
+      
+      <module name="Search">
+        <param name="search">search index=_internal | head 1000 | timechart count</param>
+
+        <module name="ProgressIndicator" />
+        <module name="Pager">
+          <param name="count">5</param>
+          
+          <module name="Table" />
+        </module>
+        <module name="Button">
+          <module name="Redirector">
+            <param name="url">testcases_for_timepicker_prepopulation</param>
+            <param name="arg.earliest">$search.timeRange.earliest$</param>
+            <param name="arg.latest">$search.timeRange.latest$</param>
+          </module>
+        </module>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           
+            <p>
+              $shared.timeRange.label$<br>
+              <br>
+              $shared.timeRange.earliest$<br>
+              $shared.timeRange.latest$<br>
+            </p>
+           
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+    <!-- 
+    <module name="TimePicker" layoutPanel="panel_row2_col1">
+      <param name="default">last 4 hours</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          THE TIMERANGEPICKER ABOVE SHOULD REMAIN AT Last 4 hours, because the implicit 'all time' push from URLLoader should be ignored.
+          <p>
+            $search.timeRange.label$<br>
+            <br>
+            $search.timeRange.earliest$<br>
+            $search.timeRange.latest$<br>
+          </p>
+         
+         
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row2_col2">
+      <param name="earliest"> </param>
+      <param name="latest"> </param>
+
+      <module name="TimePicker">
+        <param name="default">last 4 hours</param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            THIS TIMERANGEPICKER ABOVE SHOULD REMAIN AT Last 4 hours because the empty earliest/latest from Search are an implicit all time, which is ignored.
+            <p>
+              $search.timeRange.label$<br>
+              <br>
+              $search.timeRange.earliest$<br>
+              $search.timeRange.latest$<br>
+            </p>
+           
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col3">
+      <param name="earliest">all</param>
+      <param name="latest">all</param>
+      
+      <module name="Button">
+        <module name="TimePicker">
+          <param name="default">last 4 hours</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              THIS TIMERANGEPICKER SHOULD change to All Time, because the all/all from the Search is an explicit All Time range.
+              <p>
+                $search.timeRange.label$<br>
+                <br>
+                $search.timeRange.earliest$<br>
+                $search.timeRange.latest$<br>
+              </p>
+             
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col1">
+      <param name="search">index=_internal | head 100 | stats count </param>
+
+      <module name="TimePicker">
+        <param name="default">All time</param>
+
+        <module name="Button">
+          <module name="ProgressIndicator" />
+          <module name="Table" />
+       
+          <module name="TimePicker">
+            <param name="default">last 4 hours</param>
+            
+            <module name="Search" layoutPanel="panel_row3_col1">
+              <param name="search">index=_internal | head 100 | stats count </param>
+              
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  THIS DOWNSTREAM TIMERANGEPICKER SHOULD stay at last 4 hours.  cause the upstream TimePicker outputs only an 'implicit' all time. 
+                  <p>
+                    $search.timeRange.label$<br>
+                    <br>
+                    $search.timeRange.earliest$<br>
+                    $search.timeRange.latest$<br>
+                  </p>
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    
+    
+    
+    <module name="TimePicker" layoutPanel="panel_row4_col2" group="Control - no earliest/param on Search. ">
+      <param name="default">last 4 hours</param>
+
+      <module name="Search">
+        <param name="search">index=_internal | head 100 | stats count </param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <p>
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              <br>
+              <br>
+              this should say 100 - - $results[0].count$
+            </p>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    -->
+
+  </module>
+
+
+
+
+
+
+</view>

@@ -1,0 +1,97 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for TextField events</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for TextField events</h1>
+    
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="SearchBar" layoutPanel="panel_row1_col1">
+      <param name="useOwnSubmitButton">False</param>
+
+      
+
+      <module name="TextField" >
+        <param name="name">textfield1</param>
+        <param name="label">$name$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 10 | fields - date_* | stats dc(*) as * | transpose</param>
+          
+          <module name="Pulldown">
+            <param name="name">dynamic1</param>
+            <param name="label">Dynamic 1</param>
+            <param name="valueField">column</param>
+
+            <module name="CustomBehavior">
+              <param name="customBehavior">countPushes</param>
+            </module>
+
+            <module name="Button">
+              <param name="label">Search</param>
+              <param name="allowSoftSubmit">True</param>
+
+              <module name="Search">
+                <param name="search">$textfield1$ $dynamic1$ $searchBar$</param>
+
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                  
+                  textfield1=$textfield1$<br>
+                  searchBar = $searchBar$<br>
+                  pulldown1 = $pulldown1$<br>
+                  <br>
+                  search: $search$<br>
+                  ]]></param>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      testcases
+      <table class="splTable">
+        <tr>
+          <th>case</th>
+          <th>expected</th>
+        </tr>
+        <tr>
+          <td>paste something in from the clipboard.  immediately click submit</td>
+          <td>full value pushed</td>
+        </tr>
+        <tr>
+          <td>single keypress, click submit</td>
+          <td>full value pushed</td>
+        </tr>
+        <tr>
+          <td>single keypress, hit return</td>
+          <td>full value pushed</td>
+        </tr>
+        <tr>
+          <td>single keypress, hit escape,home,end,shift,alt,control</td>
+          <td>no push, nor pseudopush</td>
+        </tr>
+
+      </table>
+      
+    ]]></param>
+  </module>
+
+</view>

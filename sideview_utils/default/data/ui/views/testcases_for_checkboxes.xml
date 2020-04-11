@@ -1,0 +1,274 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Checkboxes</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Checkboxes</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+
+
+    <module name="Button">
+      <param name="label">Once more, with feeling</param>
+
+      <module name="Checkboxes" layoutPanel="panel_row1_col1" group="static config">
+        <param name="name">test1</param>
+        
+        <param name="staticCheckboxes">
+          <list>
+            <param name="label">firstStaticLabel</param>
+            <param name="value">staticValue1</param>
+            <param name="selected">True</param>
+          </list>
+          <list>
+            <param name="label">secondStaticLabel</param>
+            <param name="value">staticValue2</param>
+          </list>
+          <list>
+            <param name="label">thirdStaticLabel</param>
+            <param name="value">staticValue3</param>
+            <param name="selected">True</param>
+          </list>
+          <list>
+            <param name="label">fourth"hasAQuote</param>
+            <param name="value">fourth"hasAQuoteLabel</param>
+            <param name="selected">True</param>
+          </list>
+        </param>
+        <param name="separator">+OR+</param>
+        <param name="template">myField="$value$"</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           <p>
+           selected value is:<br>
+            $test1$<br>
+              <br>
+              label is $test1.label$
+           </p>
+           
+          ]]></param>
+        </module>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row1_col2" group="dynamic config">
+        <param name="search"><![CDATA[
+          | stats count | fields - count | eval name=split("foo,bar,baz,bat\"hasAQuote",",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+        ]]></param>
+        
+        <module name="Checkboxes">
+          <param name="name">test2</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          <param name="separator">+OR+</param>
+          <param name="template">myField="$value$"</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             selected value is:<br>
+              $test2$<br>
+              <br>
+              label is $test2.label$
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+
+
+    
+      <module name="Search" layoutPanel="panel_row1_col3" group="combination">
+        <param name="search"><![CDATA[
+          | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+        ]]></param>
+        
+        <module name="Checkboxes">
+          <param name="name">test3</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          <param name="separator">+OR+</param>
+          <param name="template">myField="$value$"</param>
+          <param name="outerTemplate">( $value$ )</param>
+          <param name="staticCheckboxes">
+            <list>
+              <param name="label">firstStaticLabel</param>
+              <param name="value">staticValue1</param>
+            </list>
+            <list>
+              <param name="label">secondStaticLabel</param>
+              <param name="value">staticValue2</param>
+            </list>
+            <list>
+              <param name="label">thirdStaticLabel</param>
+              <param name="value">staticValue3</param>
+            </list>
+          </param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             selected value is:<br>
+              $test3$<br>
+              <br>
+              label is $test3.label$
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row2_col1">
+      <param name="html"><![CDATA[
+        <h3>test prepopulation</h3>
+        <a href="?test1=staticValue2&test2=barValue&test3=staticValue2&test3=barValue">preselect secondStatic,  then second dynamic,  and then BOTh secondStatic and second dynamic</a><br>
+
+
+        <a href="?test1=*&test2=*&test3=*">preselect all static,  all dynamic, all in both. </a>
+      ]]></param>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="ValueSetter prepopulating dynamic config">
+      <param name="search"><![CDATA[
+        | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+      ]]></param>
+      
+      <module name="ValueSetter">
+        <param name="name">test2</param>
+        <param name="value">fooValue,barValue</param>
+        <param name="delim">,</param>
+        <param name="allowClobber">False</param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           valueSetter value is:<br>
+            $test2$
+           ]]></param>
+        </module>
+
+        <module name="Checkboxes">
+          <param name="name">test2</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          <param name="separator">+OR+</param>
+          <param name="template">myField="$value$"</param>
+          <param name="outerTemplate">( $value$ )</param>
+          
+
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             (by default should have foo and bar initially selected)
+             selected value is:<br>
+              $test2$
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+    <module name="Search" layoutPanel="panel_row3_col2" group="ValueSetter prepopulating ALL, with dynamic config">
+      <param name="search"><![CDATA[
+        | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+      ]]></param>
+      
+      <module name="PostProcess">
+        <param name="search">| stats values(value) as test2</param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">test2</param>
+
+          <module name="PostProcess">
+            <param name="search"> </param>
+
+          
+            <module name="HTML">
+              <param name="html"><![CDATA[
+               resultsValueSetter value is:<br>
+                $test2$
+               ]]></param>
+            </module>
+
+            <module name="Checkboxes">
+              <param name="name">test2</param>
+              <param name="valueField">value</param>
+              <param name="labelField">label</param>
+              <param name="separator">+OR+</param>
+              <param name="template">myField="$value$"</param>
+              <param name="outerTemplate">( $value$ )</param>
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                 <p>
+                 (by default should have all checkboxes initially selected)
+                 selected value is:<br>
+                  $test2$
+                 </p>
+                 
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row4_col1" group="needing required_field_list">
+      <param name="search"><![CDATA[
+        index=_internal component=metrics group=per_sourcetype_thruput | head 10 | rename series as value 
+      ]]></param>
+      
+      <module name="Checkboxes">
+        <param name="name">test2</param>
+        <param name="valueField">value</param>
+        <param name="separator">+OR+</param>
+        <param name="template">myField="$value$"</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           
+           <p>
+           selected value is:<br>
+            $test2$
+           </p>
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+  </module>
+              
+
+</view>

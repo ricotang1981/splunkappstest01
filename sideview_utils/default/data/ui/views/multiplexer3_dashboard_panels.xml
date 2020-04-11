@@ -1,0 +1,95 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Multiplexing entire dashboard panels</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Using Multiplexer to make entire dashboard panels</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      You can't!<br>
+      <br>
+      OK just kidding.  You sort of can't, you sort of can! 
+
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+
+    The "panel_row1_col2" system with which you're now familiar (and a bit tired),  creates a set of divs with certain classnames.   The Multiplexer cannot really clone out this HTML and leverage this CSS - that all lives at a higher level.   However with a little custom CSS, you can have the Multiplexer clone out HTML and leverage CSS that <b>you</b> wrote.   <br>
+      <br>
+      This is advanced stuff, but this page gives you a working example. 
+
+      
+      <br clear="all">
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search">index=* OR index=_* | head 50000 | stats count by sourcetype source</param>
+    <param name="earliest">-30d</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="PostProcess">
+      <param name="search">dedup sourcetype</param>
+  
+      <module name="Pager">
+        <param name="count">5</param>
+
+        <module name="Multiplexer">
+          <param name="fields">sourcetype</param>
+
+          <module name="PostProcess">
+            <param name="search">search sourcetype="$sourcetype$" | stats sum(count) as eventCount by source</param>
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                <b>$sourcetype$</b> 
+              ]]></param>
+            </module>
+            <module name="Pager">
+              <module name="Table" />
+            </module>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          To understand this example you absolutely have to read the corresponding CSS being used inside application.css.   You'll have to copy this CSS out and into your own app.  Open sideview_utils/appserver/static/application.css and find the comment that says "EXAMPLE CSS FROM the example view multiplexer3_dashboard_panels.xml"
+        </li>
+
+        <li>  The basic idea of the CSS is twofold.  First we turn off the normal bordered-panel nature of that containing panel by applying css rules to ".splView-multiplexer3_dashboard_panels .panel_row3_col .dashboardCell"
+
+        <li>Then we style our Multiplexer blocks to look like those same bordered-panels by applying CSS rules to ".splView-multiplexer3_dashboard_panels .multiplexedBlock " and .splView-multiplexer3_dashboard_panels .multiplexedBlockInner" 
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Multiplexer" target="_blank">Multiplexer and its params</a>
+        </li>
+
+      </ol>
+    ]]></param>
+  </module>
+
+
+
+
+</view>

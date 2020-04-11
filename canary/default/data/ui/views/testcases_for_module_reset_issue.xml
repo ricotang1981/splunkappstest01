@@ -1,0 +1,84 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>Testcases for Pulldown</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Pulldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    
+    <module name="Search" layoutPanel="panel_row1_col1" >
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log sourcetype=splunkd group=per_*_thruput | stats count by group series date_hour
+      ]]></param>
+      <param name="earliest">-4h</param>
+
+      <module name="Pulldown">
+        <param name="name">group</param>
+        <param name="label">$name$</param>
+        <param name="valueField">$name$</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="postProcess">dedup $name$ | sort $name$</param>
+
+        <module name="Pulldown">
+          <param name="name">series</param>
+          <param name="label">$name$</param>
+          <param name="valueField">$name$</param>
+          <param name="template">$name$="$value$"</param>
+          <param name="postProcess">search $group$ | dedup $name$ | sort $name$</param>
+
+          <module name="Search">
+            <param name="search">index=* OR index=_* source="$series.rawValue$" OR sourcetype="$series.rawValue$" OR index="$series.rawValue$" OR host="$series.rawValue$" | stats count by date_hour sourcetype source index</param>
+            <param name="earliest">-4h</param>
+
+            <module name="Pulldown">
+              <param name="name">sourcetype</param>
+              <param name="label">$name$</param>
+              <param name="valueField">$name$</param>
+              <param name="template">$name$="$value$"</param>
+              <param name="postProcess">dedup $name$ | sort $name$</param>
+
+              <module name="Pulldown">
+                <param name="name">source</param>
+                <param name="label">$name$</param>
+                <param name="valueField">$name$</param>
+                <param name="template">$name$="$value$"</param>
+                <param name="postProcess">search $sourcetype$ | dedup $name$ | sort $name$</param>
+
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                  $search$ 
+                  ]]></param>
+                </module>
+                
+                <module name="Button">
+                  <param name="allowSoftSubmit">False</param>
+
+                  <module name="ProgressIndicator" />
+                  
+                  <module name="Pager">
+                    <module name="Table"/>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+  </module>
+  
+        
+
+</view>

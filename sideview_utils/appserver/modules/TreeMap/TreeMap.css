@@ -1,0 +1,56 @@
+.TreeMap svg {
+    overflow: hidden;
+}
+
+.TreeMap rect {
+    pointer-events: all;
+    cursor: pointer;
+    stroke: #EEEEEE;
+}
+
+.TreeMap .chart {
+    display: block;
+    margin: auto;
+}
+
+.TreeMap .parent .label {
+    color: #FFFFFF;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    -webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    -moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.TreeMap .labelbody {
+    background: transparent;
+}
+
+.TreeMap .label {
+    margin: 2px;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    -webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    -moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.TreeMap .child .label {
+    white-space: pre-wrap;
+    text-align: center;
+    text-overflow: ellipsis;
+}
+
+.TreeMap .cell {
+    font-size: 11px;
+    cursor: pointer
+}
+
+
+.TreeMap div.stackedHeader{
+    background-color: #555555;
+    font-size: 11px;
+    color:#fff;
+    margin:0px !important;
+    padding:2px;
+    cursor:pointer;
+}

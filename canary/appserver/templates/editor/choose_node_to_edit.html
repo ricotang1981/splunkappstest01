@@ -1,0 +1,52 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="/base.html" />
+
+<link type="text/css" href="${canary_static_url_prefix}lib/editor/editor.css" rel="stylesheet" />
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/jquery/jquery-3.1.0.js"></script>
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/editor/forms.js"></script>
+
+
+% if (successMessage) :
+    <div class="success">${successMessage}</div>
+% else :
+
+% endif
+<div class="outerWrapper">
+
+<h2>Edit Existing Module</h2>
+<form id="chooseModuleForm" action="/splunkd/__raw/sv_module/edit" method="GET">
+<table class="editorTable" cellspacing="0">
+    <tr>
+        <td class="labelCell">Choose
+% if (successMessage) :
+    another
+% else :
+    a
+% endif
+            module to edit:</td>
+        <td>
+            <input type="text" name="moduleId" id="moduleId" class="moduleSelector" autocomplete="off"><br>
+            <input type="hidden" name="moduleClass" class="classField">
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="buttonCell">
+
+            <input type="hidden" name="app" id="app" value="${app}" />
+            <input type="hidden" name="view" id="view" value="${view}" />
+
+            <input type="submit" value="edit params" disabled="disabled" class="submit"/>
+        </td>
+    </tr>
+</table>
+
+</form>
+
+<p>
+    (NOTE: you can also select the view node itself if you need to edit the top level view properties)
+</p>
+
+
+</div>

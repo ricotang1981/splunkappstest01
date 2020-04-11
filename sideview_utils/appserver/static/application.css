@@ -1,0 +1,192 @@
+
+
+/**
+ * logo stuff
+ */
+ div.AccountBar {
+    padding-left:5px;
+}
+.appLogo {
+    width: 34px;
+    height: 25px; 
+    background-image: url(images/logo_sideview.gif);
+    background-repeat: no-repeat;
+    position:relative;
+    top:4px;
+}
+.appLogoContainer {
+    width:300px;
+    height:42px;
+    display:block;
+    
+    background-image:url(images/splunk_powered_logo_white.gif);
+    background-repeat:no-repeat;
+    background-position:180px 10px;
+}
+.appHeaderWrapper h1 {
+    color:#f0f0f0;
+    line-height:37px;
+}
+.error a {
+    color:#fff;
+    text-decoration: underline;
+}
+
+
+#bumpContent {
+    display:none;
+}
+
+/* Im not sure who picked Splunk's default font-size of 11px, but I envy their 
+eyesight --ncm */
+.layoutCell {
+    font-size:12px;
+}
+    
+/* this is just to help the readability of the example pages */
+.dashboardContent .HTML ul li {
+    margin-bottom:10px;
+}
+.splView-refresh_entities .dashboardContent .HTML ul li {
+    margin-bottom:4px;
+}
+
+.viewHeader h1 {
+    display:inline;
+    margin:0px;
+    padding:0px;
+    font-size:16px;
+}
+
+/* take away the 'about' link and the 'help' link cause it's confusing in this 
+ * context.
+ */
+.AppBar .auxLinks {
+    display:none;
+}
+#appBarUnitTests {
+    display:none;
+}
+.dashboardCell .Paginator {
+    clear:both;
+}
+
+table.splTable th.rowTh {
+    border-color:#ccc;
+}
+
+
+.splView-refresh_entities .Pulldown {
+    float:left;
+    margin-right:10px;
+}
+
+ol li {
+    margin-left:5px;
+}
+
+.splView-events1_intro .SoftWrap,
+.splView-events1_intro .RowNumbers,
+.splView-events1_intro .Segmentation,
+.splView-events1_intro .MaxLines {
+    float:left;
+    margin-right:15px;
+}
+.splView-events1_intro .MaxLines {
+    clear:left;
+}
+/* for some insane reasont he RowNumbers module has it's own custom top margin
+ *  which we have to undo here. 
+ */
+.splView-events1_intro .RowNumbers  {
+    margin-top:4px;
+}
+.splView-events1_intro .Events {
+    clear:left;
+}
+
+.splView-home .mainSearchControls {
+    border-bottom:0px;
+    padding:0px;
+}
+.splView-home .mainSearchControls .HTML {
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
+
+
+
+.dashboardContent h2 {
+    margin-top:0px;
+}
+
+span.hasExpectedValue {
+    font-weight:bold;
+    color:#393;
+}
+span.hasUnexpectedValue {
+    font-weight:bold;
+    color:#933;
+}
+
+
+.splView-prototype .Table {
+    width:30%;
+    margin-right:3%;
+    float:left;
+    clear:none;
+}
+.splView-prototype .Filters {
+    clear:left;
+}
+.splView-prototype .checkboxWrapper {
+    float:left;
+}
+
+
+.splView-testcases_for_checkboxes .Checkboxes .checkboxWrapper {
+    display:inline-block;
+    margin-right:20px;
+    min-width:120px;
+}
+
+
+.splView-inspect_indexed_data .viewHeader .Pulldown,
+.splView-inspect_indexed_data .mainSearchControls .Pulldown {
+    float:left;
+}
+/** 
+ *  EXAMPLE CSS FROM the example view multiplexer3_dashboard_panels.xml
+ * 
+ * FIRST - we turn off all the rounded-border panel-ness of the actual panel.
+ */
+.splView-multiplexer3_dashboard_panels .panel_row3_col .dashboardCell {
+    padding:0px;
+    border:0px;
+    background:transparent;
+}
+
+/** 
+ * 2) Next we apply CSS to the Multiplexer's normally invisible div's 
+ * to make *those* divs float and behave like rounded-corner panels.  
+ */
+.splView-multiplexer3_dashboard_panels .multiplexedBlock {
+    width:33.33%;
+    float:left;
+}
+.splView-multiplexer3_dashboard_panels .multiplexedBlockInner {
+    padding:5px 10px;
+    margin:0px 10px 10px 0px;
+    background-color:#fff;
+    border-radius: 2px;
+    border-style: solid;
+    border-width: 1px;
+    position: relative;
+}
+
+
+.splView-testcases_for_layer .dashboardContent .Button {
+    float:left;
+    margin-right:10px;
+}

@@ -1,0 +1,48 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Multiplexer with Switcher</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Multiplexer with Switcher</h1>
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+
+  <module name="TabSwitcher" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="mode">independent</param>
+
+    <module name="Search" group="Multiplexer">
+      <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top group | streamstats count | eval group=group+" (" + count + ")"</param>
+      <param name="earliest">-15m</param>
+      <param name="latest">now</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Multiplexer">
+        <param name="field">group</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            Displaying stuff about $group$
+          ]]></param>
+        </module>
+      </module>
+    </module>
+    <module name="HTML" group="static child">
+      <param name="html"><![CDATA[
+        Lorem ipsem dolor sit amet. 
+      ]]></param>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+  
+
+
+</view>

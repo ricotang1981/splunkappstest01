@@ -1,0 +1,43 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>About</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>About Sideview, LLC and its products</h1>
+    ]]></param>
+  </module>
+
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <p>
+        <a href="http://www.sideviewapps.com" target="_blank">Sideview LLC</a> develops and sells commercial software for  Splunk Enterprise and Splunk Cloud and was started in 2010.  Sideview's primary product is the "Cisco CDR Reporting and Analytics" app for Splunk.
+      </p>
+
+      <h3>About Canary</h3>
+      <p>
+        The best place to learn more about Canary is <a href="https://sideviewapps.com/apps/canary/">on our website</a>.
+      <p>
+
+      <p>
+        Feel free to <a href="http://sideviewapps.com/contact">contact us</a> for any reason at all - if you have any questions large or small, technical questions, non-technical questions or even if you have cat photos that you think we should see.
+      </p>
+
+      <p>
+        If something in this app doesn't seem to be working right though just email us at <a href="mailto:support@sideviewapps.com">support@sideviewapps.com</a> and we'll respond promptly.
+      </p>
+
+
+
+    ]]></param>
+  </module>
+
+
+</view>

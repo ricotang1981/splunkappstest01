@@ -1,0 +1,17 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+/*
+@            /en-US/modules/@89596.6/JobSpinner/JobSpinner.css
+need         /en-US/static/@89596.6:52/app/sideview_utils/spinner.gif
+good enough  /en-US/static/app/sideview_utils/spinner.gif
+therefore    ../../../static/app/sideview_utils/spinner.gif
+*/
+
+.JobSpinner {
+    padding:0px !important;
+    width:26px !important;;
+    height:26px !important;
+    float:left;
+    background-image: url(../../../static/app/sideview_utils/spinner.gif);
+    background-position:0px 0px;
+}

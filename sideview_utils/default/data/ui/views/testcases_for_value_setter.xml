@@ -1,0 +1,518 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for ValueSetter</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for ValueSetter</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <module name="ValueSetter">
+      <param name="name">foo</param>
+      <param name="value">FooValue</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           straight up value: <span class="shouldBe" s:shouldBe="FooValue">$foo$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter">
+      <param name="arg.foo">FooValue</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           single arg.foo <span class="shouldBe" s:shouldBe="FooValue">$foo$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter">
+      <param name="arg.foo">FooValue</param>
+      <param name="arg.bar">BarValue</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           multi arg.foo and arg.bar <span class="shouldBe" s:shouldBe="FooValue BarValue">$foo$ $bar$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col1">
+      <param name="arg.foo">FooValue</param>
+      <param name="arg.bar">BarValue</param>
+
+      <module name="ValueSetter">
+        <param name="arg.$foo$">only </param>
+        <param name="arg.$bar$">zuul</param>
+
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+             dynamic arg.* names - There is <span class="shouldBe" s:shouldBe="only zuul">$FooValue$ $BarValue$</span><br>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col2">
+      <param name="arg.foo">FooValue</param>
+      
+      <module name="ValueSetter" >
+        <param name="arg.foo">Sky.fall()!!!</param>
+        <param name="allowClobber">False</param>
+        
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+             arg.* noclobber - <span class="shouldBe" s:shouldBe="FooValue">$foo$</span><br>
+          ]]></param>
+        </module>
+      </module>
+      
+      <module name="ValueSetter">
+        <param name="name">foo</param>
+        <param name="value">Sky.fall()!!!</param>
+        <param name="allowClobber">False</param>
+        
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+             name,value noclobber - <span class="shouldBe" s:shouldBe="FooValue">$foo$</span><br>
+          ]]></param>
+        </module>
+      </module>
+
+
+    </module>
+
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col2">
+      <param name="arg.foo">FooValue</param>
+      
+      <module name="ValueSetter">
+        <param name="arg.sneaky">foo</param>
+
+        <module name="ValueSetter" >
+          <param name="arg.$sneaky$">Sky.fall()!!!</param>
+          <param name="allowClobber">False</param>
+          
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+               sneaky arg.* noclobber - <span class="shouldBe" s:shouldBe="FooValue">$foo$</span><br>
+            ]]></param>
+          </module>
+        </module>
+        
+        <module name="ValueSetter">
+          <param name="name">$sneaky$</param>
+          <param name="value">Sky.fall()!!!</param>
+          <param name="allowClobber">False</param>
+          
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+               sneaky name,value noclobber - <span class="shouldBe" s:shouldBe="FooValue">$foo$</span><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+
+
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col3">
+      <param name="name">foo</param>
+      <param name="value">FooValue,BarValue</param>
+      <param name="delim">,</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           name/value style, splitting with delims - <span class="shouldBe" s:shouldBe="FooValue">$foo[0]$</span> and <span class="shouldBe" s:shouldBe="BarValue">$foo[1]$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col3">
+      <param name="arg.foo">FooValue,BarValue</param>
+      <param name="delim">,</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           arg.* style, splitting with delims - <span class="shouldBe" s:shouldBe="FooValue">$foo[0]$</span> and <span class="shouldBe" s:shouldBe="BarValue">$foo[1]$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col3">
+      <param name="arg.FooValue[0]">FirstFooValue</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           setting explicit array syntax, arg* - <span class="shouldBe" s:shouldBe="FirstFooValue">$FooValue[0]$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row1_col3">
+      <param name="name">FooValue[0]</param>
+      <param name="value">FirstFooValue</param>
+      <module name="HTML">
+        <param name="customBehavior">highlightPassesAndFails</param>
+        <param name="html"><![CDATA[
+           setting explicit array syntax, name/value- <span class="shouldBe" s:shouldBe="FirstFooValue">$FooValue[0]$</span><br>
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="Pulldown" layoutPanel="panel_row2_col1">
+      <param name="name">untemplated</param>
+      <param name="label">untemplated</param>
+
+      <param name="staticOptions">
+        <list>
+          <param name="label">Null value</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="label">backslash value</param>
+          <param name="value">foo\bar</param>
+        </list>
+        <list>
+          <param name="label">url-unsafe value</param>
+          <param name="value">foo#bar?baz</param>
+        </list>
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">templated</param>
+        <param name="label">templated</param>
+        <param name="template">someField="$value$"</param>
+
+        <param name="staticOptions">
+          <list>
+            <param name="label">Null value</param>
+            <param name="value"></param>
+          </list>
+          <list>
+            <param name="label">backslash value</param>
+            <param name="value">foo\bar</param>
+          </list>
+          <list>
+            <param name="label">url-unsafe value</param>
+            <param name="value">foo#bar?baz</param>
+          </list>
+        </param>
+
+        <module name="Search">
+          <param name="search"><![CDATA[
+            $untemplated$ $templated$
+          ]]></param>
+          
+          <module name="ValueSetter">
+            <param name="name">redundantlyEscapedRawValue</param>
+            <param name="backslashEscapeKeys">untemplated.rawValue</param>
+            <param name="value">$untemplated.rawValue$</param>
+
+            <module name="ValueSetter">
+              <param name="name">urlEncodedValue</param>
+              <param name="urlEncodeKeys">untemplated.rawValue</param>
+              <param name="value">$untemplated.rawValue$</param>
+
+              <module name="ValueSetter">
+                <param name="name">combinedValue</param>
+                <param name="requiredKeys">untemplated.rawValue,templated.rawValue</param>
+                <param name="value">( received both $untemplated.rawValue$ and $templated.rawValue$ )</param>
+
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                   untemplated = $untemplated$<br>
+                   untemplated.rawValue = $untemplated.rawValue$<br>
+                   <br>
+
+
+                   templated = $templated$<br>
+                   templated.rawValue = $templated.rawValue$<br>
+
+                   <br>
+
+                   redundantlyEscapedRawValue = $redundantlyEscapedRawValue$<br>
+                   urlEncodedValue = $urlEncodedValue$<br>
+                   <br>
+                   <br>
+                   $combinedValue$
+                  
+                   
+                  ]]></param>
+                </module>
+              </module>
+            </module>
+          </module>
+
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col2">
+      <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 100</param>
+      <param name="earliest">-24h</param>
+
+      <module name="ProgressIndicator" />
+      
+      <module name="ValueSetter">
+        <param name="name">customSid</param>
+        <param name="value">$results.sid$</param>
+
+        <module name="ValueSetter">
+          <param name="name">customTimeRangeKey</param>
+          <param name="value">$search.timeRange.earliest$</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            can ValueSetter retrieve our sid? <br>
+            $$customSid$$=$customSid$<br>
+            <br>
+            How about a timerange key?<br>
+            $$customTimeRangeKey$$ = $customTimeRangeKey$
+
+            ]]></param>
+          </module>
+        </module>
+
+        <module name="ValueSetter">
+          <param name="urlEncodeKeys">search,search.timeRange.earliest,search.timeRange.latest</param>
+          <param name="name">rawURL</param>
+          <param name="value">flashtimeline?q=search $search$&amp;earliest=$search.timeRange.earliest$&amp;latest=$search.timeRange.latest$</param>
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            how about when we're also urlEncoding the search? <br>
+            $$customSid$$=$customSid$<br>
+            <br>
+            $$search.timeRange.earliest$$= $search.timeRange.earliest$<br>
+            <br>
+            rawURL?<br>
+            $$rawURL$$ = $rawURL$
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+    <module name="TimeRangePicker" layoutPanel="panel_row3_col1">
+      <param name="default">Last 24 hours</param>
+      <module name="Search">
+        <param name="search">search #1</param>
+
+        <module name="ValueSetter">
+          <param name="name">rawEventsURL</param>
+          <param name="urlEncodeKeys">search</param>
+          <param name="value">flashtimeline?q=search $search$&amp;earliest=$search.timeRange.earliest$&amp;latest=$search.timeRange.latest$</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              OLDSCHOOL URL (No SideviewUtils module in the "flashtimeline" view)
+              <a href="$rawEventsURL$" target="_blank">test link #1</a>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="TimeRangePicker" layoutPanel="panel_row3_col2">
+      <param name="default">Last 24 hours</param>
+      <module name="Search">
+        <param name="search">search #2</param>
+
+        <module name="PostProcess">
+          <param name="search">| search postprocess #1 (has leading pipe)</param>
+
+          <module name="ValueSetter">
+            <param name="name">rawEventsURL</param>
+            <param name="urlEncodeKeys">search,postProcess</param>
+            <param name="value">flashtimeline?q=search $search$ $postProcess$&amp;earliest=$search.timeRange.earliest$&amp;latest=$search.timeRange.latest$</param>
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                OLDSCHOOL URL, passing postProcess
+                <a href="$rawEventsURL$" target="_blank">test link #2</a>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="TimeRangePicker" layoutPanel="panel_row3_col3">
+      <param name="default">Last 24 hours</param>
+      <module name="Search">
+        <param name="search">I am test search #3</param>
+
+        <module name="PostProcess">
+          <param name="search">search postprocess #2 (has NO leading pipe)</param>
+
+          <module name="ValueSetter">
+            <param name="name">postProcessWithGuaranteedPipe</param>
+            <param name="requiredKeys">postProcess</param>
+            <param name="value">| $postProcess$</param>
+
+            <module name="ValueSetter">
+              <param name="name">rawEventsURL</param>
+              <param name="urlEncodeKeys">search,postProcessWithGuaranteedPipe</param>
+              <param name="value">flashtimeline?q=search $search$ $postProcessWithGuaranteedPipe$&amp;earliest=$search.timeRange.earliest$&amp;latest=$search.timeRange.latest$</param>
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  OLDSCHOOL URL with postprocess and gauranteed pipe via requiredKeys
+                  <a href="$rawEventsURL$" target="_blank">test link #3</a>
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+
+
+
+    <module name="Search" layoutPanel="panel_row4_col1">
+      <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 5 | fields _time group series</param>
+      <param name="earliest">-4h@h</param>
+      <param name="latest">@h</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Button">
+        <param name="label">push again</param>
+
+      
+        <module name="ValueSetter">
+          <param name="name">stashedEarliest</param>
+          <param name="value">$results.timeRange.earliest$</param>
+
+          <module name="ValueSetter">
+            <param name="name">stashedLatest</param>
+            <param name="value">$results.timeRange.latest$</param>
+
+
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                $$results.timeRange.earliest$$ -- $results.timeRange.earliest$<br>
+                $$results.timeRange.latest$$ -- $results.timeRange.latest$<br>
+
+                $$results.timeRange.earliest$$ can be stashed? -- $stashedEarliest$<br>
+                $$results.timeRange.latest$$ can be stashed? -- $stashedLatest$
+              ]]></param>
+            </module>
+          </module>
+        </module>
+
+        <module name="ValueSetter">
+          <param name="name">stashedEarliest</param>
+          <param name="value">$search.timeRange.earliest$</param>
+
+          <module name="ValueSetter">
+            <param name="name">stashedLatest</param>
+            <param name="value">$search.timeRange.latest$</param>
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                $$search.timeRange.earliest$$ -- $search.timeRange.earliest$<br>
+                $$search.timeRange.latest$$ -- $search.timeRange.latest$<br>
+
+                $$search.timeRange.earliest$$ can be stashed? -- $stashedEarliest$<br>
+                $$search.timeRange.latest$$ can be stashed? -- $stashedLatest$
+              ]]></param>
+            </module>
+
+
+          </module>
+        </module>
+        <module name="Table"/>
+      </module>
+    </module>
+
+
+    <module name="Checkboxes"  layoutPanel="panel_row5_col1">
+      <param name="name">test1</param>   
+      <param name="staticCheckboxes">
+        <list>
+          <param name="label">firstStaticLabel</param>
+          <param name="value">staticValue1</param>
+        </list>
+        <list>
+          <param name="label">secondStaticLabel</param>
+          <param name="value">staticValue2</param>
+        </list>
+        <list>
+          <param name="label">thirdStaticLabel</param>
+          <param name="value">staticValue3</param>
+        </list>
+      </param>
+      <param name="separator">+OR+</param>
+      <param name="template">myField="$value$"</param>
+      <param name="outerTemplate">( $value$ )</param>
+
+      <!-- Checkboxes 2 -->
+
+      <module name="Checkboxes" group="static config 2">
+        <param name="name">test2</param>   
+        <param name="staticCheckboxes">
+          <list>
+            <param name="label">StaticLabel4</param>
+            <param name="value">staticValue4</param>
+          </list>
+          <list>
+            <param name="label">StaticLabel5</param>
+            <param name="value">staticValue5</param>
+          </list>
+          <list>
+            <param name="label">StaticLabel6</param>
+            <param name="value">staticValue6</param>
+          </list>
+        </param>
+        <param name="separator">+OR+</param>
+        <param name="template">myField="$value$"</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <module name="ValueSetter">
+          <param name="name">dynamicOr</param>
+          <param name="requiredKeys">test1,test2</param>
+          <param name="value">OR</param>
+
+          <module name="Search">  
+            <param name="search">index="index_test" ($test1$ $dynamicOr$ $test2$) </param>
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                $search$
+              ]]></param>
+            </module>
+          </module>
+
+          
+        </module>
+      </module>
+    </module>
+
+    
+
+  </module>
+    
+
+</view>

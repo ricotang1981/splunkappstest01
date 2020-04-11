@@ -1,0 +1,101 @@
+@font-face {
+    font-family: 'IconViewFont';
+    src: url('/static/fonts/splunkicons-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    /*  unicode-range: U+00-FF; */
+}
+@font-face {
+    font-family: 'Splunk Platform Sans';
+    src: url('/static/fonts/proxima-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*  semibold */
+@font-face {
+    font-family: 'Splunk Platform Sans';
+    src: url('/static/fonts/proxima-semibold-webfont.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+
+/*  Bold */
+@font-face {
+    font-family: 'Splunk Platform Sans';
+    src: url('/static/fonts/proxima-bold-webfont.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+.TopNav {
+    background-color:#000;
+    height:37px;
+}
+.splunkIcons {
+    cursor:pointer;
+}
+.TopNav a,
+.TopNav a:active,
+.TopNav a:visited {
+    color:#eee;
+}
+
+.splunkIcon,
+.greaterThanIcon,
+.enterpriseIcon {
+    font-family: "IconViewFont";
+    font-size:18px;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    display: inline-block
+}
+.splunkIcons,
+.appTitle {
+    padding:7px 15px;
+    float:left;
+}
+.leftSideMenu {
+    float:left;
+}
+.rightSideMenu {
+    float:right;
+}
+.splunkIcon {
+    color:#fff;
+}
+
+
+.greaterThanIcon,
+.enterpriseIcon {
+    color:#5CC05C;
+}
+.greaterThanIcon::before {
+    content: ">\AE";
+}
+.enterpriseIcon::before {
+    content: "\F001"
+}
+
+.TopNav li a,
+.TopNav li.topLevel li a  {
+    color:#333;
+    /*max-width: calc((100vw - 860px) / 2);*/
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-weight:normal;
+    font-size:14px;
+    font-family: "Splunk Platform Sans", "Proxima Nova", Roboto, Droid, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding:5px 10px;
+}
+.TopNav li.topLevel > a {
+    padding:10px 10px 0px 10px;
+    color:#C3CBD4;
+    display: inline-block;
+
+}
+.TopNav li.topLevel:last-child a {
+    padding-right:15px;
+}

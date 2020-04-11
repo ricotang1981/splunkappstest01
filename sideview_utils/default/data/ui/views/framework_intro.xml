@@ -1,0 +1,162 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>overview of the view XML</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Overview of the View XML (aka advanced XML)</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+<h1>Take a deep breath. This is important.</h1>
+
+<h3>In the View XML, the hierarchy is everything. </h3>
+<p>
+  If you use the Sideview Editor (which ships in the "Sideview Admin Tools" app) the module hierarchy is represented as lines drawn between modules.  If instead you edit the raw view XML files, it is represented instead by the &lt;module&gt; tags being nested inside each other.  No matter which of the two representations you're dealing with,  modules are wired together into a tree where the tree trunk is always at the top.  
+</p>
+
+<h3>Definition: "pushes"</h3>
+<p>
+  When a user does something, like when they click the green button in a Button module, that starts a "push".
+</p>
+<p>
+  A "push" means that starting from that Button module, some data will start flowing through the tree. The flow of data will accumulate hardcoded configurations from the view itself as well as values that have been selected by the user.    This flow of data always moves down to the child modules "below".  Barring exceptional circumstances the data <b>never</b> flows up.  
+</p>
+
+<h3>Definitions: "downstream" modules and "upstream" modules</h3>
+<p>
+  Because the data is always being "pushed" deeper into the tree towards the leaves, we call the more nested modules the "downstream" modules,  and above a given module, we call the chain of ancestor modules above it the "upstream" modules. 
+</p>
+
+<h3>Modules can only communicate downstream, and only through their data</h3>
+<p>
+  Each module receives its little package of data from upstream, and it <b>might</b> add some data that it wants to send to the downstream modules. That's it.  It actually has no direct contact with <b>any</b> modules - neither the downstream nor the upstream modules.
+</p>
+
+<h3>How modules communicate - introducing $$foo$$ tokens</h3>
+<p>
+  As the push distributes data down through all of the downstream modules, each of the modules gets a chance to contribute its own data to the set of data and arguments being pushed.   This communication always happens through a set of key-value pairs that we will often call $$foo$$ tokens.
+</p>
+
+    ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h2>Let's take a break and look at an example</h2>
+
+  <pre>  &lt;module name="Button" layoutPanel="panel_row1_col1"&gt;
+    &lt;param name="label"&gt;Start "pushing" data to my downstream modules&lt;/param&gt;
+
+    &lt;module name="Search" &gt;
+      &lt;param name="search"&gt;index=* | head 1000 | top sourcetype&lt;/param&gt;
+      
+      &lt;module name="Pager"&gt;
+      
+        &lt;module name="Table" /&gt;
+
+      &lt;/module&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
+</pre>
+
+    <p>
+      At the top there is a Button module which has a Search module downstream from it.   Then downstream from that Search module there is a Pager module and then further downstream a Table module.   <a href="hello_world" target="hello_world">You can see the living form of this view config by clicking here</a>.
+    </p>
+    <p>
+      When you click that green button (which is part of our Button module),  you start a "push".  Our little package of data flows down through the Search module, the Pager module and finally to the Table module.
+    </p>
+    <p>
+      We'll come back to the magic business of how the search gets dispatched.   For now let's just focus on the Pager and the Table modules. 
+      
+    </p>
+    <p>
+      Notice that the Table module is downstream from the Pager module. Let's work out why this is. You might have figured out that the Pager module's job in the world is to present a set of links to the user, ie  "1 2 3 4 5 prev next".   Then when the user clicks one of these links,  presumably the Pager module will have to "tell" the Table module about the change, right?   
+    </p>
+    <p>
+      Well what's the <b>ONLY</b> way that <b>any</b> module can tell <b>any</b> other module <b>anything</b>?   It's if the module it's telling is "downstream".     That's why the Table has to be downstream from the Pager.  And to answer your next question, the key that it uses to do this is $$results.offset$$.  
+    </p>
+
+
+   
+ ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h1>Take another deep breath.  You're halfway there!</h1>
+
+      <p>
+        Now you understand the "downstream",  "upstream",  "push" and "$$foo$$ token" concepts.   All that's left is how, when and why the searches get kicked off. 
+      </p>
+
+      <h2>Modules do not kick off searches</h2>
+      <p>
+        It's a common misconception that Splunk searches are kicked off by "special" modules like the Search module.  This is not true.  The Search module does send the raw text of a search down into the downstream data,  just like the TimeRangePicker module sends a time range argument for that search.  But these arguments by themselves do not necessarily result in any searches being dispatched.
+      </p>
+      <p>
+        What does dispatch the search though, is the Splunk UI itself.
+      </p>
+      
+      <h2>Definition: "dispatching module"</h2>
+      <p>
+        Yes, I know I just said that modules dont dispatch searches.   Nonetheless, some modules in the tree "require a search to be running".  Although you might well point out that this is massively confusing, we call these modules the "dispatching modules".  
+      </p>
+      <p>
+        Picture a particular module and ask yourself if it can do its job meaningfully without some search results to access.  If the module cannot, then you can assume that it is a "dispatching module".  
+      </p>
+      <p> 
+        Example 1 - if a FlashChart module had no ability to access search results, then it wouldn't be able to render a chart for the user.  Therefore you can conclude that FlashChart is a 'dispatching' module. <br>
+        Example 2 - a TextField module presents a text input field to the user, and it allows them to type something into this field.   It can do this job just fine without accessing any search results - therefore you can safely conclude that TextField is not a "dispatching module". <br>
+        Example 3 - ProgressIndicator is a module that displays a visualization of how much progress a search has made.    It couldn't do this job very well if it had no access to the dispatched search results, so you can safely conclude that it is a "dispatching module".
+      </p>
+
+      <h2>OK finally.  Here's how searches are dispatched</h2>
+      
+      Let's say that we have a push in progress, and data is flowing down through the branches of the tree. 
+      <ol>
+        <li>
+          Right when the push is about to hit a layer of modules where at least one is a "dispatching module", the Splunk UI reaches in and pauses the push.  
+        </li>
+        <li>Next it uses the Splunk REST API to kick off the search, using the search argument, the timerange argument, and a couple other advanced settings that might or might not be present in the data.</li>
+        <li>
+          Some milliseconds later the search is kicked off and running.  Now the Splunk UI takes the package of arguments adds in the information that downstream modules will need to access the search results. 
+        </li>
+        <li>The system resumes the paused push and the data is allowed to move downstream again.</li>
+      </ol>
+
+      <p>Now as if by magic all the modules <b>from that point and further downstream</b> will be able to access the search results.    </p> 
+        
+
+
+  
+     ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h3>Further reading, thinking and examples</h3> 
+      
+      <p>
+        After you get used to $$foo$$ tokens, they start to feel a lot like the fields in the Splunk search language. Just remember that these are two completely different spaces of keys and values. Except for some advanced stuff that the ResultsValueSetter module can do, these two spaces of key value pairs do not mix.
+      </p>
+      <p>
+        You can read a lot more about $$foo$$ tokens on these two pages -- <a href="custom_keys">Overview of all the new $$foo$$ tokens</a>  and <a href="html2_dynamic_ui_tokens">Embedding HTML and including $$foo$$ tokens</a>.  One thing to remember is that when you need a literal "$$" character in a search, you need to use two consecutive "$$" characters instead - ie "$$$$"
+      </p>
+
+      <p>
+        If the heuristic around "dispatching modules" is not good enough for you, you can always go look at the autogenerated module docs at <a href="/en-US/modules">http://&lt;splunkhost&gt;:&lt;splunkport&gt;/en-US/modules</a>.   In the entry for each module you'll see whether it extends 'DispatchingModule' or 'AbstractModule'.   If even that isn't good enough for you,  ultimately it's whether or not the module returns true or false from the "requiresDispatch()" method. 
+      </p>
+
+    ]]></param>
+  </module>
+
+
+
+</view>

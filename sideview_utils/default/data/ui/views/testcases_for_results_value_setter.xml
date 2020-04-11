@@ -1,0 +1,278 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for ResultsValueSetter</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for ResultsValueSetter</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    
+    <module name="Search" layoutPanel="panel_row1_col1" group="many layers">
+      <param name="search"><![CDATA[
+        | stats count | fields - count | eval foo="fooValue"
+      ]]></param>
+      <module name="ResultsValueSetter">
+        <param name="fields">foo</param>
+        <module name="HTML">
+          <param name="html">foo = $foo$</param>
+        </module>
+
+        <module name="Search">
+          <param name="search"><![CDATA[
+            | stats count | fields - count | eval bar="barValue"
+          ]]></param>
+          <module name="ResultsValueSetter">
+            <param name="fields">bar</param>
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                foo = $foo$<br>
+                bar = $bar$
+              ]]></param>
+            </module>
+          
+
+
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="with 'fields *' clause">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group=per_sourcetype_thruput series=splunkd_access | fields * | head 1
+      ]]></param>
+
+      <module name="Button">
+        <param name="label">resubmit</param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">series,group,kbps,kb,eps</param>
+          
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+             series = <span class="shouldBe" s:shouldBe="splunkd_access">$series$</span><br>
+             group = <span class="shouldBe" s:shouldBe="per_sourcetype_thruput">$group$</span><br>
+             kbps = $kbps$<br>
+             kb = $kb$<br>
+             eps = $eps$<br>
+             host = <span class="shouldBe" s:shouldBe="">$host$</span> (should be blank)<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row2_col2" group="no 'fields *' clause">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group=per_sourcetype_thruput series=splunkd_access | head 1
+      ]]></param>
+
+      <module name="Button">
+        <param name="label">resubmit</param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">series,group,kbps,kb,eps</param>
+          
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+             series = <span class="shouldBe" s:shouldBe="splunkd_access">$series$</span><br>
+             group = <span class="shouldBe" s:shouldBe="per_sourcetype_thruput">$group$</span><br>
+             kbps = $kbps$<br>
+             kb = $kb$<br>
+             eps = $eps$<br>
+             host = <span class="shouldBe" s:shouldBe="">$host$</span> (should be blank)<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="fields PARAM set to *">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group=per_sourcetype_thruput series=splunkd_access | head 1
+      ]]></param>
+
+      <module name="Button">
+        <param name="label">resubmit</param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">*</param>
+          
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+             series = <span class="shouldBe" s:shouldBe="splunkd_access">$series$</span><br>
+             group = <span class="shouldBe" s:shouldBe="per_sourcetype_thruput">$group$</span><br>
+             kbps = $kbps$<br>
+             kb = $kb$<br>
+             eps = $eps$<br>
+             host = $host$ (should NOT be blank)</span><br>
+             _time = $_time$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row3_col2" group="multivalue">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group=per_*_thruput | head 1000 | sort group | stats values(group) as groups
+      ]]></param>
+
+      <module name="Button">
+        <param name="label">resubmit</param>
+
+        <module name="ValueSetter">
+          <param name="name">groups[0]</param>
+          <param name="value">this should get overwritten.</param>
+          
+          <module name="ResultsValueSetter">
+            <param name="fields">groups</param>
+
+            <module name="ValueSetter">
+              <param name="name">firstGroup</param>
+              <param name="value">$groups[0]$</param>
+            
+              <module name="HTML">
+                <param name="customBehavior">highlightPassesAndFails</param>
+                <param name="html"><![CDATA[
+                  groups = $groups$<br>
+                  <br>
+                  <b>KNOWN FAILURE</b> (RVS uses outputmode json, which doesnt handle multivalued fields correctly even in 5.0 and 6.0)<br>
+                  groups[0] = <span class="shouldBe" s:shouldBe="per_index_thruput">$firstGroup$</span><br>
+                  
+                 
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col3" group="multivalue, with assist">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group=per_*_thruput | head 1000 | sort group | stats values(group) as groups | eval groups=mvjoin(groups,",")
+      ]]></param>
+
+      <module name="Button">
+        <param name="label">resubmit</param>
+
+          
+        <module name="ResultsValueSetter">
+          <param name="fields">groups</param>
+          <module name="ValueSetter">
+            <param name="name">groups</param>
+            <param name="value">$groups$</param>
+            <param name="delim">,</param>
+
+          
+            <module name="HTML">
+              <param name="customBehavior">highlightPassesAndFails</param>
+              <param name="html"><![CDATA[
+                groups[0] = <span class="shouldBe" s:shouldBe="per_host_thruput">$groups[0]$</span><br>
+                
+               
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row4_col1" group="using time from drilldown">
+      <param name="search">| stats count | fields - count | eval foo="1355333734,1355333634,1355333534,1355333134,1355333134,1355333034" | eval foo=split(foo,",") | mvexpand foo | rename foo as _time | timechart count</param>
+
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">line</param>
+        <param name="arg.charting.legend.placement">right</param>
+
+        <module name="JSChart">
+          <param name="width">100%</param>
+          <param name="height">160px</param>
+
+          <module name="Search">
+            <param name="search">now="$search.timeRange.latest$" earliest="-1d" index=* OR index=_* | head 1000 | stats count by sourcetype</param>
+            
+            <module name="ProgressIndicator" />
+
+            <module name="SearchControls"></module>
+
+            <module name="HTML">
+              <param name="customBehavior">highlightPassesAndFails</param>
+              <param name="html"><![CDATA[
+               earliest= $search.timeRange.earliest$<br>
+               latest = $search.timeRange.latest$<br>
+               search = $search$<br>
+               
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row4_col2" group="using time from drilldown">
+      <param name="search">| stats count | fields - count | eval foo="1355333734,1355333634,1355333534,1355333134,1355333134,1355333034" | eval foo=split(foo,",") | mvexpand foo | rename foo as _time | timechart count</param>
+
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">line</param>
+        <param name="arg.charting.legend.placement">right</param>
+
+        <module name="JSChart">
+          <param name="width">100%</param>
+          <param name="height">160px</param>
+
+          
+          <module name="PostProcess">
+            <param name="search">| eval earliest=relative_time("$search.timeRange.latest$", "-1d")</param>   
+            
+            <module name="ResultsValueSetter">
+              <param name="fields">earliest</param>
+
+              <module name="Search">
+                <param name="search">index=* OR index=_* | head 10000 | timechart count by sourcetype</param>
+                <param name="earliest">$earliest$</param>
+                <param name="latest">$latest$</param>
+
+                <!-- useful just so we can check the job inspector -->
+                <module name="SearchControls"></module>
+            
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                   earliest= $search.timeRange.earliest$<br>
+                   latest = $search.timeRange.latest$<br>
+                   label = $search.timeRange.label$<br>
+                   <br>
+                   search = $search$<br>
+                   
+                  ]]></param>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

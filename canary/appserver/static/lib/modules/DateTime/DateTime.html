@@ -1,0 +1,13 @@
+<%page args="module"/>
+
+
+
+% if 'label' in module:
+  <label for="${module['moduleId']}_input">${_(module['label'])|h}</label>
+% endif
+  <input type="text" id="${module['moduleId']}_input"/>
+
+
+
+
+

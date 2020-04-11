@@ -1,0 +1,560 @@
+/**
+ *  Canary.  Long Live Canary UI!   Oh wait it died.   Oh wait we have another one.
+ */
+body {
+    background-image: linear-gradient(#ffffff, #f5f5f5 400px, #ffffff);
+    background-repeat:no-repeat;
+    margin:0px;
+    padding:0px;
+}
+* {
+    border-color:#ccc;
+}
+body,
+td,
+th,
+input,
+select,
+button,
+option {
+    font-size:14px;
+    font-family: "Splunk Platform Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    color:#000;
+}
+option:disabled {
+	color:#999;
+}
+
+/**
+ * Stalwartly defending the tyranny of form elements.
+ */
+input[type="text"],
+button,
+textarea,
+select,
+.CheckboxPulldown button.ui-corner-all,
+ul.menuFormElement li.topLevel {
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 1px 1px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset;
+    border-radius:3px;
+}
+
+
+input,
+select {
+    margin-bottom: 0;
+    margin-top: 0;
+    vertical-align: middle;
+}
+.TimePicker li.topLevel {
+    min-width:80px;
+    vertical-align:middle;
+}
+
+
+input,
+select,
+ul.menuFormElement li.topLevel {
+    background-color:#fff;
+}
+
+input.radio,
+input.checkbox {
+    width: auto;
+    border: 0;
+}
+
+.Pulldown select,
+.TextField input,
+.CheckboxPulldown button,
+ul.menuFormElement li.topLevel {
+    margin:0px;
+    padding:2px 5px 2px 5px;
+    vertical-align: middle;
+}
+/* for some reason I can't figure out, select's get 1extra px from somewhere. */
+.Pulldown select {
+    padding-top:1px;
+    padding-bottom:1px;
+}
+.Pulldown label {
+    padding-top:3px !important;
+}
+.CheckboxPulldown label {
+    padding-top:3px !important;
+}
+/* yep it's everyone but Pulldown */
+.CheckboxPulldown button,
+.TextField input,
+ul.menuFormElement li.topLevel {
+    padding:2px 5px 2px 8px;
+}
+
+
+
+
+.floatFormElements .Pulldown,
+.floatFormElements .CheckboxPulldown,
+.floatFormElements .TextField,
+.floatFormElements .TimeRangePicker,
+.floatFormElements .TimePicker,
+.floatFormElements .Button {
+    float:left;
+    padding: 5px 20px 5px 0px;
+}
+
+
+.info,
+.error,
+.warn,
+.fatal {
+    padding: 5px 10px;
+}
+.error {
+color:#900;
+font-weight:bold
+}
+
+
+.TimePicker span.ui-icon {
+    float: right;
+}
+.Button .svButton {
+    padding:0px 10px 2px 10px;
+}
+.svButton,
+.ui-widget-header  {
+    background: linear-gradient(360deg, #ffb000, #f2bd49);
+    border: 1px solid #976f03 !important;
+
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 2px 2px -1px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .3) inset !important;
+
+    /*  the core canary yellow, this is the yellow from the duckfez color
+    scheme, just desaturated and slightly darkened.
+background-color: #f2bd49 !important;
+
+    lighter hover color = #fdf5ce
+    old colors:
+    #edd43e    #e7cb5a   #e9ca4b;
+    old border colors
+     e78f08 333
+
+    */
+}
+.svIcon {
+    background-image: url(images/icons_444.png), linear-gradient(360deg, #ffb000, #f2bd49);
+    background-position: 0 0;
+}
+.buttonSecondary {
+    background-color:#ddd !important;
+}
+
+fieldset {
+    border:none;
+    margin:0px;
+    padding:0px;
+}
+
+
+
+div.abutLeft {
+    margin-left:0px;
+    padding-left:0px !important;
+}
+div.abutLeft input {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+div.abutRight {
+    margin-right:0px;
+    padding-right:0px !important;
+}
+div.abutRight select {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right-width:0px;
+}
+
+
+a,a:link,
+a:visited,
+.explicitLinkStyle {
+    color:#669;
+    text-decoration:none;
+}
+a:active,
+a:hover {
+    color:#99a;
+}
+
+table {
+    border-collapse:collapse;
+    border-spacing: 0;
+}
+td {
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width:0px;
+    border-right-width:0px;
+    border-style:solid;
+    padding: 7px 6px 6px 6px;
+}
+tr td:first-child,
+tr.columnRow th:first-child {
+    padding-left:0px !important;
+}
+
+
+ul,
+ol {
+  padding-top: 0;
+  margin-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 10px;
+}
+ul ul,
+ol ol,
+ul ol,
+ol ul {
+  padding-top: 0;
+  margin-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+ul {
+  margin-left: 14px;
+  padding-left: 0;
+}
+ol {
+  margin-left: 20px;
+  padding-left: 0;
+  margin-bottom: 10px;
+}
+ul li {
+  margin-bottom: 0;
+  margin-left: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+}
+ol li {
+  margin-bottom: 10px;
+}
+
+.viewHeader .HTML,
+.viewHeader .Link {
+    padding:5px 10px 5px 0px;
+}
+/* links are frequently to the left of plain HTML h1's */
+.viewHeader .Link {
+    padding-right:0px;
+}
+.resultsArea {
+    background-color:#fff;
+}
+.resultsArea {
+    border-top:1px solid #ccc;
+}
+
+.viewHeader,
+.mainSearchControls,
+.resultsHeaderPanel,
+.pageControls  {
+    clear:both;
+}
+.viewHeader .Module,
+.mainSearchControls .Module,
+.resultsHeaderPanel .Module,
+.pageControls .Module {
+    padding-bottom:5px;
+}
+/* except Tabs,  who never wants this */
+.viewHeader .Tabs,
+.mainSearchControls .Tabs {
+    padding-bottom:0px;
+}
+
+.resultsHeaderPanel .Module {
+    padding-top:5px;
+}
+
+.selectedModuleForEditing {
+    display:block;
+    background-color:#ffd;
+}
+
+.viewHeader,
+.mainSearchControls,
+.graphArea,
+.resultsArea {
+    clear:both;
+    padding-left:15px;
+    padding-right:15px;
+}
+div.clearFloats {
+    clear:both;
+}
+
+
+
+.viewHeader h1,
+.viewHeader h2,
+.viewHeader h3,
+.viewHeader h4,
+.viewHeader .Link a {
+    display:inline-block;
+    margin:5px 5px 5px 0px;
+}
+ h1,
+h2,
+h3 {
+    margin-top:0px;
+}
+
+.flexContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /*
+    justify-content: space-around;
+    */
+    align-items:stretch;
+    margin-right:4px;
+}
+
+.flexItem {
+    flex-grow: 1;
+    opacity:0.85;
+    background-color:#eee;
+    background: linear-gradient(360deg, #fafafa, #f5f5f5);
+    padding:5px 10px;
+    margin:4px 0px 0px 4px;
+    border-width:1px;
+    border-style:solid;
+    border-color: #999;
+    border-radius:2px;
+}
+
+.flexItem td {
+    font-size:12px;
+}
+
+.svButton {
+/*
+af9a45;
+*/
+    border-radius: 3px;
+    padding:0px 3px;
+    height:20px;
+    line-height: 18px;
+}
+/* I dont know why, but these end up getting an extra 2 pixels of height
+from somewhere besides normal box model shenanigans */
+a.svButton {
+    height:18px;
+}
+.svButton, .svButton span {
+    display:block;
+    float:left;
+}
+.svButtonGroup .svButton  {
+    margin-left:0px;
+    border-radius: 0;
+    border-left-width:0px;
+}
+.svButtonGroup .svButton:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-left-width:1px;
+}
+.svButtonGroup .svButton:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.svIcon  {
+    display: block;
+    float: left;
+    margin-top: 4px;
+    height: 13px;
+    width: 13px;
+    min-width: 13px;
+    overflow: hidden;
+}
+
+
+
+
+/**
+ shared elements from modal popup widgetry (Fields, TimePicker)
+*/
+.hereComesNothing {
+    position:fixed;
+    z-index:95;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    opacity:0.5;
+    background-color:#333;
+}
+.modalPopup {
+    background-color:#fff;
+    border:1px solid #666;
+    border-radius: 4px;
+    padding:10px 40px 30px 40px;
+    position:fixed;
+    z-index:96;
+    left:50%;
+    top:20%;
+    transform:translateX(-50%);
+}
+.modalPopup .buttonRow button {
+    float:right;
+    margin-top:10px;
+    margin-left:10px;
+}
+
+
+/*
+refugees from our old view.css from ancient prototyping.
+*/
+.CustomBehavior,
+.Multiplexer,
+.PostProcess,
+.Redirector,
+.ResultsValueSetter,
+.Search,
+.SavedSearch,
+.SideviewUtils,
+.URLLoader,
+.ValueSetter,
+.ArrayValueSetter,
+.Report,
+.Switcher,
+.Gate,
+.ShowHide {
+    padding:0px !important;
+    height:0px;
+    display:none;
+}
+.viewHeader .TimeRangePicker,
+.mainSearchControls .TimeRangePicker,
+.resultsArea .TimeRangePicker,
+.dashboardContent .TimeRangePicker {
+    min-height:27px;
+}
+
+
+
+
+div.clonedModule,
+.dashboardCell div.clonedModule  {
+     padding:0px;
+}
+
+.hiddenModule {
+    display:none;
+    padding:0px !important;
+}
+.hidden {
+    display:none;
+}
+
+.svMenu, .svMenu ul {
+    list-style: none outside none;
+    z-index: 500;
+    margin:0px;
+}
+
+.svMenu ul {
+    list-style:none;
+    margin:0px;
+    padding:0px;
+
+    border:1px solid #bbb;
+    background-color:#fff;
+}
+.svMenu ul {
+    z-index:501;
+}
+.svMenu ul ul {
+    z-index:502;
+}
+.svMenu ul ul ul {
+    z-index:503;
+}
+
+/* ALL UL */
+.svMenu li ul {
+    position:absolute;
+    display:none;
+}
+.svMenu li ul.open {
+    display:block;
+    border-radius: 4px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    box-sizing: border-box;
+}
+
+
+
+.svMenu li div.divider {
+    border-bottom-width:1px;
+    border-bottom-style:solid;
+}
+
+/* TOP LEVEL LI */
+.svMenu li.topLevel {
+    display:inline-block;
+    font-weight: bold;
+    color:#fff;
+}
+
+/* SUBMENU LI */
+.svMenu ul li {
+    font-weight:normal;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    width: 300px;
+    word-wrap: break-word
+}
+
+/* SUBMENU A */
+.svMenu ul a {
+    width:275px;
+    color:#333;
+    text-decoration:none;
+    display: block;
+    padding: 4px 15px 4px 10px;
+}
+.svMenu ul a:hover {
+    background-color:#f3ecbb;
+}
+.svMenu ul a.hasSubMenu {
+
+    background: #fff url(images/arrow_right_grey.png) no-repeat right 5px;
+}
+.svMenu ul a.hasSubMenu:hover {
+    background: #f3ecbb url(images/arrow_right_grey.png) no-repeat right 5px;
+}
+
+
+ul.svMenu a[target="_blank"]::after {
+    margin: 0 5px 0 8px;
+    content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+}
+
+ul.svMenu li.topLevel span.arrow {
+    display:inline-block;
+    position:relative;
+    top:-2px;
+    margin-left:5px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #ccc;
+}

@@ -1,0 +1,244 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="search.html" isSticky="False" isVisible="False">
+  <label>Testcases for new drilldown keys in FlashChart,JSChart,SimpleResultsTable</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="TitleBar" layoutPanel="viewHeader"></module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="default">index=_internal sourcetype="splunkd" source="*metrics.log" group="*_thruput"</param>
+      <param name="useOwnSubmitButton">False</param>
+
+
+      <module name="TimeRangePicker">
+        <param name="searchWhenChanged">True</param>
+        <param name="default">Last 24 hours</param>
+
+
+        <module name="Search">
+          <param name="search">$searchBar$ | fields - date_* | stats dc(*) as * | transpose | rename "row 1" as "count" column as field | eval label=field + " (" + count + ")" | table field label </param>
+
+          <module name="CustomBehavior">
+            <param name="requiresDispatch">True</param>
+          </module>
+
+          <module name="Pulldown" layoutPanel="mainSearchControls">
+            <param name="name">stat</param>
+            <param name="label">Chart the</param>
+            <param name="clear">left</param>
+            <param name="float">left</param>
+            <param name="staticOptions">
+              <list>
+                <param name="label">distinct count of</param>
+                <param name="value">dc</param>
+              </list>
+              <list>
+                <param name="label">average</param>
+                <param name="value">avg</param>
+              </list>
+              <list>
+                <param name="label">max</param>
+                <param name="value">max</param>
+              </list>
+              <list>
+                <param name="label">min</param>
+                <param name="value">min</param>
+              </list>
+              <list>
+                <param name="label">sum</param>
+                <param name="value">sum</param>
+              </list>
+              <list>
+                <param name="label">95th percentile</param>
+                <param name="value">perc95</param>
+              </list>
+              <list>
+                <param name="label">5th percentile</param>
+                <param name="value">perc5</param>
+              </list>
+            </param>
+
+
+            <module name="Pulldown">
+              <param name="name">yField</param>
+              <param name="valueField">field</param>
+              <param name="labelField">label</param>
+              <param name="float">left</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="label">events</param>
+                  <param name="value"></param>
+                </list>
+              </param>
+
+              <module name="Pulldown">
+                <param name="name">xField</param>
+                <param name="postProcess">eval label=if(field=="divider",label,"over " + label)</param>
+                <param name="valueField">field</param>
+                <param name="labelField">label</param>
+                <param name="float">left</param>
+                <param name="staticOptions">
+                  <list>
+                    <param name="label">over time</param>
+                    <param name="value">_time</param>
+                  </list>
+                </param>
+
+                <module name="Pulldown">
+                  <param name="name">zField</param>
+                  <param name="label">split by</param>
+                  <param name="valueField">field</param>
+                  <param name="labelField">label</param>
+                  <param name="float">left</param>
+                  <param name="staticOptions">
+                    <list>
+                      <param name="label">(none)</param>
+                      <param name="value"></param>
+                    </list>
+                  </param>
+                  
+                  <module name="Button">
+                    <param name="allowSoftSubmit">True</param>
+
+                    <module name="Report">
+                      <param name="name">report</param>
+                      <param name="stat">$stat$</param>
+                      <param name="xField">$xField$</param>
+                      <param name="yField">$yField$</param>
+                      <param name="zField">$zField$</param>
+
+
+                      
+                      <module name="Search">
+                        <param name="search">$searchBar$ | $report$  | eval testfield=index." \"".ROUTE."\""</param>
+                        
+                        <module name="Pulldown" layoutPanel="graphArea">
+                          <param name="name">groupName</param>
+                          <param name="label">Sourcetype</param>
+                          <param name="size">4</param>
+                          <param name="separator">,</param>
+                          <param name="staticOptions">
+                            <list>
+                              <param name="value">FlashChart</param>
+                            </list>
+                            <list>
+                              <param name="value">JSChart</param>
+                            </list>
+                            <list>
+                              <param name="value">SimpleResultsTable (row)</param>
+                            </list>
+                            <list>
+                              <param name="value">SimpleResultsTable (all)</param>
+                            </list>
+                          </param>
+                          
+                          
+                          <module name="Switcher" group=" ">
+                            <param name="selectedGroup">$groupName$</param>
+
+                            <module name="ValueSetter" group="FlashChart">
+                              <param name="arg.charting.chart">column</param>
+                              <param name="arg.charting.chart.stackMode">stacked</param>
+                              <param name="arg.charting.axisTitleX.visibility">collapsed</param>
+                              
+                              <module name="ValueSetter">
+                                <param name="name">charting.legend.placement</param>
+                                <param name="value">right</param>
+                                <param name="requiredKeys">zField</param>
+                                
+                                <module name="EnablePreview">
+                                  <param name="enable">True</param>
+                                  <param name="display">false</param>
+                                </module>
+
+                                <module name="ZoomLinks"></module>
+
+                                <module name="JSChart">
+                                  <param name="height">150px</param>
+
+                                  <module name="HTML">
+                                    <param name="html"><![CDATA[
+                                      click.value = $click.value$<br>
+                                      click.name2 = $click.name2$<br>
+                                      click.searchTerms = $click.searchTerms$<br>
+                                      click.splitByTerm = $click.splitByTerm$<br>
+                                      click.xTerm = $click.xTerm$<br>
+                                      
+                                    ]]></param>
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                            <module name="ValueSetter" group="JSChart">
+                              <param name="arg.charting.chart">column</param>
+                              <param name="arg.charting.chart.stackMode">stacked</param>
+                              <module name="JSChart">
+                                <module name="HTML">
+                                  <param name="html"><![CDATA[
+                                    click.value = $click.value$<br>
+                                    click.name2 = $click.name2$<br>
+                                    click.searchTerms = $click.searchTerms$<br>
+                                    click.splitByTerm = $click.splitByTerm$<br>
+                                    click.xTerm = $click.xTerm$<br>
+                                    
+                                  ]]></param>
+                                </module>
+                              </module>
+                            </module>
+
+                            <module name="Pager" group="SimpleResultsTable (row)">
+                              <module name="SimpleResultsTable">
+                                <param name="entityName">results</param>
+                                <param name="drilldown">row</param>
+                                <module name="HTML">
+                                  <param name="html"><![CDATA[
+                                    click.value = $click.value$<br>
+                                    click.name2 = $click.name2$<br>
+                                    click.searchTerms = $click.searchTerms$<br>
+                                    click.splitByTerm = $click.splitByTerm$<br>
+                                    click.xTerm = $click.xTerm$<br>
+                                    
+                                  ]]></param>
+                                </module>
+                              </module>
+                            </module>
+
+                            <module name="Pager" group="SimpleResultsTable (all)">
+                              <module name="SimpleResultsTable">
+                                <param name="entityName">results</param>
+                                <param name="drilldown">all</param>
+                                <module name="HTML">
+                                  <param name="html"><![CDATA[
+                                    click.value = $click.value$<br>
+                                    click.name2 = $click.name2$<br>
+                                    click.searchTerms = $click.searchTerms$<br>
+                                    click.splitByTerm = $click.splitByTerm$<br>
+                                    click.xTerm = $click.xTerm$<br>
+                                    
+                                  ]]></param>
+                                </module>
+                              </module>
+                            </module>
+                            
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

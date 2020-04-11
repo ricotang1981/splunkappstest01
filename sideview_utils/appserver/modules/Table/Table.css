@@ -1,0 +1,93 @@
+
+div.Table {
+    clear:both;
+}
+div.Table div.resultsContainer {
+    overflow-x:auto;
+}
+.Table tr.columnRow th {
+    white-space: nowrap;
+    padding:0px 5px;
+}
+.Table tr.columnRow th.sortable {
+    cursor:pointer;
+}
+
+.Table tr.columnRow th.sortable span.sortArrow {
+    display:inline-block;
+    min-width:15px;
+    min-height:10px;
+    background-image: url(../../../static/app/sideview_utils/images/arrow_sort.gif);
+    background-position:7px 0px;
+    background-repeat:no-repeat;
+} 
+.Table tr.columnRow th.activeSort span.sortArrow {
+    background-image: url(../../../static/app/sideview_utils/images/arrow_sort_asc.gif);
+    background-position:7px 4px;
+    background-repeat:no-repeat;
+}
+
+.Table tr.columnRow th.descending  span.sortArrow {
+    background-image: url(../../../static/app/sideview_utils/images/arrow_sort_desc.gif);
+    background-position:7px 4px;
+    background-repeat:no-repeat;
+}
+
+
+.Table tr.selected td {
+    background-color:#DCD28B;
+}
+
+.Table .drilldownEnabled td {
+    cursor:pointer;
+    color:#1a7996;
+}
+
+
+.Table p.emptyResults {
+    border-radius:4px;
+    color:#666;   
+    background-color:#edede7;
+    padding:10px;
+    text-align:center;
+}
+.Table p.emptyResults .hidden {
+    display:none;
+}
+.Table p.emptyResults p.details {
+    text-align:left;
+}
+
+.Table.table-chrome table tr th {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #E9E9E9;
+    background-image: linear-gradient(to bottom, #F5F5F5, #DCDCDC);
+    background-repeat: repeat-x;
+    box-shadow: none;
+    color: #333333;
+    font-weight:normal; 
+    line-height: 16px;
+    border-bottom:0px;
+    border-top:0px;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+.Table.table-chrome table tr > th:last-child,
+.Table.table-chrome table tr > td:last-child {
+    padding-right: 20px;
+}
+.Table.table-chrome table tr > th:first-child,
+.Table.table-chrome table tr > td:first-child {
+    padding-left: 20px;
+}
+.Table.table-chrome {
+    border-top:1px solid #ccc;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.Table.table-striped table > tbody > tr:nth-child(2n) > td {
+    background-color: #F5F5F5;
+}

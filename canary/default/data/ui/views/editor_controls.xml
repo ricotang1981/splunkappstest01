@@ -1,0 +1,94 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view stylesheet="lib/editor/editor.css">
+  <label>Sideview Editor - controls</label>
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+
+    <module name="Search">
+      <param name="search">
+| rest /services/apps/local
+| search disabled=0
+| table label title
+| rename title as app
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">app</param>
+        <param name="label">App</param>
+        <param name="float">left</param>
+        <param name="valueField">app</param>
+        <param name="labelField">label</param>
+        <param name="staticOptions"></param>
+
+        <module name="Search">
+          <param name="search">
+| rest servicesNS/-/$app$/data/ui/views
+| checkxml
+| search title!="_admin" type!="Simple XML*" type!="HTML dashboard" type!="Splunk redirect view" type!="malformed XML"
+| table title label
+| rename title as view
+| sort 0 view
+</param>
+
+          <module name="Pulldown">
+            <param name="name">view</param>
+            <param name="label">View</param>
+            <param name="float">left</param>
+            <param name="valueField">view</param>
+            <param name="labelField">view</param>
+            <param name="staticOptions">
+              <list>
+                <param name="value">_new</param>
+                <param name="label">Create New View...</param>
+              </list>
+            </param>
+            <!--
+            <param name="customBehavior">don't default to create new</param>
+            -->
+
+            <module name="Pulldown">
+              <param name="name">mode</param>
+              <param name="label">Mode</param>
+              <param name="float">left</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="value">edit</param>
+                  <param name="label">Edit</param>
+                </list>
+                <list>
+                  <param name="value">add</param>
+                  <param name="label">Add</param>
+                </list>
+                <list>
+                  <param name="value">delete</param>
+                  <param name="label">Delete</param>
+                </list>
+                <list>
+                  <param name="value">reattach</param>
+                  <param name="label">Reattach</param>
+                </list>
+                <list>
+                  <param name="value">debug</param>
+                  <param name="label">Runtime Debug</param>
+                </list>
+              </param>
+              <param name="customBehavior">hide if create new is selected</param>
+
+              <module name="Button">
+                <param name="allowSoftSubmit">True</param>
+                <param name="allowAutoSubmit">False</param>
+                <param name="label">go</param>
+
+                <module name="CustomBehavior">
+                  <param name="customBehavior">set app, view and mode</param>
+                </module>
+
+              </module>
+
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

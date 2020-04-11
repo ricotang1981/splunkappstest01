@@ -1,0 +1,162 @@
+<view template="dashboard.html" isVisible="False">
+
+  <label>testcase for nested table drilldowns</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="navigationHeader" />
+
+
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True"> 
+    
+    <module name="Search" layoutPanel="panel_row1_col1" >
+      <param name="search"> * | head 100 | dedup sourcetype | stats count by sourcetype, source, host</param>
+      
+      <module name="HTML">
+        <param name="html">displayRowNumbers True</param>
+      </module>
+
+      <module name="ProgressIndicator" />
+      
+      <module name="Pager">
+          
+        <module name="Table">
+          <param name="fields">sourcetype, source, host</param>
+
+          <module name="HTML">
+            <param name="html">You clicked sourcetype=$row.fields.sourcetype$, source=$row.fields.source$, host=$row.fields.host$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row1_col2" >
+      <param name="search"> * | head 100 | dedup sourcetype | stats count by sourcetype, source, host</param>
+      <module name="HTML">
+        <param name="html">displayRowNumbers False</param>
+      </module>
+
+      <module name="ProgressIndicator" />
+      
+      <module name="Pager">
+          
+        <module name="Table">
+          <param name="fields">sourcetype, source, host</param>
+
+          <module name="HTML">
+            <param name="html">You clicked sourcetype=$row.fields.sourcetype$, source=$row.fields.source$, host=$row.fields.host$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+   <module name="Search" layoutPanel="panel_row2_col1" >
+      <param name="search"> * | head 100 | dedup sourcetype | stats count by sourcetype, source, host</param>
+      <module name="HTML">
+        <param name="html">displayRowNumbers unset</param>
+      </module>
+
+      <module name="ProgressIndicator" />
+      
+      <module name="Pager">
+          
+        <module name="Table">
+          <param name="fields">sourcetype, source, host</param>
+
+          <module name="HTML">
+            <param name="html">You clicked sourcetype=$row.fields.sourcetype$, source=$row.fields.source$, host=$row.fields.host$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row2_col2" >
+      <param name="search"> * | head 100 | dedup sourcetype | stats count by sourcetype, source, host</param>
+      <module name="HTML">
+        <param name="html">displayRowNumbers dynamic</param>
+      </module>
+
+      <module name="ProgressIndicator" />
+      
+      <module name="Checkbox">
+        <param name="name">results.displayRowNumbers</param>
+        <param name="onValue">True</param>
+        <param name="offValue">False</param>
+        <module name="Pager">
+            
+          <module name="Table">
+            <param name="fields">sourcetype, source, host</param>
+
+            <module name="HTML">
+              <param name="html">You clicked sourcetype=$row.fields.sourcetype$, source=$row.fields.source$, host=$row.fields.host$</param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col1" >
+      <param name="search">index=_internal source=*metrics.log | head 10000 | stats count by group,series</param>
+      
+      <module name="HTML">
+        <param name="html">two levels, nested. Outer table has displayRowNumbers True, inner table has False.</param>
+      </module>
+      
+      <module name="ProgressIndicator" />
+      
+        
+      <module name="Pager">
+          
+        <module name="Table">
+          <param name="fields">group series count</param>
+
+          <module name="HTML">
+            <param name="html">You clicked group=$row.fields.group$, click again to drill down one more level</param>
+          </module>
+
+          <module name="Search">
+            <param name="search">index=_internal source=*metrics.log group="$row.fields.group$" | head 10000</param>
+
+            <module name="ProgressIndicator" />
+
+
+            <module name="Pager">
+              <module name="Table">
+                <param name="name">row2</param>
+                <param name="fields">group series kb eps</param>
+                
+                <module name="HTML">
+                
+                  <param name="html">
+                    <![CDATA[
+                    
+                    <h3>values from the row you clicked</h3>
+
+                    <table class="splTable">
+                      <tr>
+                        <td>row2.fields.group</td>
+                        <td>$row2.fields.group$</td>
+                      </tr>
+                      <tr>
+                        <td>row2.fields.series</td>
+                        <td>$row2.fields.series$</td>
+                      </tr>
+                    </table>
+                    ]]>
+                  </param>
+
+                </module>
+                
+              </module>
+            </module>
+          </module>
+
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

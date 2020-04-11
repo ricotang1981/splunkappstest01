@@ -1,0 +1,71 @@
+<view template="dashboard.html">
+  <label>Testcases for TreeMap</label>
+  <module name="AccountBar" layoutPanel="appHeader"/>
+  <module name="AppBar" layoutPanel="navigationHeader"/>
+  <module name="SideviewUtils" layoutPanel="navigationHeader"/>
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="clearOnJobDispatch">False</param>
+    <param name="maxSize">1</param>
+  </module>
+  
+  <module name="StaticContentSample" layoutPanel="viewHeader">
+    <param name="text"><![CDATA[
+      <h1>Testcases for TreeMap</h1>
+    ]]></param>
+  </module>
+  
+
+  <module name="SearchBar" layoutPanel="splSearchControls-inline" autoRun="True">
+    <param name="useAssistant">true</param>
+    <param name="useTypeahead">true</param>
+    <param name="useOwnSubmitButton">False</param>
+    <param name="default">| tstats prestats=t count WHERE index=* GROUPBY index sourcetype source
+          | stats count by index sourcetype source
+          | search count>0 (index=cisco_cdr) 
+          | table index sourcetype source count
+          | sort 0 index sourcetype source count</param>
+    
+    <module name="TimeRangePicker">
+      <param name="selected">Last 4 hours</param>
+      <param name="searchWhenChanged">True</param>
+
+      <module name="Button">
+        <param name="allowSoftSubmit">True</param>
+
+
+        
+
+
+      
+        <module name="TreeMap" layoutPanel="panel_row1_col1">
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              Where are we going and why am I in this handbasket?<br>
+              $treemap.searchTerms$<br>
+              index is = $treemap.index$<br>
+              sourcetype is $treemap.sourcetype$<br>
+              source is $treemap.source$
+            ]]></param>
+          </module>
+
+          <module name="Search">
+            <param name="search">$treemap.searchTerms$ | head 1000</param>
+
+            <module name="Pager"> 
+              <module name="Table" />
+            </module>
+          </module>
+
+        </module>
+
+        <module name="Pager" layoutPanel="panel_row1_col2"> 
+          <module name="Table" />
+        </module>
+      </module>
+
+        
+    </module>
+  </module>
+</view>

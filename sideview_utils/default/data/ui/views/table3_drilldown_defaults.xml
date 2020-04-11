@@ -1,0 +1,179 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Table - drilldown - setting defaults</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Table - drilldown - setting defaults</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+      Ordinarily a Table module will hide all downstream modules until the user clicks a row. However you have a few optional params that you can use to change this behavior. 
+      </p>
+      <ol>
+        <li><b>default.* params</b>  If you want to provide certain default values downstream before any Table row is selected, you can set one or more of these.   For instance if you set "default.sourcetype" to "*",  then the $$row.fields.sourcetype$$ key downstream will have the value "*".    If you have any default.* params set, note that the Table module will no longer hide downstream modules.  Furthermore, if one or more rows have the same field values that match the set of default.* params, the first such row will be styled with a selected background-color as though the user had clicked it.
+        </li>
+
+        <li><b>the "selectedIndex" param</b>  If you set this to "0", then the first rendered row will be highlighted, selected, and its "$$row.fields.fieldName$$" keys provided downstream.
+        </li>
+      </ol>
+
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+     First lets see how to use the default.* params.  Here we have set the default "userid" to "2", and the default "fullName" to "Agatha Christie".   Those values are thus provided to the modules downstream of the Table.  Since both these values happen to match a rendered row in the table, a) that row is rendered highlighted, and b) *all* drilldolwn tokens from that selected row are provided, rather than just our two defaults.
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">| stats count | eval names="bmulrony;Robert Mulrony;17;tuesday,agatha;Agatha Christie;187;wednesday,msatterthwaite;Mildred Satterthwaite;2;friday" | eval names=split(names,",") | mvexpand names | eval names=split(names,";") | eval username=mvindex(names,0) | eval fullName=mvindex(names,1) | eval sessions=mvindex(names,2) | eval favoriteDay=mvindex(names,3) | streamstats count | rename count as userid | table userid username fullName sessions favoriteDay</param>
+    <param name="earliest">-12h</param>
+    
+    <module name="Pager">
+      <param name="count">5</param>
+      
+      <module name="Table">
+        <param name="hiddenFields">userid username</param>
+        <param name="default.userid">2</param>
+        <param name="default.fullName">Agatha Christie</param>
+
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>Showing details for username $row.fields.username$</h2>
+
+            $$row.fields.userid$$ = $row.fields.userid$   (note this is a hidden field in the actual table)<br>
+            $$row.fields.username$$ = $row.fields.username$  (note this is a hidden field in the actual table)<br>
+            $$row.fields.fullName$$ = $row.fields.fullName$<br>
+            $$row.fields.sessions$$ = $row.fields.sessions$<br>
+            $$row.fields.favoriteDay$$ = $row.fields.favoriteDay$<br>
+
+            
+            
+
+          ]]></param>
+        </module>
+
+        <module name="HTML" layoutPanel="panel_row3_col1">
+          <param name="html"><![CDATA[
+            <h2>Showing the 10 most recent events on $row.fields.fullName$'s favorite day, which was $row.fields.favoriteDay$</h2>
+          ]]></param>
+        </module>
+
+        <module name="Search" layoutPanel="panel_row3_col1">
+          <param name="search">index=* OR index=_* date_wday="$row.fields.favoriteDay$" | head 10</param>
+          <param name="earliest">-7d</param>
+
+          <module name="Events">
+            <param name="resizeMode">fixed</param>
+            <param name="height">250px</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+
+
+
+
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+     Now lets look at the selectedIndex param.  Here we have set it to "1", and as you can see, the 2nd row is selected (the index counts starting from 0 rather than from 1)
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">| stats count | eval names="bmulrony;Robert Mulrony;17;tuesday,agatha;Agatha Christie;187;wednesday,msatterthwaite;Mildred Satterthwaite;2;friday" | eval names=split(names,",") | mvexpand names | eval names=split(names,";") | eval username=mvindex(names,0) | eval fullName=mvindex(names,1) | eval sessions=mvindex(names,2) | eval favoriteDay=mvindex(names,3) | streamstats count | rename count as userid | table userid username fullName sessions favoriteDay</param>
+    <param name="earliest">-12h</param>
+    
+    <module name="Pager">
+      <param name="count">5</param>
+      
+      <module name="Table">
+        <param name="hiddenFields">userid username</param>
+        <param name="selectedIndex">1</param>
+
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>Showing details for username $row.fields.username$</h2>
+
+            $$row.fields.userid$$ = $row.fields.userid$   (note this is a hidden field in the actual table)<br>
+            $$row.fields.username$$ = $row.fields.username$  (note this is a hidden field in the actual table)<br>
+            $$row.fields.fullName$$ = $row.fields.fullName$<br>
+            $$row.fields.sessions$$ = $row.fields.sessions$<br>
+            $$row.fields.favoriteDay$$ = $row.fields.favoriteDay$<br>
+
+            
+            
+
+          ]]></param>
+        </module>
+
+        <module name="HTML" layoutPanel="panel_row3_col1">
+          <param name="html"><![CDATA[
+            <h2>Showing the 10 most recent events on $row.fields.fullName$'s favorite day, which was $row.fields.favoriteDay$</h2>
+          ]]></param>
+        </module>
+
+        <module name="Search" layoutPanel="panel_row3_col1">
+          <param name="search">index=* OR index=_* date_wday="$row.fields.favoriteDay$" | head 10</param>
+          <param name="earliest">-7d</param>
+
+          <module name="Events">
+            <param name="resizeMode">fixed</param>
+            <param name="height">250px</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>As with all drilldown configurations, you may want to review the <a href="custom_keys">$$foo$$ token overview page</a>.</li>
+        <li>
+          Note that when you are using selectedIndex to select something, and the user pages to page 2 or beyond, no row will be highlighted and the downstream drilldown modules will all be hidden.  If the user clicks a row on page 2 or page N, of course those drilldown modules will all show again. 
+        </li>
+        <li>
+          It is possible to specify both default.* params AND the selectedIndex param.  Note however that the selectedIndex param will win, if there is ever any conflict.  In such a case the drilldown tokens will be the values from the selectedIndex row, plus whatever default.* values are not in conflict with that one selected row.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Table" target="_blank">Table and its params</a>.
+        </li>       
+      </ol>
+      ]]></param>
+  </module>
+
+
+  
+
+</view>

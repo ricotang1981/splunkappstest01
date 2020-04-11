@@ -1,0 +1,71 @@
+html, body {
+    margin:0;
+    padding:0;
+    font-family: "Lucida Grande", Verdana;
+    font-size: 0.9em;
+    background-color:#222;
+}
+body {
+    overflow:hidden;
+}
+
+
+
+a {
+    color:#23A4FF;
+}
+
+
+
+
+.text {
+    margin: 7px;
+}
+
+#inner-details {
+    font-size:0.8em;
+    list-style:none;
+    margin:7px;
+}
+
+
+
+
+#infovis {
+    position:relative;
+    width:100%;
+    height:100%;
+    margin:auto;
+    overflow:hidden;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+#infovis:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+
+
+.modeDescription {
+    display:none;
+}
+.selectedMode {
+    display:inline !important;
+}
+#mainControls {
+    padding:5px 5px 0px 5px;
+}
+#infovis {
+    height:100%;
+    width:100%;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select:none;
+}
+
+.jit-autoadjust-label {
+    padding:5px 10px;
+}

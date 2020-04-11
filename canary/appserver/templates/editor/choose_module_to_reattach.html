@@ -1,0 +1,133 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="//base.html" />
+<link type="text/css" href="${canary_static_url_prefix}lib/editor/editor.css" rel="stylesheet" />
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/jquery/jquery-3.1.0.js"></script>
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/editor/forms.js"></script>
+
+<script language="javascript" type="text/javascript">
+
+$(document).ready(function() {
+    $("#insertionType").change(function() {
+        var type= $(this).val();
+        var insertBeforeRow = $("#insertBeforeRow");
+        if (type=="insertBefore") {
+            insertBeforeRow.css("display","table-row");
+        } else {
+            insertBeforeRow.css("display","none");
+        }
+    });
+
+    $("#reattachModuleForm").submit(function() {
+        $("div.fail").remove();
+        var moduleId    = $("input[name='moduleId']").val();
+        var moduleClass = $("input[name='moduleClass']").val();
+
+        if (moduleClass=="view") {
+            alert("nice try");
+            return false;
+        }
+        var payload = getFormValues();
+        var sessionKey = $("input[name='splunk_form_key']").val();
+        payload.push("splunk_form_key=" + sessionKey);
+
+        var insertionType = $("select[name='insertionType']").val();
+        payload.push("insertionType=" + insertionType);
+
+
+        var editor = window.parent.getEditor();
+        var url = editor.make_url("/splunkd/__raw/sv_view/${app}/${view}/reattach_module");
+
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+            if (options['type'] && options['type'].toUpperCase() == 'GET') return;
+            jqXHR.setRequestHeader("X-Splunk-Form-Key", sessionKey);
+        });
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: payload.join("&"),
+            success: function(response) {
+                if (response.success) {
+                    editor.getViewWindow().document.location.reload();
+
+                    var newSelectedNode = $("#parentModuleId").val();
+                    editor.reloadSchematic("${app}", "${view}", newSelectedNode);
+
+                    editor.success("${app}", "${view}");
+                }
+                else if (response.message) {
+                    editor.fail(response.message);
+                }
+            },
+
+            error: function(jqXHR, textStatus, errorThrown) {
+                message = jqXHR.responseJSON["message"];
+                editor.fail(message)
+            },
+            dataType: "json"
+        });
+        return false;
+
+
+
+
+
+
+    });
+
+});
+</script>
+<div class="outerWrapper">
+
+<h2>Detach/Reattach Existing Module</h2>
+
+
+<form id="reattachModuleForm">
+<table class="editorTable" cellspacing="0">
+    <tr>
+        <td class="labelCell">Choose a module to detach:</td>
+        <td>
+            <input type="text" class="moduleSelector param" name="moduleId" autocomplete="off" /><br>
+            <input type="hidden" name="moduleClass" class="classField" />
+        </td>
+    </tr>
+
+    <tr>
+        <td class="labelCell">make that module a new child of:</td>
+        <td>
+            <input type="text" class="moduleSelector param" name="parentModuleId" id="parentModuleId" autocomplete="off" /><br>
+            <input type="hidden" name="parentModuleClass" class="classField" />
+        </td>
+    </tr>
+
+
+    <tr>
+        <td class="labelCell">and</td>
+        <td>
+            <select name="insertionType" id="insertionType">
+                <option value="append">just add the module as the last child</option>
+                <option value="insertBefore">insert the module before...</option>
+            </select>
+        </td>
+    </tr>
+    <tr id="insertBeforeRow" style="display:none">
+        <td class="labelCell">... this existing module: </td>
+        <td>
+            <input type="text" class="moduleSelector param" name="insertBeforeModuleId" autocomplete="off" /><br>
+            <input type="hidden" name="insertBeforeModuleClass" class="classField" />
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="buttonCell">
+
+            <input type="hidden" name="splunk_form_key" value="${csrfToken}" />
+
+            <input type="submit" value="Reattach module" class="submit"/>
+        </td>
+    </tr>
+</table>
+</form>
+</table>
+</div>

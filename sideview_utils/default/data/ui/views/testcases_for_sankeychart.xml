@@ -1,0 +1,69 @@
+<view template="dashboard.html">
+  <label>Testcases for SankeyChart</label>
+  <module name="AccountBar" layoutPanel="appHeader"/>
+  <module name="AppBar" layoutPanel="navigationHeader"/>
+  <module name="SideviewUtils" layoutPanel="navigationHeader"/>
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="clearOnJobDispatch">False</param>
+    <param name="maxSize">1</param>
+  </module>
+  
+  <module name="StaticContentSample" layoutPanel="viewHeader">
+    <param name="text"><![CDATA[
+      <h1>Testcases for SankeyChart</h1>
+    ]]></param>
+  </module>
+  
+
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useAssistant">true</param>
+      <param name="useTypeahead">true</param>
+      <param name="useOwnSubmitButton">False</param>
+      <param name="default"><![CDATA[
+        index=cisco_cdr type=internal callingPartyNumber>0 finalCalledPartyNumber>0 | head 1000 | stats count by callingPartyNumber finalCalledPartyNumber | sort - count | where count>5 | head 10
+      ]]></param>
+      
+      <module name="TimeRangePicker">
+        <param name="selected">Last 4 hours</param>
+        <param name="searchWhenChanged">True</param>
+
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="ProgressIndicator"  layoutPanel="panel_row1_col1"/>
+          <module name="SankeyChart" layoutPanel="panel_row1_col1">
+
+            <!-- 
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                Where are we going and why am I in this handbasket?<br>
+                
+              ]]></param>
+            </module>
+
+            <module name="Search">
+              <param name="search">$sankey.searchterms$ | head 1000</param>
+
+              <module name="Pager"> 
+                <module name="Table" />
+              </module>
+            </module>
+            -->
+
+          </module>
+
+          <module name="Pager" layoutPanel="panel_row2_col1"> 
+            <module name="Table" />
+          </module>
+        </module>
+
+          
+      </module>
+    </module>
+  </module>
+</view>

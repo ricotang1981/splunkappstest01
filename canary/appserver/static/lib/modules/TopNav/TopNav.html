@@ -1,0 +1,18 @@
+
+        <div class="splunkIcons">
+            <div class="splunkIcon">splunk</div><div class="greaterThanIcon"></div><div class="enterpriseIcon"></div>
+        </div>
+
+        <ul class="leftSideMenu svMenu">
+            <li class="topLevel hasSubmenu appsMenuOpener"><a href="#">App: ${appLabels.get(appId)|h}<span class="arrow"></span></a></li>
+        </ul>
+
+        <ul class="svMenu rightSideMenu">
+            <li class="topLevel hasSubmenu userMenuOpener"><a href="#">${userFullName|h}<span class="arrow"></span></a></li>
+            <li class="topLevel hasSubmenu activityMenuOpener"><a href="#">activity<span class="arrow"></span></a></li>
+
+            <li class="topLevel"><a class="managerLink" href="#" target="_blank">settings</a></li>
+            <!--
+            <li class="topLevel"><a href="?output_as=yaml">(View as yaml)</a></li>
+            -->
+        </ul>

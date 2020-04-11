@@ -1,0 +1,106 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="//base.html" />
+
+<%def name="body_element_open()"></%def>
+<%def name="body_element_close()"></%def>
+
+
+<%block name="css">
+
+</%block>
+
+
+<%block name="js">
+<script type="text/javascript" src="${canary_static_url_prefix}lib/require.js"></script>
+
+<script language="javascript" type="text/javascript">
+  window.secretFramesetDict = {
+    "app": "${app}",
+    "view":"${view}",
+    "user": "${user}",
+  }
+
+window.$C = ${splunkConfig}
+
+require.config({
+    baseUrl: '${canary_static_url_prefix}lib/',
+    paths: {
+        "jquery": "jquery/jquery-3.1.0",
+        "jquery-cookie": "jquery/jquery-cookie-1.4.1",
+        "editor": "editor/editor",
+        "jquery-ui":   "jquery/jquery-ui",
+        "jquery-multiselect":  "jquery/jquery.multiselect",
+        "jquery-timepicker":  "jquery/jquery-timepicker-addon-1.6.3",
+        "d3": "d3/d3.5.14.2",
+        "twbsPagination":  "jquery/jquery.twbsPagination.min",
+        "svmodule": "module",
+        "moment": "moment/moment_2.24.0",
+        "chartjs" : "chartjs/chartjs_2.8",
+        "twix": "twix/twix.min",
+        "strftime": "strftime/strftime-0.11"
+    },
+    shim: {
+        "chartjs": {deps: ["moment"]},
+        "jquery-multiselect":  {deps: ["jquery-ui"]},
+        "twbsPagination" : {deps:["jquery"]},
+        "application": {
+            //These script dependencies should be loaded before loading
+            //application.js
+            deps: ["jquery","sideview", "context","api/SplunkSearch","job","job_monitor"],
+            //Once loaded, use the global 'applicationJS' as the
+            //module value.
+            exports: "applicationJS"
+        },
+        "svmodule":{
+            deps: ["jquery","sideview", "context","api/SplunkSearch","job","job_monitor","strftime"]
+        }
+    }
+});
+
+require(
+    ["sideview",
+    "editor",
+    ],
+    function(Sideview, Editor) {
+        window.getEditor = function() {
+          return Editor;
+        }
+        window.attachEditorEventHandler = function() {
+            Editor.onViewWindowLoaded();
+        }
+
+
+    }
+);
+
+</script>
+
+
+</%block>
+
+
+<%block name="title">
+    Sideview Editor
+</%block>
+
+
+
+
+<frameset rows="70px,*" framespacing="6" border="6">
+    <frame src="/splunkd/__raw/sv_view/canary/editor_controls?app=${app}&view=${view}&mode=${mode}" name="controls" id="controls">
+
+    <frameset cols="40%,*" framespacing="6" border="6">
+      <frameset rows="70%,*" framespacing="6" border="6">
+        <frame src="about:blank" name="editWindow" id="editWindow">
+        <frame src="about:blank" name="description" id="description">
+      </frameset>
+
+      <frameset rows="40%,*" framespacing="6" border="6">
+        <frame src="/splunkd/__raw/sv_view/${app}/${view}/spacetree?module_id=${module_id}" name="schematic" id="schematic">
+        <frame src="/splunkd/__raw/sv_view/${app}/${view}" name="view" id="view" scrolling="yes" onload="attachEditorEventHandler()">
+      </frameset>
+
+    </frameset>
+</frameset>

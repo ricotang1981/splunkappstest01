@@ -1,0 +1,155 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>embedding HTML and including search results</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Embedding HTML and including values from your search results</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+    <p>
+      OK that's pretty cool, but it gets better because the HTML module can also display field values from your search results. 
+    </p>
+    <p>
+      Say you have some search results and you want to write out the 'userName' field from the first row.  All you have to do is put this into your HTML module anywhere:<br>  
+      <br>
+      <b>$$results[0].userName$$</b>.<br>  
+      <br>
+      Here are some examples.
+    </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 1000 | stats sum(kb) as kb by series | sort - kb</param>
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>A simple example</h2>
+        We'll run this search:<br>
+        $search$<br>
+        <br>
+        And then right here we print out the throughput value of the top sourcetype in KB: <br>
+        <br>
+        <b>$results[0].series$ ($results[0].kb$ KB)</b><br>
+      ]]></param>
+    </module>
+    
+    <module name="HTML" layoutPanel="panel_row3_col1">
+      <param name="html"><![CDATA[
+        <p>
+          Say we want a table of the top 5. Note this is an artificial example because it is of course a lot better to use a Paginator module and a Table module. The point is that you can really do *any* html.
+        </p>
+
+        <table class="splTable">
+        <tr>
+          <th>Sourcetype</th>
+          <th>KB</th>
+        </tr>
+        <tr>
+          <td>$results[0].series$</td>
+          <td>$results[0].kb$ &nbsp;</td>
+        </tr>
+        <tr>
+          <td>$results[1].series$</td>
+          <td>$results[1].kb$  &nbsp;</td>
+        </tr>
+        <tr>
+          <td>$results[2].series$</td>
+          <td>$results[2].kb$ &nbsp;</td>
+        </tr>
+        <tr>
+          <td>$results[3].series$</td>
+          <td>$results[3].kb$ &nbsp;</td>
+        </tr>
+        <tr>
+          <td>$results[4].series$</td>
+          <td>$results[4].kb$ &nbsp;</td>
+        </tr>
+      </table>
+        ]]></param>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          This really is cool.   
+        </li>
+        <li>
+          As a practical matter this means that there's not much reason to use the SingleValue module anymore which is good.  Two pages from now (counting by the "Next" button at the top right),  you'll see a view that shows you step by step how to replace SingleValue with HTML.
+        </li>
+        <li>the HTML module is not really designed to render a lot of rows, and in fact by default it will only allow you to render fields from the first 10 rows.  This is governed by the "maxRows" param, which defaults to 10.  If you find yourself wanting to render lots of rows with the HTML module, consider using the <a href="table3_rendering">Table module with its custom embedding and rendering features</a>,  or consider using <a href="multiplexer1_intro">the Multiplexer module</a> instead and "multiplexing" a single HTML module. 
+        </li>
+        <li>If and when you want to take a field value and use it not just in an HTML module, but in some other module,   you should look at the <a href="results_value_setter1_intro">ResultsValueSetter module</a>.  ResultsValueSetter is the "bigger hammer" to this behavior, since with ResultsValueSetter you end up wiht a simple $fieldName$ token that you can use in *any* module.</li>
+          
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.HTML" target="_blank">HTML and its params</a>.
+        </li>
+        
+      </ol>
+      ]]></param>
+  </module>
+
+
+
+
+  
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | head 100000 | stats sum(kb) as kb by series | sort - kb</param>
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>Now a longer running search, with preview enabled</h2>
+        We'll run this search:<br>
+        $search$<br>
+        <br>
+        And then right here we'll print out the throughput value of the top sourcetype in KB:<br>
+        <br>
+        
+        ]]></param>
+    </module>
+
+    <module name="Button">
+      <param name="label">Search</param>
+      
+      
+      <module name="EnablePreview">
+        <param name="enable">True</param>
+        <param name="display">false</param>
+      </module>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <b>$results[0].series$ ($results[0].kb$ KB)</b><br>
+          <br>
+          (btw, if you just want the resultCount and scanCount you can do that too)<br>
+          results.count = $results.count$<br>
+          results.eventCount = $results.eventCount$<br>
+          results.scanCount = $results.scanCount$<br>
+          results.eventAvailableCount = $results.eventAvailableCount$<br>
+          results.sid = $results.sid$<br>
+          
+          
+          ]]></param>
+      </module>
+
+      <module name="ProgressIndicator" />
+
+    </module>
+  </module>
+
+
+</view>

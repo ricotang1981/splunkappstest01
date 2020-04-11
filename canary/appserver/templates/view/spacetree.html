@@ -1,0 +1,231 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="//base.html" />
+
+
+<%block name="css">
+<link type="text/css" href="${canary_static_url_prefix}lib/spacetree/spacetree.css" rel="stylesheet" />
+</%block>
+
+<%block name="js">
+<script type="text/javascript" src="${canary_static_url_prefix}lib/i18n_stub.js"></script>
+<script type="text/javascript" src="${canary_static_url_prefix}lib/jquery/jquery-3.1.0.js"></script>
+<script type="text/javascript" src="${canary_static_url_prefix}lib/spacetree/jit-yc.js"></script>
+
+
+
+<script language="javascript" type="text/javascript">
+
+function setHeight() {
+    var newWidth = $(window).width();
+    var newHeight = $(window).height();
+
+    $("#infovis").css("width", newWidth).css("height", newHeight);
+    if (window.st) window.st.canvas.resize($("#infovis").width(), $("#infovis").height());
+}
+function goTellTheManUpstairs(type, id) {
+    var editor = parent.getEditor();
+    if (type=="view") {
+        editor.selectView();
+    }
+    else if (type=="pattern") {
+        editor.selectPattern(id);
+    }
+    else if (type=="module"){
+        editor.selectModule(id);
+    }
+}
+window.onunload = function() {
+    window.goTellTheManUpstairs = null;
+    window.st = null;
+}
+$(window).resize(setHeight);
+$(document).ready(function() {
+    setHeight();
+});
+
+var labelType, useGradients, nativeTextSupport, animate;
+
+(function() {
+  var ua = navigator.userAgent,
+      iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
+      typeOfCanvas = typeof HTMLCanvasElement,
+      nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
+      textSupport = nativeCanvasSupport
+        && (typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+      //I'm setting this based on the fact that ExCanvas provides text support for IE
+      //and that as of today iPhone/iPad current text support is lame
+      labelType = (!nativeCanvasSupport || (textSupport && !iStuff))? 'Native' : 'HTML';
+      nativeTextSupport = labelType == 'Native';
+      useGradients = nativeCanvasSupport;
+      animate = !(iStuff || !nativeCanvasSupport);
+})();
+
+
+function init(){
+    //init data
+    var json = ${stJSON}
+    //end
+    //init Spacetree
+    //Create a new ST instance
+    var st = new $jit.ST({
+        orientation:"top",
+        //id of viz container element
+        injectInto: 'infovis',
+        //set duration for the animation
+        duration: 300,
+        //set animation transition type
+        transition: $jit.Trans.Quart.easeInOut,
+        //set distance between node and its children
+        levelDistance: 20,
+        levelsToShow: 6,
+        //enable panning
+        Navigation: {
+          enable:true,
+          panning:true
+        },
+        //set node and edge styles
+        //set overridable=true for styling individual
+        //nodes or edges
+        Node: {
+            autoHeight: true,
+            autoWidth: true,
+            paddingLeft:5,
+            paddingRight:5,
+            type: 'rectangle',
+            color: '#aaa',
+            overridable: true
+        },
+
+        Edge: {
+            type: 'bezier',
+            overridable: true
+        },
+
+        onBeforeCompute: function(node){
+            //console.error("loading " + node.name);
+        },
+
+        onAfterCompute: function(){
+            //console.error("done");
+        },
+
+        //This method is called on DOM label creation.
+        //Use this method to add event handlers and styles to
+        //your node.
+        onCreateLabel: function(label, node){
+            label.id = node.id;
+            label.innerHTML = node.name;
+            label.onclick = function(evt){
+                st.onClick(node.id);
+                var type = node.data["type"] || "module"
+                goTellTheManUpstairs(type, node.id);
+            };
+            //set label styles
+            var style = label.style;
+
+
+            //if (editor.isSideviewModule(node.name)) {
+            //    style.backgroundImage = "url('/en-US/static/app/sideview_admin_tools/images/spacetree_sv_indicator.gif')";
+            //    style.backgroundRepeat = "no-repeat";
+            //}
+            style.cursor = 'pointer';
+            style.fontSize = '1em';
+            style.paddingTop    = "5px";
+            style.paddingBottom = "5px";
+            style.paddingLeft   = "10px";
+            style.paddingRight  = "10px";
+        },
+
+        //This method is called right before plotting
+        //a node. It's useful for changing an individual node
+        //style properties before plotting it.
+        //The data properties prefixed with a dollar
+        //sign will override the global node style properties.
+        onBeforePlotNode: function(node){
+            //add some color to the nodes in the path between the
+            //root node and the selected node.
+            if (node.selected) {
+                node.data.$color = "#f5e998";
+            }
+            else {
+                delete node.data.$color;
+                //if the node belongs to the last plotted level
+                if(!node.anySubnode("exist")) {
+                    //count children number
+                    var count = 0;
+                    node.eachSubnode(function(n) { count++; });
+                    //assign a node color based on
+                    //how many children it has
+                    node.data.$color = ['#aaa', '#baa', '#caa', '#daa', '#eaa', '#faa'][count];
+                }
+            }
+        },
+
+        //This method is called right before plotting
+        //an edge. It's useful for changing an individual edge
+        //style properties before plotting it.
+        //Edge data proprties prefixed with a dollar sign will
+        //override the Edge global style properties.
+        onBeforePlotLine: function(adj){
+            if (adj.nodeFrom.selected && adj.nodeTo.selected) {
+                adj.data.$color = "#eed";
+                adj.data.$lineWidth = 3;
+            }
+            else {
+                delete adj.data.$color;
+                delete adj.data.$lineWidth;
+            }
+        }
+    });
+    //load json data
+    st.loadJSON(json);
+    //compute node positions and layout
+    st.compute();
+    //optional: make a translation of the tree
+    //st.geom.translate(new $jit.Complex(200, 0), "current");
+
+    window.st = st;
+
+    var nodeToSelect = "Search_0";
+    var urlParams = new URLSearchParams(location.search);
+    if (urlParams.has('module_id') && urlParams.get('module_id')) {
+        nodeToSelect = urlParams.get('module_id');
+    }
+
+    // if the given node exists in our JSON, it's good enough for us.
+    if (nodeToSelect && $jit.json.getSubtree(json,nodeToSelect)) {
+        st.onClick(nodeToSelect);
+    }
+    else {
+        st.onClick(st.root);
+    }
+
+    if (parent !== window) {
+        if (!parent.getEditor()) {
+            console.error("there is a parent window but the editor doesnt exist!")
+        }
+    } else {
+        console.warn("there's no parent window so... hopefully someone knows what they're doing");
+    }
+
+
+}
+
+
+
+
+
+function passiveSelectModule(moduleId) {
+    window.st.onClick(moduleId);
+}
+</script>
+    </%block>
+
+<%def name="body_element_open()"></%def>
+
+<body onload="init();">
+<div id="infovis"></div>
+</body>
+</html>

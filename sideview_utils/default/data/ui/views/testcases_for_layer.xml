@@ -1,0 +1,479 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Layer</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Layer</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="TextField" layoutPanel="panel_row1_col1">
+      <param name="name">searchStr</param>
+      <param name="default">| tstats prestats=t summariesonly=t count where index=_internal by _time sourcetype | timechart count by sourcetype</param>
+      <param name="width">80%</param>
+      <param name="label"></param>
+      
+      <module name="Search">
+        <param name="search">$searchStr$</param>
+
+        <module name="Button">
+          <param name="label">Save Report</param>
+          <param name="allowAutoSubmit">False</param>
+
+          <!-- into wonderland we go.  All modules downstream of a Layer are clipped out of the DOM and moved into the Layer's layer. -->
+          
+          <!-- Note that we put all of the contents into a layoutPanel far below the fold so all the pageload jittering is invisible  -->
+          <module name="Layer" layoutPanel="panel_row4_col1">
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                <h3>Save Report</h3>
+              ]]></param>
+            </module>
+
+            <module name="TextField">
+              <param name="name">savedSearchName</param>
+              <param name="label">name</param>
+              <param name="cssClass">saveReportFields</param>
+
+              <module name="Radio">
+                <param name="name">sharing</param>
+                <param name="cssClass">saveReportFields</param>
+                <param name="staticRadios">
+                  <list>
+                    <param name="label">Keep search private</param>
+                    <param name="value"></param>
+                    <param name="selected">true</param>
+                  </list>
+                  <list>
+                    <param name="label">Share with all users of the app</param>
+                    <param name="value">app</param>
+                  </list>
+                </param>
+
+                <module name="Button">
+                  <param name="cssClass">saveReportFields</param>
+                  <param name="label">Save</param>
+                  
+                  <module name="REST">
+                    <param name="name">createReportRest</param>
+                    <param name="uri">/splunkd/__raw/servicesNS/admin/cisco_cdr/saved/searches</param>
+                    <param name="arg.name">$savedSearchName$</param>
+                    <param name="arg.search">search $search$</param>
+                    <param name="arg.dispatch.earliest_time">$search.timeRange.earliest$</param>
+                    <param name="arg.dispatch.latest_time">$search.timeRange.latest$</param>
+
+                    <module name="Gate">
+                      <param name="requiredKeys">sharing</param>
+
+                      <module name="REST">
+                        <param name="name">setReportAclRest</param>
+                        <param name="uri">/splunkd/__raw/servicesNS/admin/cisco_cdr/saved/searches/$savedSearchName$/acl</param>
+                        <param name="arg.sharing">$sharing$</param>
+                      </module>
+                    </module>
+                    
+                    <module name="Switcher" group=" ">
+                      <param name="selectedGroup">$createReportRest.state$</param>
+
+                      <module name="HTML" group="success">
+                        <param name="html"><![CDATA[
+                            Your report was created successfully.  
+                          ]]></param>
+                        
+                        <module name="Link">
+                          <param name="label">You can set scheduling and alerting properties, and change permissions in the Admin section</param>
+
+                          <module name="Redirector">
+                            <param name="url">/manager/cisco_cdr/saved/searches</param>
+                            <param name="arg.search">$savedSearchName$</param>
+                            <param name="arg.ns">cisco_cdr</param>
+                          </module>
+                        </module>
+                        <module name="ShowHide">
+                          <param name="hide">.saveReportFields</param>
+                        </module>
+                      </module>
+
+                      <module name="HTML" group="failure">
+                        <param name="html"><![CDATA[ 
+                          Error creating report:<br>
+                          $createReportRest.errorMessage$
+                        ]]></param>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+
+        <module name="Button">
+          <param name="label">Create Dashboard Panel</param>
+          <param name="allowAutoSubmit">False</param>
+
+          <module name="Layer" layoutPanel="panel_row4_col1">
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                <h3>Create Dashboard Panel</h3>
+
+              ]]></param>
+            </module>
+
+            <module name="TextField">
+              <param name="name">savedSearchName</param>
+              <param name="label">saved report name</param>
+              <param name="cssClass">createDashboardFields</param>
+
+              <module name="ValueSetter">
+                <param name="arg.stashedSearch">$search$</param>
+
+                <module name="Search">
+                  <param name="search">| rest /servicesNS/-/cisco_cdr/data/ui/views splunk_server=local  | search rootNode="dashboard" OR rootNode="form" | table title</param>
+                  
+                  <module name="Radio">
+                    <param name="name">newOrExistingDashboard</param>
+                    <param name="cssClass">createDashboardFields</param>
+                    <param name="staticRadios">
+                      <list>
+                        <param name="value">new</param>
+                        <param name="label">new dashboard</param>
+                      </list>
+                      <list>
+                        <param name="value">existing</param>
+                        <param name="label">existing dashboard</param>
+                      </list>
+                    </param>
+
+                    <module name="Switcher" group=" ">
+                      <param name="selectedGroup">$newOrExistingDashboard$</param>
+
+                      <module name="TextField" group="new">
+                        <param name="name">dashboardName</param>
+                        <param name="label">dashboard name</param>
+                        <param name="cssClass">createDashboardFields</param>
+
+                        <module name="TextField">
+                          <param name="name">panelTitle</param>
+                          <param name="label">panel title</param>
+                          <param name="cssClass">createDashboardFields</param>
+
+                          <module name="Button">
+                            <param name="label">Create</param>
+                            <param name="cssClass">createDashboardFields</param>
+
+                            <!-- 
+                            TODO - way to put $user$ and $app$  instead of hardcoding as we are here. 
+                            TODO - something has to make the dashboard_id by taking name and replacing space with underscores etc.
+                               -->
+                            <module name="REST">
+                              <param name="name">createReportRest</param>
+                              <param name="uri">/splunkd/__raw/servicesNS/admin/cisco_cdr/saved/searches</param>
+                              <param name="arg.name">$savedSearchName$</param>
+                              <param name="arg.search">$stashedSearch$</param>
+
+                              <module name="Switcher" group=" ">
+                                <param name="selectedGroup">$createReportRest.state$</param>
+
+                                <module name="NullModule" group="success">
+                                  <!-- say nothing -->
+                                  <module name="REST">
+                                    <param name="name">createDashboardRest</param>
+                                    <param name="uri">/splunkd/__raw/servicesNS/admin/cisco_cdr/data/ui/views/</param>
+                                    <param name="arg.name">$dashboardName$</param>
+                                    <param name="arg.eai:data"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+    <dashboard>
+      <label>$dashboardName$</label>
+      <row>
+        <chart>
+          <searchName>$savedSearchName$</searchName>
+          <title>$panelTitle$</title>
+          <option name="charting.chart">column</option>
+        </chart>
+      </row>
+    </dashboard>]]></param>
+                                    <module name="Switcher" group=" ">
+                                      <param name="selectedGroup">$createDashboardRest.state$</param>
+
+                                      <module name="NullModule" group="success">
+                                        <module name="HTML">
+                                        
+                                          <param name="html"><![CDATA[
+                                              Your dashboard was created successfully.  
+                                          ]]></param>
+                                        </module>
+                                        <module name="Link">
+                                          <param name="label">You can edit the dashboard directly using Splunk's Dashboard Editor</param>
+
+                                          <module name="Redirector">
+                                            <param name="url">$dashboardName$</param>
+                                          </module>
+                                        </module>
+                                        
+                                        <module name="ShowHide">
+                                          <param name="hide">.createDashboardFields</param>
+                                        </module>
+                                        
+                                      </module>
+                                      
+                                      <module name="HTML" group="failure">
+                                        <param name="html"><![CDATA[ 
+                                          Error creating dashboard:<br>
+                                          $createDashboardRest.errorMessage$
+                                        ]]></param>
+                                      </module>
+
+                                    </module>
+                                  </module>
+                                </module>
+
+                                <module name="HTML" group="failure">
+                                  <param name="html"><![CDATA[ 
+                                    Error creating report:<br>
+                                    $createReportRest.errorMessage$
+                                  ]]></param>
+                                </module>
+
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    
+
+
+                      <module name="Pulldown" group="existing">
+                        <param name="name">existingDashboard</param>
+                        <param name="label">dashboard name</param>
+                        <param name="valueField">title</param>
+                        <param name="staticOptions" />
+                        <param name="cssClass">createDashboardFields</param>
+
+                        <module name="TextField">
+                          <param name="name">panelTitle</param>
+                          <param name="label">panel title</param>
+                          <param name="cssClass">createDashboardFields</param>
+
+                          <module name="Button">
+                            <param name="label">Create</param>
+                            <param name="cssClass">createDashboardFields</param>
+
+                            <module name="REST">
+                              <param name="name">createReportRest</param>
+                              <param name="uri">/splunkd/__raw/servicesNS/admin/cisco_cdr/saved/searches</param>
+                              <param name="arg.name">$savedSearchName$</param>
+                              <param name="arg.search">$stashedSearch$</param>
+
+                              <module name="Switcher" group=" ">
+                                <param name="selectedGroup">$createReportRest.state$</param>
+
+                                <module name="NullModule" group="success">
+                                  <!-- nothing to say here. move along -->
+
+                                  <module name="Search">
+                                    <param name="search">| rest /servicesNS/admin/cisco_cdr/data/ui/views/$existingDashboard$ | rename "eai:data" as eaiData</param>
+
+                                    <module name="ResultsValueSetter">
+                                      <param name="fields">eaiData</param>
+
+                                      <module name="ValueSetter">
+                                        <param name="arg.newRow"><![CDATA[ 
+    <row>
+      <chart>
+        <searchName>$savedSearchName$</searchName>
+        <title>$panelTitle$</title>
+        <option name="charting.chart">column</option>
+      </chart>
+    </row>
+                                        ]]></param>
+
+                                        <module name="CustomBehavior">
+                                          <param name="customBehavior">insertNewPanelWithinEaiData</param>
+
+                                          <module name="REST">
+                                            <param name="name">updateExistingDashboardRest</param>
+                                            <param name="uri">/splunkd/__raw/servicesNS/admin/cisco_cdr/data/ui/views/$existingDashboard$</param>
+                                            <param name="arg.eai:data">$eaiData$</param>
+                                            
+                                            <module name="Switcher" group=" ">
+                                              <param name="selectedGroup">$updateExistingDashboardRest.state$</param>
+
+                                              <module name="NullModule" group="success">
+                                                <module name="HTML">
+                                                  <param name="html"><![CDATA[
+                                                      Your dashboard panel was successfully added.  
+                                                  ]]></param>
+                                                </module>
+                                                <module name="Link">
+                                                  <param name="label">You can edit the dashboard directly using Splunk's Dashboard Editor</param>
+
+                                                  <module name="Redirector">
+                                                    <param name="url">$existingDashboard$</param>
+                                                  </module>
+                                                </module>
+                                                
+                                                <module name="ShowHide">
+                                                  <param name="hide">.createDashboardFields</param>
+                                                </module>
+                                              </module>
+
+                                              <module name="HTML" group="failure">
+                                                <param name="html"><![CDATA[ 
+                                                  Error updating existing dashboard:<br>
+                                                  $updateExistingDashboardRest.errorMessage$
+                                                ]]></param>
+                                              </module>
+
+                                            </module>
+                                          </module>
+                                        </module>
+                                      </module>
+                                    </module>
+                                  </module>
+                                </module>
+                                <module name="NullModule" group="failure">
+                                  <module name="HTML">
+                                    <param name="html"><![CDATA[
+                                    Error creating report:<br>
+                                    $createReportRest.errorMessage$
+                                    ]]></param>
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+
+        </module>
+
+        <module name="Table" />
+      </module>
+    </module>
+
+
+    
+
+    
+    <module name="Search" layoutPanel="panel_row3_col1" >
+      <param name="search"><![CDATA[
+        index=_internal component=Metrics group=per_sourcetype_thruput | head 1000 | 
+        timechart count by series
+      ]]></param>
+      <module name="Pulldown">
+        <param name="name">charting.chart.stackMode</param>
+        <param name="label">Stack mode</param>
+        <param name="staticOptions">
+          <list>
+            <param name="value">stacked</param>
+            <param name="label">stacked</param>
+          </list>
+          <list>
+            <param name="value">default</param>
+            <param name="label">not stacked</param>
+          </list>
+          <list>
+            <param name="value">stacked100</param>
+            <param name="label">100% stacked</param>
+          </list>
+        </param>
+        <module name="JSChart">
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              Control group HTML module.
+
+            ]]></param>
+          </module>
+          <module name="Layer">
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                You clicked a JSChart Element with<br>
+                searchTerms="$click.searchTerms$"<br>
+                click.value = "$click.value$"<br>
+                click.name2 = "$click.name2$"<br>
+
+              ]]></param>
+            </module>
+
+          </module>
+        </module>
+      </module>
+
+      
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col2" >
+      <param name="search"><![CDATA[
+        index=_internal component=Metrics group=per_sourcetype_thruput | head 1000 | rename series as sourcetype | table sourcetype kbps eps kb ev avg_age max_age | eval actions=""
+      ]]></param>
+      
+      <module name="Link">
+        <param name="label">Show Table</param>
+        <module name="Layer">
+          <module name="Pager">
+            <module name="Table">
+              <param name="hiddenFields">eps ev avg_age max_age actions</param>
+            </module>
+          </module>
+        </module>
+
+      </module>
+
+      <module name="Button" layoutPanel="panel_row4_col1">
+        <module name="Table">
+          <param name="hiddenFields">eps ev avg_age max_age actions</param>
+          <module name="Layer">
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                You clicked the row with<br>
+                sourcetype="$row.fields.sourcetype$"<br>
+                eps=$row.fields.eps$<br>
+                avg_age=$row.fields.avg_age$<br>
+                max_age=$row.fields.max_age$<br>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+
+        <module name="Table" layoutPanel="panel_row5_col1">
+          <param name="hiddenFields">eps ev avg_age max_age</param>
+
+          <module name="Link" group="row.fields.actions">
+            <param name="label">Details</param>
+
+            <module name="Layer" >
+              
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  You clicked the row with<br>
+                  sourcetype="$row.fields.sourcetype$"<br>
+                  eps=$row.fields.eps$<br>
+                  avg_age=$row.fields.avg_age$<br>
+                  max_age=$row.fields.max_age$<br>
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  
+        
+
+</view>

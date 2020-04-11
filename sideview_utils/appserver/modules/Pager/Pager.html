@@ -1,0 +1,8 @@
+<%page args="module"/>
+
+% if (not APP.get("paginationLibraryAlreadyIncluded",False)): 
+    <%
+    APP["paginationLibraryAlreadyIncluded"] = True
+    %>
+    <script type="text/javascript" src="${make_url('/static/app/sideview_utils/jquery/jquery.twbsPagination.min.js')}"></script>
+% endif

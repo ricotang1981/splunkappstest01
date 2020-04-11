@@ -1,0 +1,359 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" >
+  <label>Sideview Report Builder</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customJavascript">sideview_utils/report.js sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/report.css</param>
+  </module>
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+
+
+  <module name="URLLoader" layoutPanel="navigationHeader">
+    <param name="keepURLUpdated">True</param>
+    
+    <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+      <h1 class="doNotPrint">Sideview Report Builder</h1>
+      ]]></param>
+    </module>
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useAssistant">true</param>
+      <param name="useTypeahead">true</param>
+      <param name="useOwnSubmitButton">False</param>
+      
+      <module name="TimeRangePicker">
+        <param name="selected">Last 4 hours</param>
+        <param name="searchWhenChanged">True</param>
+
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="Search">
+            <param name="search">$searchBar.value$ `get_fields_for_report_pulldowns`</param>
+
+            <module name="HTML" layoutPanel="graphArea">
+              <param name="html"><![CDATA[
+              <div class="noSearchEnteredMessage">
+                First use the text field and the time range pulldown above to search for your events. <br>
+                <br>
+              </div>
+              ]]></param>
+            </module>
+
+            <module name="CustomBehavior">
+              <param name="requiresDispatch">True</param>
+              <param name="customBehavior">hideDownstreamUntilSearchSubmitted</param>
+            </module>
+
+            <module name="Pulldown" layoutPanel="mainSearchControls">
+              <param name="name">stat</param>
+              <param name="label">Chart the</param>
+              <param name="clear">left</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="label">count of events</param>
+                  <param name="value"></param>
+                </list>
+                <list>
+                  <param name="label">distinct count of</param>
+                  <param name="value">dc</param>
+                </list>
+                <list>
+                  <param name="label">average</param>
+                  <param name="value">avg</param>
+                </list>
+                <list>
+                  <param name="label">max</param>
+                  <param name="value">max</param>
+                </list>
+                <list>
+                  <param name="label">min</param>
+                  <param name="value">min</param>
+                </list>
+                <list>
+                  <param name="label">sum</param>
+                  <param name="value">sum</param>
+                </list>
+                <list>
+                  <param name="label">95th percentile</param>
+                  <param name="value">perc95</param>
+                </list>
+                <list>
+                  <param name="label">5th percentile</param>
+                  <param name="value">perc5</param>
+                </list>
+              </param>
+
+              <module name="Pulldown">
+                <param name="name">yField</param>
+                <param name="valueField">field</param>
+                <param name="labelField">label</param>
+                <param name="staticOptions"></param>
+                <param name="customBehavior">customYFieldPulldown</param>
+
+                <module name="Pulldown">
+                  <param name="name">xField</param>
+                  <param name="valueField">field</param>
+                  <param name="labelField">label</param>
+                  <param name="postProcess">eval label=if(field=="divider",label,"over " + label)</param>
+                  <param name="staticOptions">
+                    <list>
+                      <param name="label">over time</param>
+                      <param name="value">_time</param>
+                    </list>
+                  </param>
+
+                  <module name="Pulldown">
+                    <param name="name">zField</param>
+                    <param name="label">split by</param>
+                    <param name="valueField">field</param>
+                    <param name="labelField">label</param>
+                    <param name="staticOptions">
+                      <list>
+                        <param name="label">(none)</param>
+                        <param name="value"></param>
+                      </list>
+                    </param>
+
+                    <module name="Search">
+                      <param name="search">| stats count 
+                      | fields - count 
+                      | eval field1=if(len("$stat$")==0,"count","$stat$($yField$)")
+                      | eval field2=field1+" (ascending)" 
+                      | eval field1=field1+" (descending)"
+                      | eval field3="$xField$  (ascending)" 
+                      | eval field4="$xField$  (descending)" 
+                      | transpose | rename "row 1" as sortByLabel | eval sortByValue=replace(replace(sortByLabel,"\(ascending\)",""),"\(descending\)","desc")</param>
+
+                      <module name="Pulldown">
+                        <param name="name">sortBy</param>
+                        <param name="label">sort by</param>
+                        <param name="template"> | sort by $value$</param>
+                        <param name="valueField">sortByValue</param>
+                        <param name="labelField">sortByLabel</param>
+                        <param name="staticOptions"></param>
+                        <param name="customBehavior">customSortByPulldown</param>
+                    
+                        <module name="Button">
+                          <param name="allowSoftSubmit">True</param>
+
+                          <module name="Report" layoutPanel="viewHeader">
+                            <param name="name">report</param>
+                            <param name="stat">$stat$</param>
+                            <param name="xField">$xField$</param>
+                            <param name="yField">$yField$</param>
+                            <param name="zField">$zField$</param>
+
+                            <module name="Search">
+                              <param name="search">$searchBar.value$ | $report$ $sortBy$</param>
+
+                              <module name="SearchControls" layoutPanel="mainSearchControls">
+                                <!-- remove the saveResults options because the sid permalinks wont work here. -->
+                                <param name="saveMenu">saveSearch</param>
+                                <!-- eventtypes cant contain pipes, so we remove the createEventType option. -->
+                                <param name="createMenu">createDashboardPanel createAlert createScheduledSearch</param>
+                              </module>
+
+                              <module name="Tabs" layoutPanel="resultsAreaLeft">
+                                <param name="name">selectedTab</param>
+                                <param name="staticTabs">
+                                  <list>
+                                    <param name="value">Table,Chart</param>
+                                    <param name="label">Both</param>
+                                  </list>
+                                  <list>
+                                    <param name="value">Table</param>
+                                  </list>
+                                  <list>
+                                    <param name="value">Chart</param>
+                                  </list>
+                                </param>
+
+                                <module name="Switcher">
+                                  <param name="selectedGroup">$selectedTab$</param>
+
+                                  <module name="ValueSetter" group="Chart">
+                                    <param name="arg.charting.axisTitleX.visibility">collapsed</param>
+                                    
+                                    <module name="ValueSetter">
+                                      <param name="name">charting.legend.placement</param>
+                                      <param name="value">right</param>
+                                      <param name="requiredKeys">zField</param>
+                                      
+                                      <module name="EnablePreview">
+                                        <param name="enable">True</param>
+                                        <param name="display">false</param>
+                                      </module>
+
+                                      <module name="Pulldown">
+                                        <param name="name">charting.chart</param>
+                                        <param name="label">Chart type</param>
+                                        <param name="clear">left</param>
+                                        <param name="staticOptions">
+                                          <list>
+                                            <param name="value">column</param>
+                                            <param name="label">Column</param>
+                                          </list>
+                                          <list>
+                                            <param name="value">line</param>
+                                            <param name="label">Line</param>
+                                          </list>
+                                          <list>
+                                            <param name="value">area</param>
+                                            <param name="label">Area</param>
+                                          </list>
+                                          <list>
+                                            <param name="value">bar</param>
+                                            <param name="label">Bar</param>
+                                          </list>
+                                          <list>
+                                            <param name="value">pie</param>
+                                            <param name="label">Pie</param>
+                                          </list>
+                                        </param>
+
+                                        <module name="Pulldown">
+                                          <param name="name">charting.chart.stackMode</param>
+                                          <param name="label">Stack mode</param>
+                                          <param name="staticOptions">
+                                            <list>
+                                              <param name="value">stacked</param>
+                                              <param name="label">Stacked</param>
+                                            </list>
+                                            <list>
+                                              <param name="value">default</param>
+                                              <param name="label">None</param>
+                                            </list>
+                                            <list>
+                                              <param name="value">stacked100</param>
+                                              <param name="label">100% Stacked</param>
+                                            </list>
+                                          </param>
+                                          <param name="customBehavior">stackModePulldown</param>
+                                          
+                                          <module name="Pulldown">
+                                            <param name="name">charting.chart.nullValueMode</param>
+                                            <param name="label">Null Values</param>
+                                            <param name="staticOptions">
+                                              <list>
+                                                <param name="value">zero</param>
+                                                <param name="label">Treat as zero</param>
+                                              </list>
+                                              <list>
+                                                <param name="value">gaps</param>
+                                                <param name="label">Omit</param>
+                                              </list>
+                                              <list>
+                                                <param name="value">connect</param>
+                                                <param name="label">Connect</param>
+                                              </list>
+                                            </param>
+                                            <param name="customBehavior">nullValueModePulldown</param>
+
+                                            <module name="Pulldown">
+                                              <param name="name">charting.chart.showMarkers</param>
+                                              <param name="label">Display markers</param>
+                                              <param name="staticOptions">
+                                                <list>
+                                                  <param name="value">true</param>
+                                                  <param name="label">Yes</param>
+                                                </list>
+                                                <list>
+                                                  <param name="value">false</param>
+                                                  <param name="label">No</param>
+                                                </list>
+                                              </param>
+                                              <param name="customBehavior">showMarkersPulldown</param>
+                                      
+                                              <module name="EnablePreview">
+                                                <param name="enable">True</param>
+                                                <param name="display">false</param>
+                                              </module>
+
+                                              <module name="ZoomLinks"></module>
+
+                                              <module name="JSChart">
+                                                <param name="height">300px</param>
+
+                                                <module name="Redirector">
+                                                  <param name="url">sv_report</param>
+                                                  <param name="generalSearchTermField">searchBar</param>
+                                                  <param name="arg.searchBar">$searchBar.rawValue$</param>
+                                                  
+                                                  <param name="arg.earliest">$search.timeRange.earliest$</param>
+                                                  <param name="arg.latest">$search.timeRange.latest$</param>
+
+                                                  <param name="arg.autoRun">True</param>
+                                                </module>
+                                              
+                                              </module>
+                                            </module>
+                                          </module>
+                                        </module>
+                                      </module>
+                                    </module>
+                                  </module>
+
+                                  
+                                  <module name="Pulldown" group="Table">
+                                    <param name="name">results.count</param>
+                                    <param name="label">results per page</param>
+                                    <param name="float">right</param>
+                                    <param name="staticOptions">
+                                      <list><param name="value">10</param></list>
+                                      <list><param name="value">20</param></list>
+                                      <list><param name="value">50</param></list>
+                                      <list><param name="value">100</param></list>
+                                    </param>
+
+                                    <module name="HTML">
+                                      <param name="html"><![CDATA[
+                                        <h3>$results.count$ rows returned.  $results.scanCount$ events scanned. <a class="doNotPrint" href="chart?searchBar= $encodedSearch$&earliest=$search.timeRange.earliest$&latest=$search.timeRange.latest$&autoRun=True">$rawSearchLinkText$</a></h3>
+                                      ]]></param>
+                                      <param name="customBehavior">rawSearchLink</param>
+                                    </module>
+
+                                    <module name="Pager">
+                                      
+                                      <module name="Table">
+
+                                        <module name="Redirector">
+                                          <param name="url">sv_report</param>
+                                          <param name="generalSearchTermField">searchBar</param>
+                                          <param name="arg.searchBar">$searchBar.rawValue$</param>
+                                          
+                                          <param name="arg.earliest">$search.timeRange.earliest$</param>
+                                          <param name="arg.latest">$search.timeRange.latest$</param>
+
+                                          <param name="arg.autoRun">True</param>
+                                        </module>
+                                      </module>
+                                    </module>
+                                  </module>
+                                </module>
+                              </module>
+                              <module name="ProgressIndicator" layoutPanel="resultsAreaLeft"></module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+
+</view>

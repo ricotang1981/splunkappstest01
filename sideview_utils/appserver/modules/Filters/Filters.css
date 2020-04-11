@@ -1,0 +1,25 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+div.Filters div.filter {
+    float:left;
+    margin-right:20px;
+}
+div.Filters div.filterLabel {
+    float:left;
+    margin-right:5px;
+}
+
+div.Filters div.filter a {
+    float:left;
+    
+    display:block;
+    background: url(../../../static/img/skins/default/icon_circle_delete.png) no-repeat left center;
+    margin-top:1px;
+    width:11px;
+    height:1px;
+    padding-top:11px;
+    overflow:hidden;
+}
+
+
+

@@ -1,0 +1,54 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<%
+    def isPopulated(pName, module) :
+        if (pName in module and module[pName]) :
+            return True
+        else:
+            return False
+%>
+
+<%def name="buildRadio(id,name,label, value='', selected='False')">\
+    <% 
+    selectedAttr = ('checked="checked"') if selected.lower() == "true" else '' 
+    if (value==None): value=""
+    if (label==None): label=value
+    %>
+    <div class="radioWrapper static">
+        <input type="radio" value="${value|h}" id="${id}" name="${name}" ${selectedAttr}$><label for="${id}">${label|h}</label></div>
+</%def>\
+
+<div class="outerRadioWrapper
+% if (module['layout'] == "horizontal") :
+    floatLayout
+% endif
+">
+
+% if (isPopulated("staticRadios",module)):
+    <%
+    index = 0;
+    %>
+    % for field in module['staticRadios']:
+        % if field and field.get('value', False)!=False :
+        <%
+        id = module["id"] + "_static_" + str(index)
+        name = module["id"] + "_button"
+        index = index+1
+        %>
+    <%self:buildRadio label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" name="${name}" id="${id}"/>
+        % else :
+    <option> Radios.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</option>
+        % endif
+    % endfor
+% endif
+
+%if (isPopulated("valueField",module)):
+    <div class="radioWrapper dynamic">${_("Loading...")|h}</div>
+% endif
+
+</div>
+% if (module['layout'] == "horizontal") :
+<div class="clearFloats"></div>
+% endif

@@ -1,0 +1,72 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<%
+import splunk.util
+import splunk.entity as en
+import urllib
+
+
+# get the saved searches
+searches = en.getEntities('saved/searches', namespace=APP['id'], search='is_visible=1 AND disabled=0', count=500)
+# make a map of savedsearch to view
+
+keys = splunk.util.objUnicode(searches.keys())
+nameToViewMap = {}
+%>
+% for savedName in keys :
+    <%
+    ss = searches[savedName]
+    nameToViewMap[savedName] = ss.get("displayview", ss.get("request.ui_dispatch_view"))
+    %>
+% endfor
+
+
+
+<ul class="appBarNav treeview">
+    % for i, item in enumerate(navConfig):
+    <li>
+        % if ("uri" in item) :
+        <a href="${(item['uri']) | h}">${item['label']|h}</a>
+        % else :
+        <span class="folder">${item['label']|h}</span>
+        % endif
+
+        % if ("submenu" in item) :
+            <% 
+            rendered = 0
+            %>
+        <ul>
+            % for subItem in item["submenu"]:
+                % if ("sharing" not in subItem or (subItem["sharing"]!="global" and subItem["label"] != "placeholder")) :
+                    <% 
+                    rendered = rendered+1
+                    %>
+                    
+                    % if ("uri" in subItem) :
+                        <%
+                        # interpose here for a second to replace the infernal @go url
+                        # with a proper URL, so that we can replace ?s= resurrection 
+                        # with the sideview linking convention.
+                        %>
+                        
+            <li><a href="${(subItem['uri']) | h}">${subItem['label']|h}</a></li>
+                        
+                    % else :
+            <li><span class="folder">${subItem['label']|h}</span></li>
+                    % endif
+                % endif
+             
+            % endfor
+            % if rendered == 0:
+                <li><span>(You have not saved any reports yet)</span></li>
+            % endif
+                
+        </ul>
+           
+        % endif
+        
+    </li>
+    % endfor
+</ul>

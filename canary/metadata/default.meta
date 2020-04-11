@@ -1,0 +1,22 @@
+[macros/get_fields_for_report_pulldowns]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[views/sv_report]
+access = read : [ * ], write : [ admin ]
+# export = system
+owner = admin
+version = 4.3
+
+[views/sv_search]
+access = read : [ * ], write : [ admin ]
+#export = system
+owner = admin
+version = 4.3
+
+[views/chart]
+access = read : [ * ], write : [ admin ]
+#export = system
+owner = admin
+version = 4.3
+

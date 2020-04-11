@@ -1,0 +1,338 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - rendering</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - rendering</h1>
+    ]]></param>
+  </module>
+
+
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+<style type="text/css">
+tr.grey {
+  background-color: #bbbbbb;
+}
+tr.red td {
+  background-color:#aa0000;
+  color:white;
+}
+</style>
+]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Search" layoutPanel="panel_row1_col1" group="natural column ordering">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | timechart count | eval field1="foo" | eval field2="bar" | eval field3="baz" 
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        should be time count field1 field2 field3
+        ]]></param>
+      </module>
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="Button">
+          <module name="Table">
+          </module>
+        </module>
+
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row1_col2" group="explicit column ordering">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | timechart count | eval field1="foo" | eval field2="bar" | eval field3="baz" | table field3 field2 field1 count _time
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        should be time field3 field2 field1 count
+        ]]></param>
+      </module>
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="Button">
+          <module name="Table">
+          </module>
+        </module>
+
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row1_col3" group="fields param">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | timechart count | eval field1="foo" | eval field2="bar" | eval field3="baz" 
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        should be field3 time field2 field1 count
+        ]]></param>
+      </module>
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="Button">
+          <module name="Table">
+            <param name="fields">field3 time field2 field1 count</param>
+          </module>
+        </module>
+
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="no underscore fields by default">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | timechart count | eval _someOtherField="zomg" 
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        should be time count 
+        ]]></param>
+      </module>
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+        <module name="Button">
+          <module name="Table">
+          </module>
+        </module>    
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col2" group="show underscore fields if E explicit fields clause">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | timechart count | eval _someOtherField="zomg" 
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        should be count _time _someOtherField
+        ]]></param>
+      </module>
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+        <module name="Button">
+          <module name="Table">
+            <param name="fields">count _time _someOtherField</param>
+          </module>
+        </module>    
+      </module>
+    </module>
+
+
+    
+    <module name="Search" layoutPanel="panel_row3_col1" group="rowClass and as hiddenField">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index | eval myClassField=if(count=="2","red",if(count=="4","grey","white"))
+      ]]></param>
+      
+      <module name="ProgressIndicator" />
+      
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="Button" layoutPanel="panel_row3_col1_grp1">
+          <module name="Table">
+            <param name="rowClass">$row.fields.myClassField$</param>
+          </module>
+        </module>
+
+        <module name="Button" layoutPanel="panel_row3_col1_grp2">
+          <module name="Table">
+            <param name="hiddenFields">myClassField</param>
+            <param name="rowClass">$row.fields.myClassField$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row4_col1" group="rowClass, also as hiddenField, hiddenField is from $foo$">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index | eval myClassField=if(count=="2","red",if(count=="4","grey","white"))
+      ]]></param>
+      <module name="ProgressIndicator" />
+      
+      
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="TextField">
+          <param name="name">myHiddenFieldsKey</param>
+          <param name="default">myClassField</param>
+
+          <module name="TextField">
+            <param name="name">myFieldsKey</param>
+            <param name="default">count sourcetype source index</param>
+
+          
+
+            <module name="Button" layoutPanel="panel_row4_col1_grp1">
+              <module name="Table">
+                <param name="rowClass">$row.fields.myClassField$</param>
+              </module>
+            </module>
+
+            <module name="Button" layoutPanel="panel_row4_col1_grp2">
+              <module name="Table">
+                <param name="hiddenFields">$myHiddenFieldsKey$</param>
+                <param name="fields">$myFieldsKey$</param>
+                <param name="rowClass">$row.fields.myClassField$</param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+    <module name="Search" layoutPanel="panel_row5_col1" group="rowStyle">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index | eval myStyleField=if(count=="2","#aa0000",if(count=="4","#0000aa",null()))
+      ]]></param>
+      
+      
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="Button" layoutPanel="panel_row5_col1_grp1">
+          <module name="Table">
+            <param name="rowStyle">background-color:$row.fields.myStyleField$</param>
+          </module>
+        </module>
+
+        <module name="Button" layoutPanel="panel_row5_col1_grp2">
+          <module name="Table">
+            <param name="hiddenFields">myStyleField</param>
+            <param name="rowStyle">background-color:$row.fields.myStyleField$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row6_col1" group="multiValues and rowClass (use firebug)">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_*_thruput" | head 1000 | stats dc(series) as seriesCount values(series) as seriesValues by group
+      ]]></param>
+      <module name="Button" layoutPanel="panel_row6_col1_grp1">
+        
+        <module name="Pager">
+          <module name="Table">
+            <param name="hiddenFields">seriesCount</param>
+            <param name="rowClass">has$row.fields.seriesCount$</param>
+          </module>
+        </module>
+      </module>
+      <module name="Button" layoutPanel="panel_row6_col2" group="same but no hiddenFields+rowClass">
+        <module name="Pager">
+          <module name="SimpleResultsTable">
+            <param name="entityName">results</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+    <module name="Search" layoutPanel="panel_row7_col1" group="null fields in certain rows">
+      <param name="search"><![CDATA[
+        index=_internal sourcetype=splunk_web_access OR sourcetype=splunkd | head 1000 | streamstats count by sourcetype | where count<5 | fields count status source host sourcetype | eval host=if(count=="2",null(),host)
+      ]]></param>
+      
+      
+      <module name="ValueSetter">
+        <param name="name">results.count</param>
+        <param name="value">5</param>
+
+        <module name="Button">
+          <module name="Table">
+          </module>
+        </module>
+
+      </module>
+    </module>
+
+
+    
+
+
+    <module name="Search" layoutPanel="panel_row8_col1" group="no results message, no postProcess">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_*_thruput" | head 1000 | stats dc(series) as seriesCount values(series) as seriesValues by group | search fred="flintstone"
+      ]]></param>
+      
+      <module name="Button">
+        <module name="Table">
+          <param name="fields">field1 field2 field3</param>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row8_col2" group="no results message, with postProcess">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_*_thruput" | head 1000 | stats dc(series) as seriesCount values(series) as seriesValues by group 
+      ]]></param>
+
+      <module name="PostProcess">
+        <param name="search">| search fred="flintstone"</param>
+        
+        <module name="Button">
+          <module name="Table">
+            <param name="fields">field1 field2 field3</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row9_col1" group="waiting for results message">
+      <param name="search"><![CDATA[
+        index=_* OR index=*  | head 100000 | stats count by sourcetype index
+      ]]></param>
+
+      <module name="Button">
+        <module name="PostProcess">
+          <param name="search">| search fred="flintstone"</param>
+      
+          <module name="ProgressIndicator" />
+          <module name="EnablePreview">
+            <param name="display">false</param>
+            <param name="enable">True</param>
+          </module>
+          <module name="SearchControls"></module>
+          <module name="Table"></module>
+        </module>
+      </module>
+    </module>
+  </module>
+  
+        
+
+</view>

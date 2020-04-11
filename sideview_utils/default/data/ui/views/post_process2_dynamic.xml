@@ -1,0 +1,80 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>PostProcess - dynamic config</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>PostProcess - setting a portion of the postProcess search dynamically</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: dynamic config">
+    <param name="html"><![CDATA[
+      Here we show how you can configure postProcess such that part(s) of the postProcess search are pulled in from the user's selection.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_*_thruput" | stats sum(kb) as KB by group,series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="ProgressIndicator" />
+
+    <module name="Pulldown">
+      <param name="name">field</param>
+      <param name="label">Show me the KB of the top </param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">Sourcetypes</param>
+          <param name="value">sourcetype</param>
+        </list>
+        <list>
+          <param name="label">Sources</param>
+          <param name="value">source</param>
+        </list>
+        <list>
+          <param name="label">Indexes</param>
+          <param name="value">index</param>
+        </list>
+      </param>
+
+      <module name="PostProcess">
+        <param name="search">search group="per_$field$_thruput" | sort - KB | head 10 | fields series,KB | rename series as $field$</param>
+
+        <module name="ValueSetter">
+          <param name="arg.charting.chart">pie</param>
+
+          <module name="JSChart">
+            <param name="height">300px</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          If you have not already read our <a href="post_process_intro">Introduction to Post process searches</a>,  do so now.
+        </li>
+        <li>
+          Note that the postProcess search incorporates the user's selection as $$field$$ in a couple places. This is not possible using just Splunk's core modules.
+        </li>
+        <li>
+          This is just a static Pulldown module. Things start to get more interesting when the pulldowns themselves are rendering options from the datacube search.
+        </li>
+      </ol>
+
+      ]]></param>
+  </module>
+</view>

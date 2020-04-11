@@ -1,0 +1,41 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Sideview Editor</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1><a href="home">Home</a> &gt; Sideview Editor - It has moved!</h1>
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        The Sideview Editor has moved.  Instead of being in Sideview Utils it is now in the "Sideview Admin Tools" app.   You can get Sideview Admin Tools for free, and under the same Internal Use license agreement as Sideview Utils. <a href="https://sideviewapps.com/apps/sideview-admin-tools/"><b>Download it from our website</b></a> or look for it on Splunkbase.  (be aware that in general the version on Splunkbase may be slightly older).
+      </p>
+      <p>
+        Also if you are a current customer under a Sideview Developer License, everything in that agreement extends to all of the code and all of the tools that we provide in Sideview Admin Tools as well. 
+      </p>
+      <p>
+        <a href="https://sideviewapps.com/contact">Please contact us with any questions.   The same goes for any feedback at all.</a>
+      </p>
+      <br>
+      <br>
+
+      <h1><a href="https://sideviewapps.com/apps/sideview-admin-tools/"><b>Go to our website to download the Sideview Admin Tools App</b></a></h1>
+      <br>
+      <br>
+
+
+
+    ]]></param>
+  </module>
+
+</view>

@@ -1,0 +1,92 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Search module's preview param</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Search module's preview param</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+
+    <module name="Search" layoutPanel="panel_row1_col1" group="preview off">
+      <param name="search"><![CDATA[
+        index=* OR index=_* | head 2000000 | stats count by index sourcetype | sort 0 - count
+      ]]></param>
+      <param name="preview">False</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        $results.count$ rows returned
+        ]]></param>
+      </module>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        <param name="count">5</param>
+        <module name="Table" />
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="preview on">
+      <param name="search"><![CDATA[
+        index=* OR index=_* | head 2000000 | stats count by index sourcetype | sort 0 - count
+      ]]></param>
+      <param name="preview">True</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        $results.count$ rows returned
+        ]]></param>
+      </module>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        <param name="count">5</param>
+        <module name="Table" />
+      </module>
+    </module>
+
+
+
+    <module name="Checkbox" layoutPanel="panel_row3_col1" group="preview set from upstream">
+      <param name="name">preview</param>
+      <param name="onValue">True</param>
+      <param name="offValue">False</param>
+
+      <module name="Search" >
+        <param name="search"><![CDATA[
+          index=* OR index=_* | head 2000000 | stats count by index sourcetype | sort 0 - count
+        ]]></param>
+        <param name="preview">$preview$</param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          $results.count$ rows returned
+          ]]></param>
+        </module>
+
+        <module name="ProgressIndicator" />
+
+        <module name="Pager">
+          <param name="count">5</param>
+          <module name="Table" />
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+    
+</view>

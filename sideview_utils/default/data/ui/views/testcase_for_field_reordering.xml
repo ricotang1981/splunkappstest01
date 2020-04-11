@@ -1,0 +1,101 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for reordering fields in tables</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+    
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+
+
+
+
+    
+  <module name="HiddenSearch" layoutPanel="panel_row1_col1" group="natural column ordering" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | timechart count | fields - _time | eval field1="foo" | eval field2="bar" | eval field3="baz" 
+    ]]></param>
+    <module name="SimpleResultsHeader">
+      <param name="entityName">results</param>
+      <param name="headerFormat"><![CDATA[
+      should be count field1 field2 field3
+      ]]></param>
+    </module>
+    <module name="SimpleResultsTable">
+      <param name="entityName">results</param>
+    </module>
+  </module>
+
+
+
+  <module name="HiddenSearch" layoutPanel="panel_row2_col1" group="explicit column ordering" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | timechart count | fields - _time | eval field1="foo" | eval field2="bar" | eval field3="baz"  | fields field3 field1 field2 count
+    ]]></param>
+    <module name="SimpleResultsHeader">
+      <param name="entityName">results</param>
+      <param name="headerFormat"><![CDATA[
+      should be field3 field1 field2 count 
+      ]]></param>
+    </module>
+    <module name="SimpleResultsTable">
+      <param name="entityName">results</param>
+    </module>
+  </module>
+
+
+  <module name="HiddenSearch" layoutPanel="panel_row3_col1" group="explicit column ordering, with postprocess" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | timechart count | fields - _time | eval field1="foo" | eval field2="bar" | eval field3="baz"  
+    ]]></param>
+    <module name="HiddenPostProcess">
+      <param name="search">| fields field3 field1 field2 count</param>
+
+      <module name="SimpleResultsHeader">
+        <param name="entityName">results</param>
+        <param name="headerFormat"><![CDATA[
+        should be field3 field1 field2 count 
+        ]]></param>
+      </module>
+      <module name="SimpleResultsTable">
+        <param name="entityName">results</param>
+      </module>
+    </module>
+  </module>
+
+
+
+
+  <module name="HiddenSearch" layoutPanel="panel_row4_col1" group="wildcarded column ordering in the search and also in the postprocess" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | timechart count | eval field1="foo" | eval field2="bar" | eval field3="baz" | fields - _time | fields field3 field1 *  
+    ]]></param>
+    <module name="HiddenPostProcess">
+      <param name="search">| fields count *</param>
+
+      <module name="StaticContentSample">
+        <param name="text"><![CDATA[
+        We do  <br>
+        <b>| fields field3 field1 *  </b>
+        <br>
+        on the base search<br>
+        and then <br>
+        <b>| fields count *</b><br>
+        on the postprocess<br>
+        <br>
+        the end result <b>should</b> be count field3 field1 field2.  <br>
+        But it is not.  The second wildcarded fields command resets the "*" fields to alphanumeric order.
+
+        ]]></param>
+      </module>
+      <module name="SimpleResultsTable">
+        <param name="entityName">results</param>
+      </module>
+    </module>
+  </module>
+
+    
+        
+
+</view>

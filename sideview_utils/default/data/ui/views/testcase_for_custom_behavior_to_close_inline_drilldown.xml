@@ -1,0 +1,57 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Drilldowns with tables and charts</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Inline drilldowns with a little close button</h1>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) by series | sort - avg(eps)</param>
+    <param name="earliest">-2h</param>
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>Sourcetypes and their average event throughput $search.timeRange.label$</h2>
+      ]]></param>
+    </module>
+    <module name="ProgressIndicator" />
+    <module name="Pager">
+      <module name="Table">
+        <param name="customBehavior">closeButtonHidesAllChildrenAndClearsSelection</param>
+        
+        <module name="Search">
+          <param name="search">index=* OR index=_* sourcetype="$row.fields.series$" | stats count by source | sort - count</param>
+          <param name="earliest">-2h</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <div style="float:right"><a class="splIcon splIcon-close"></a></div>
+              <h2>$results.count$ source(s) that have sourcetype=$row.fields.series$</h2>
+            ]]></param>
+            <param name="customBehavior">closeButtonContractsDrilldownTable</param>
+          </module>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <module name="Table"></module>
+          </module>
+
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+
+  
+
+</view>

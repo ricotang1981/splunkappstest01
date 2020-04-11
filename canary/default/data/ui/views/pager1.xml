@@ -1,0 +1,48 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>Pager module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pager</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Pager is... really pretty simple.  It outputs a $foo$ token called "results.offset".  If there's a "results.count" upstream then it uses that as the number of results per page.   And for the total results it just looks at the current job. 
+      </p>
+      
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | head 10000 | table _time series kb</param>
+    <param name="earliest">-4h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pager">
+
+      <module name="Table"></module>
+
+      <module name="Pager"></module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Pager" target="_blank">Pager and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+</view>

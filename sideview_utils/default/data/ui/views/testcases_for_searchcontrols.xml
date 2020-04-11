@@ -1,0 +1,65 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for SearchControls module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  
+  <module name="NavBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>SearchControls - Testcases</h1>
+    ]]></param>
+  </module>
+  
+
+  <module name="SearchBar" layoutPanel="splSearchControls-inline" >
+    <param name="default">index=_* OR index=* | stats count by sourcetype</param>
+    <param name="useOwnSubmitButton">False</param>
+
+    <module name="TimePicker">
+
+      <module name="TimeRangePicker">
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+
+          <module name="SearchControls"  layoutPanel="panel_row1_col1">
+            <!-- 
+            <param name="sections">jobControls export</param>
+            <param name="jobControls">finalize cancel pause background</param>
+            -->
+          </module>
+          
+          
+          <module name="ProgressIndicator"  layoutPanel="panel_row1_col1"></module>
+
+          <module name="JobStatus" layoutPanel="panel_row1_col1" />
+
+
+          <module name="Pager"  layoutPanel="panel_row1_col1">
+            <param name="entityName">results</param>
+            <module name="SimpleResultsTable">
+              <param name="displayRowNumbers">False</param>
+              <param name="entityName">results</param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+          
+      
+  </module>
+
+ 
+
+
+
+
+
+
+
+</view>

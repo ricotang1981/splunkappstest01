@@ -1,0 +1,56 @@
+<view isVisible="false" template="dashboard.html">
+  <label>Testcases for Button module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Button - Testcase for allowAutoSubmit=False </h1>
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+      <param name="size">3</param>
+      <param name="template">series="$value$"</param>
+      <param name="separator">+OR+</param>
+      <param name="outerTemplate">( $value$ )</param>
+
+      <module name="Button">
+        <param name="allowAutoSubmit">False</param>
+        <param name="label">click to run downstream search...</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <module name="Table"/> 
+          </module>
+        </module>
+      </module>
+      <module name="Button">
+        <param name="allowAutoSubmit">False</param>
+        <param name="label">click to redirect somewhere</param>
+
+        <module name="Redirector">
+          <param name="url">http://google.com</param>
+          <param name="arg.q">ZOMG IT REDIRECTED</param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

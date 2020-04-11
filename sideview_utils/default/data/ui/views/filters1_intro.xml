@@ -1,0 +1,147 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Filters - Intro</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Filters - Intro</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      Filters module is an advanced module, intended for use only by App developers who are comfortable with writing and fully understanding customBehavior javascript in the Splunk UI Framework. 
+      <br>
+      <br>
+      If this is not you, then consider yourself warned.
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      In this first example we use the Filters module to implement a customBehavior whereby clicking on a Table module modifies the very search that fed that Table.   You can of course apply the $$filters$$ key to either a search or a postprocess or both, as you need.  Here we just use it in a Search.
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Filters" layoutPanel="panel_row2_col1" autoRun="True">
+    <module name="Search">
+      <param name="search">index=_ OR index=* $filters$ | head 10000 | rename _raw as event | table sourcetype event</param>
+      <module name="ProgressIndicator" />
+      <module name="Pager">
+        <module name="Table">
+          <module name="CustomBehavior">
+            <param name="customBehavior">bounceUpToFiltersExample</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      In the next two panels we show a complex example, using one Filters module along with the same customBehavior, to make THREE interactive Tables that each show different field summaries, where clicking any of the three Tables will add a filter to a shared Filters module.   The three Table modules as well as an EventsViewer panel beneath them will then update to show the relevant events and field values.
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Filters" layoutPanel="panel_row3_col1" autoRun="True">
+    
+    <module name="Search">
+      <param name="search">index=_* OR index=* $filters$ | head 10000 | stats count by sourcetype source index</param>
+    
+      <module name="ProgressIndicator" />
+      
+      <module name="PostProcess" layoutPanel="panel_row3_col1_grp1">
+        <param name="search">| stats sum(count) as count by sourcetype</param>
+        <module name="Pager">
+          <module name="Table">
+            <module name="CustomBehavior">
+              <param name="customBehavior">bounceUpToFiltersExample</param>
+            </module>
+          </module>
+        </module>
+      </module>
+
+      <module name="PostProcess" layoutPanel="panel_row3_col1_grp2">
+        <param name="search">| stats sum(count) as count by source</param>
+        <module name="Pager">
+          <module name="Table">
+            <module name="CustomBehavior">
+              <param name="customBehavior">bounceUpToFiltersExample</param>
+            </module>
+          </module>
+        </module>
+      </module>
+      
+      <!-- 
+      This is a testcase to keep an eye on SimpleResultsTable's 
+      implementation of Sideview's filters convention (applied via Sideview patch)
+      -->
+      <!-- 
+      <module name="PostProcess" layoutPanel="panel_row3_col1_grp2">
+        <param name="search">| stats sum(count) as count by source</param>
+        <module name="Pager">
+          <module name="SimpleResultsTable">
+            <param name="drilldownPrefix">row</param>
+            <param name="drilldown">row</param>
+            <module name="CustomBehavior">
+              <param name="customBehavior">bounceUpToFiltersExample</param>
+            </module>
+          </module>
+        </module>
+      </module>
+      -->
+      
+      <module name="PostProcess" layoutPanel="panel_row3_col1_grp3">
+        <param name="search">| stats sum(count) as count by index</param>
+        <module name="Pager">
+          <module name="Table">
+            <module name="CustomBehavior">
+              <param name="customBehavior">bounceUpToFiltersExample</param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+    <module name="Search" layoutPanel="panel_row4_col1">
+      <param name="search">index=_* OR index=* $filters$ | head 10000</param>
+      <module name="EventsViewer">
+      </module>
+    </module>
+    
+  </module>
+  <!-- END EXAMPLE -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Again, the Filters module is only for advanced users developing complex apps. We do not say this lightly.   The Filters module,  without some customBehavior to provide the other half of the interaction, is useless.  Therefore if you are not comfortable writing customBehavior(s) in Javascript to modify and extend the behavior of the Splunk UI to implement custom requirements for Splunk apps,  this module is not for you.
+        </li>
+        <li>
+          A very advanced application of the Filters module can be seen in the <a href="explore">Explore</a> interface which you can also find under "Sample Interfaces" above.
+        </li>
+        <li>
+          If you put a Filters module underneath a URLLoader module that has "keepUrlUpdated" set to "True",  the Filter selection will be maintained in the URL from click to click.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Filters" target="_blank">Filters and its params</a>.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+
+</view>
+

@@ -1,0 +1,93 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Pager</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Pager</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Search" layoutPanel="panel_row1_col1" group="one pager">
+      <param name="search"><![CDATA[
+        index=_internal | head 5000 | stats count by date_second | streamstats count
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          seconds..
+        ]]></param>
+      </module>
+
+      <module name="Pager">
+        <module name="Table"></module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="One master pager plus one slaved pager">
+      <param name="search"><![CDATA[
+        index=_internal | head 5000 | stats count by date_second | streamstats count
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          seconds..
+        ]]></param>
+      </module>
+
+      <module name="Pager">
+        <module name="Table"></module>
+        <module name="Pager" />
+      </module>
+    </module>
+
+
+
+
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="two pagers nested">
+      <param name="search"><![CDATA[
+        index=_internal | head 5000 | stats count by date_second | streamstats count
+      ]]></param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          seconds..
+        ]]></param>
+      </module>
+
+      <module name="Pager">
+        
+        
+        <module name="Table">
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              currently selected date_second is - $row.fields.date_second$
+            ]]></param>
+          </module>
+          <module name="Search">
+            <param name="search"><![CDATA[
+              index=_internal date_second=$row.fields.date_second$ | head 5000 | stats count by date_second date_minute sourcetype
+            ]]></param>
+
+            <module name="Pager" layoutPanel="panel_row4_col1">
+              <module name="Table"></module>
+            </module>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+    
+        
+
+</view>

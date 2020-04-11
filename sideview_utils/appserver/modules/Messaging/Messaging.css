@@ -1,0 +1,8 @@
+.Messaging div {
+    font-weight:bold;
+}
+
+.Messaging .error {
+    background-color:#a52e2d;
+    color:#fff;
+}

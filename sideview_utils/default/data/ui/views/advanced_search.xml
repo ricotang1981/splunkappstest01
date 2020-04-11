@@ -1,0 +1,335 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" >
+  <label>Advanced Search</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customJavascript">sideview_utils/report.js sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/report.css sideview_utils/advanced_search.css</param>
+  </module>
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+
+
+  <module name="HTML" layoutPanel="graphArea">
+    <param name="html"><![CDATA[
+      <p class="noSearchEnteredMessage">
+        First use the text field and the time range pulldown to search for some events. 
+      </p>
+    ]]></param>
+  </module>
+<!-- 
+WARNING. 
+THIS IS AN EXTREMELY ADVANCED SPLUNK VIEW. THE NUANCE OF HOW THE GATE MODULES 
+WORK TOGETHER MAKES IT EASILY THE MOST CHALLENGING VIEW IN SIDEVIEW UTILS TO 
+UNDERSTAND. 
+FURTHERMORE, MUCH WORK REMAINS BEFORE THIS VIEW CAN BE CONSIDERED EFFICIENT AT 
+ITS SEARCHES.  RIGHT NOW IT IS A BIT WASTEFUL. 
+CONSIDER THE FOLLOWING SEQUENCE. EACH BULLET REPRESENTS A NEW DISPATCHED SEARCH. 
+
+USER TYPEs IN A SEARCH AND HITs SUBMIT 
+   - to populate field pulldowns
+   - to render chart
+   - to populate field pulldown in sidebar
+   - to render sidebar
+   - to render events
+USER CLICKS A CHART ELEMENT
+   - to populate field pulldown in sidebar
+   - to render sidebar
+   - to render events
+USER CLICKS A SIDEBAR ELEMENT
+   - to populate events.. 
+
+Opportunities to make this view reuse prior search results can eliminate 
+several of these dispatched searches.
+
+-->
+  <module name="URLLoader" layoutPanel="navigationHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useAssistant">false</param>
+      <param name="useTypeahead">true</param>
+      <param name="useOwnSubmitButton">False</param>
+      
+      <module name="TimeRangePicker">
+        <param name="selected">Last 4 hours</param>
+        <param name="searchWhenChanged">True</param>
+
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="CustomBehavior">
+            <param name="customBehavior">hideDownstreamUntilSearchSubmitted</param>
+          </module>
+
+          <module name="Pulldown" layoutPanel="mainSearchControls">
+            <param name="name">optionalHeadCommand</param>
+            <param name="template">| head $value$</param>
+            <param name="label">with the most recent</param>
+            <param name="staticOptions">
+              <list>
+                <param name="value">10000</param>
+                <param name="label">10,000 events</param>
+                <param name="selected">True</param>
+              </list>
+              <list>
+                <param name="value">50000</param>
+                <param name="label">50,000 events</param>
+              </list>
+              <list>
+                <param name="value">100000</param>
+                <param name="label">100,000 events</param>
+              </list>
+              <list>
+                <param name="value"></param>
+                <param name="label">all events</param>
+              </list>
+            </param>
+
+            <module name="Search">
+              <param name="search">$searchBar.value$ $optionalHeadCommand$ `get_fields_for_report_pulldowns`</param>
+
+              <module name="CustomBehavior">
+                <param name="requiresDispatch">True</param>
+              </module>
+
+              <module name="Pulldown">
+                <param name="name">stat</param>
+                <param name="label">graph the</param>
+                <param name="staticOptions">
+                  <list>
+                    <param name="label">count of events</param>
+                    <param name="value"></param>
+                  </list>
+                  <list>
+                    <param name="label">distinct count of</param>
+                    <param name="value">dc</param>
+                  </list>
+                  <list>
+                    <param name="label">average</param>
+                    <param name="value">avg</param>
+                  </list>
+                  <list>
+                    <param name="label">max</param>
+                    <param name="value">max</param>
+                  </list>
+                  <list>
+                    <param name="label">min</param>
+                    <param name="value">min</param>
+                  </list>
+                  <list>
+                    <param name="label">sum</param>
+                    <param name="value">sum</param>
+                  </list>
+                  <list>
+                    <param name="label">95th percentile</param>
+                    <param name="value">perc95</param>
+                  </list>
+                  <list>
+                    <param name="label">5th percentile</param>
+                    <param name="value">perc5</param>
+                  </list>
+                </param>
+
+                <module name="Pulldown">
+                  <param name="name">yField</param>
+                  <param name="valueField">field</param>
+                  <param name="labelField">label</param>
+                  <param name="staticOptions"></param>
+                  <param name="customBehavior">customYFieldPulldown</param>
+
+                  <module name="Pulldown">
+                    <param name="name">xField</param>
+                    <param name="valueField">field</param>
+                    <param name="label">over</param>
+                    <param name="staticOptions">
+                      <list>
+                        <param name="label">time</param>
+                        <param name="value">_time</param>
+                      </list>
+                    </param>
+
+                    <module name="Pulldown">
+                      <param name="name">zField</param>
+                      <param name="label">split by</param>
+                      <param name="valueField">field</param>
+                      <param name="labelField">label</param>
+                      <param name="staticOptions">
+                        <list>
+                          <param name="label">(none)</param>
+                          <param name="value"></param>
+                        </list>
+                      </param>
+
+                      <module name="Search">
+                        <param name="search">| stats count 
+                        | fields - count 
+                        | eval field1=if(len("$stat$")==0,"count","$stat$($yField$)")
+                        | eval field2=field1+" (ascending)" 
+                        | eval field1=field1+" (descending)"
+                        | eval field3="$xField$  (ascending)" 
+                        | eval field4="$xField$  (descending)" 
+                        | transpose | rename "row 1" as sortByLabel | eval sortByValue=replace(replace(sortByLabel,"\(ascending\)",""),"\(descending\)","desc")</param>
+
+                        <module name="Pulldown">
+                          <param name="name">sortBy</param>
+                          <param name="label">sort by</param>
+                          <param name="template"> | sort by $value$</param>
+                          <param name="valueField">sortByValue</param>
+                          <param name="labelField">sortByLabel</param>
+                          <param name="staticOptions"></param>
+                          <param name="customBehavior">customSortByPulldown</param>
+
+                          <module name="Report">
+                            <param name="name">report</param>
+                            <param name="stat">$stat$</param>
+                            <param name="xField">$xField$</param>
+                            <param name="yField">$yField$</param>
+                            <param name="zField">$zField$</param>
+
+                            <module name="Search">
+                              <param name="search">$searchBar.value$ $optionalHeadCommand$ | $report$ $sortBy$</param>
+                              <param name="preview">True</param>
+
+                              <module name="ValueSetter">
+                                <param name="arg.charting.chart">column</param>
+                                <param name="arg.charting.chart.stackMode">stacked</param>
+                                <param name="arg.charting.axisTitleX.visibility">collapsed</param>
+                                <param name="arg.charting.legend.placement">none</param>
+                                  
+                                <module name="ValueSetter">
+                                  <param name="name">charting.legend.placement</param>
+                                  <param name="value">right</param>
+                                  <param name="requiredKeys">zField</param>
+                                  
+                                  <module name="ZoomLinks" layoutPanel="graphArea"></module>
+
+                                  <module name="FlashChart" layoutPanel="graphArea">
+                                    <param name="height">100px</param>
+                                    <param name="drilldownPrefix">flashChart</param>
+
+                                    <module name="Gate">
+                                      <param name="to">events</param>
+                                    </module>
+
+                                    <module name="Gate">
+                                      <param name="to">sidebar</param>
+                                    </module>
+                                  </module>
+                                </module>
+                              </module>
+
+                              <module name="ProgressIndicator" layoutPanel="graphArea"></module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+
+            <module name="Gate">
+              <param name="id">sidebar</param>
+              <param name="customBehavior">traceOCC</param>
+              
+              <module name="CustomBehavior">
+                <param name="customBehavior">prependSearchCommandAsAppropriate</param>
+
+                <module name="Search" layoutPanel="sidebar">
+                  <param name="search">$consolidatedSearch$ `get_fields_for_report_pulldowns`</param>
+
+                  <!-- 
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                    $search$
+                    ]]></param>
+                  </module>
+                  -->
+
+                  <module name="Pulldown">
+                    <param name="name">topField</param>
+                    <param name="valueField">field</param>
+                    <param name="labelField">label</param>
+                    <param name="width">180px</param>
+                    <param name="staticOptions">
+                      <list>
+                        <param name="label">Choose field to summarize...</param>
+                        <param name="value"></param>
+                      </list>
+                    </param>
+
+                    <module name="Gate">
+                      <param name="requiredKeys">topField</param>
+
+                      <module name="Search">
+                        <param name="search">$consolidatedSearch$ | top $topField$</param>
+
+                        <module name="Table">
+                          <param name="name">sidebarTable</param>
+                          
+                          <module name="Gate">
+                            <param name="to">events</param>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+
+            <module name="Gate">
+              <param name="id">events</param>
+              <param name="customBehavior">traceOCC</param>
+
+              <module name="ValueSetter" layoutPanel="resultsAreaLeft">
+                <param name="name">optionalHeadCommand</param>
+                <param name="value"></param>
+
+                <module name="CustomBehavior" layoutPanel="resultsAreaLeft">
+                  <param name="customBehavior">prependSearchCommandAsAppropriate</param>
+
+                  <module name="Search">
+                    <param name="search">$consolidatedSearch$ $sidebarTable.searchTerms$</param>
+
+                    <module name="Checkbox" layoutPanel="resultsHeaderPanel">
+                      <param name="name">results.softWrap</param>
+                      <param name="label">wrap events</param>
+                      <param name="checked">True</param>
+                      <param name="onValue">true</param>
+
+                      <module name="ValueSetter">
+                        <param name="name">prettySearchTerms</param>
+                        <param name="value">with $sidebarTable.searchTerms$ $flashChart.searchTerms$</param>
+                        <param name="requiredKeys">sidebarTable.searchTerms, flashChart.searchTerms</param>
+                        <param name="mode">OR</param>
+
+                        <module name="HTML">
+                          <param name="html"><![CDATA[
+                          <h3>$results.eventCount$ events found $prettySearchTerms$ $search.timeRange.label$</h3>
+                          ]]></param>
+                        </module>
+                      </module>
+
+                      <module name="Events" layoutPanel="resultsAreaLeft">
+                        <param name="customBehavior">traceOCC</param>
+                        <param name="autoResizeLevel">1</param>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  
+
+
+</view>

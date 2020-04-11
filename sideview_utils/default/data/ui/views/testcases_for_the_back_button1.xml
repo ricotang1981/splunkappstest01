@@ -1,0 +1,120 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for the Back Button</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for the Back Button</h1>
+    
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <a href="?">reset URL</a> | 
+        <a href="?search.name=test_saved_search_for_back_button_cases">saved search test</a>
+      ]]></param>
+    </module>
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useOwnSubmitButton">False</param>
+
+      <module name="TimeRangePicker">
+        <param name="selected">Last 15 minutes</param>
+        <param name="searchWhenChanged">True</param>
+        
+        <module name="SubmitButton">
+          <param name="allowSoftSubmit">True</param>
+
+
+          <module name="Pulldown" layoutPanel="panel_row1_col1">
+            <param name="name">pulldown1</param>
+            <param name="label">$name$</param>
+            <param name="staticOptions">
+              <list>
+                <param name="value">foo0</param>
+              </list>
+              <list>
+                <param name="value">foo1</param>
+              </list>
+              <list>
+                <param name="value">foo2</param>
+              </list>
+              <list>
+                <param name="value">foo3</param>
+              </list>
+            </param>
+
+            <module name="Pulldown">
+              <param name="name">pulldown2</param>
+              <param name="label">$name$</param>
+              <param name="staticOptions">
+                <list>
+                  <param name="value"></param>
+                  <param name="label">(no value)</param>
+                </list>
+                <list>
+                  <param name="value">bar1</param>
+                </list>
+                <list>
+                  <param name="value">bar2</param>
+                </list>
+                <list>
+                  <param name="value">bar3</param>
+                </list>
+              </param>
+
+              <module name="TextField" >
+                <param name="name">textfield1</param>
+                <param name="label">$name$</param>
+
+                <module name="Checkbox">
+                  <param name="name">checkbox</param>
+                  <param name="label">is this thing on?</param>
+                  <param name="onValue">checkboxIsOn</param>
+                  <param name="offValue">checkboxIsOff</param>
+                
+                  <module name="CustomBehavior">
+                    <param name="customBehavior">countPushes</param>
+                  </module>
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                    <br>
+                    <br>
+                    pulldown1=$pulldown1$<br>
+                    pulldown2=$pulldown2$<br>
+                    textfield1=$textfield1$<br>
+                    checkbox=$checkbox$<br>
+                    <br>
+                    search:<br>
+                    $searchBar$<br>
+                    <br>
+                    timerange: <br>
+                    $search.timeRange.label$<br>
+                    $search.timeRange.earliest$<br>
+                    $search.timeRange.latest$<br>
+                    ]]></param>
+                  </module>
+                  
+                  
+                  
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

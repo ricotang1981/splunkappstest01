@@ -1,0 +1,104 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Search History (prototype!)</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customStylesheet">sideview_utils/report.css</param>
+    <param name="customJavascript">sideview_utils/report.js</param>
+  </module>
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Search History (prototype!)</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="mainSearchControls" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="TimeRangePicker">
+      <param name="searchWhenChanged">True</param>
+      <param name="default">Last 4 hours</param>
+
+      <module name="TextField">
+        <param name="name">search_id</param>
+        <param name="label">search id:</param>
+        <param name="template">$name$="$value$"</param>
+
+        <module name="TextField">
+          <param name="name">user</param>
+          <param name="label">User:</param>
+          <param name="template">$name$="$value$"</param>
+
+          <module name="TextField">
+            <param name="name">searchterms</param>
+            <param name="label">misc search terms:</param>
+            
+            <module name="Button">
+              <param name="allowSoftSubmit">True</param>
+              
+
+              <module name="Search" layoutPanel="panel_row1_col1">
+                <param name="search">index=_audit search=* $search_id$ $user$ $searchterms$ | table _time search_id search user autojoin buckets ttl max_count maxtime enable_lookups extra_fields apiStartTime apiEndTime savedsearch_name action info |  stats last(*) as * by _time user search_id search</param>
+                <module name="CustomBehavior">
+                  <param name="requiresDispatch">True</param>
+                  <param name="customBehavior">hideDownstreamUntilSearchSubmitted</param>
+                </module>
+
+                <module name="Timeline">
+
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                      <h3>$results.count$ searches found $search.timeRange.label$</h3>
+                      (click a row to see full details)
+                    ]]></param>
+                  </module>
+
+                  <module name="Pager">
+                    <module name="Table">
+                      <param name="hiddenFields">autojoin buckets ttl max_count maxtime enable_lookups extra_fields apiStartTime apiEndTime savedsearch_name action info</param>
+
+                      <module name="HTML">
+                        <param name="html"><![CDATA[
+
+                        _time = $row.fields._time$<br>
+                        search_id = $row.fields.search_id$<br>
+                        user = $row.fields.user$<br>
+                        <br>
+                        search = $row.fields.search$<br>
+                        
+                        <br>
+                        apiStartTime = $row.fields.apiStartTime$<br>
+                        apiEndTime = $row.fields.apiEndTime$<br>
+                        savedsearch_name = $row.fields.savedsearch_name$<br>
+                        
+                        <br>
+                        autojoin = $row.fields.autojoin$<br>
+                        buckets = $row.fields.buckets$<br>
+                        ttl = $row.fields.ttl$<br>
+                        max_count = $row.fields.max_count$<br>
+                        maxtime = $row.fields.maxtime$<br>
+                        enable_lookups = $row.fields.enable_lookups$<br>
+                        extra_fields = $row.fields.extra_fields$<br>
+                        action = $row.fields.action$<br>
+                        info = $row.fields.info$<br>
+
+                        ]]></param>
+                      </module>
+
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  
+</view>

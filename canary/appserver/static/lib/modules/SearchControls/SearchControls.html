@@ -1,0 +1,64 @@
+<%page args="module"/>
+
+
+<%def name="buildJobControl(controlName)">\
+        <a href="#" class="svButton smallButton ${controlName}" tabindex="-1" title="${controlName}"><span class="svIcon"></span></a>
+</%def>
+
+<%def name="buildMenu(controlName, controlLabel)">\
+    <li><a href="#" class="${controlName}">${controlLabel}</a></li>
+</%def>
+
+<%
+labelDict = {
+    "saveSearch" : _("Save search..."),
+    "saveResults" : _("Save results"),
+    "saveAndShareResults" : _("Save and share results"),
+    "createDashboardPanel" : _("Dashboard panel..."),
+    "createAlert" : _("Alert..."),
+    "createEventType" : _("Event type..."),
+    "createScheduledSearch" : _("Scheduled search......")
+}
+%>
+<%def name="buildSection(name, module, labelDict)">\
+% if (name=="jobControls") :
+    <div class="svButtonGroup jobControls splButtonGroup">
+    % for controlName in module.get("jobControls").split(" "):
+        <%self:buildJobControl controlName="${controlName}" />
+    % endfor
+    </div>
+
+% elif (name=="info") :
+    <a href="#" class="svButton smallButton inspector" tabindex="-1" title="Inspect Job"><span class="svIcon"></span></a>
+% elif (name=="print") :
+    <a href="#" class="svButton smallButton print" tabindex="-1" title="Print"><span class="svIcon"></span></a>
+% elif (name=="export") :
+    <a href="#" class="svButton smallButton export" tabindex="-1" title="${_('Export')}"><span class="svIcon"></span></a>
+% elif (name=="saveMenu") :
+    ERROR - there is no saveMenu option anymore in this module
+    
+% elif (name=="createMenu") :
+
+    ERROR - there is no createMenu option anymore in this module
+% else :
+    <div>unknown section specified:  ${name}</div>
+% endif
+</%def>\
+
+
+<div class="stateWrapper nullState">
+<%
+sections = module.get("sections").split(" ")
+sections.reverse()
+%>
+% for section in sections:
+    <%self:buildSection name="${section}" module="${module}" labelDict="${labelDict}" />
+% endfor
+    <div style="clear:both;"></div>
+</div>
+
+<div class="pdfPopup"></div>
+<div style="display:none">
+</div>
+<div class="clearFloats"></div>
+

@@ -1,0 +1,252 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Switcher Module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Switcher</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1" group="simple example">
+    <param name="html"><![CDATA[
+      <p>
+        Switcher module is an invisible module, downstream from which you put N different subtrees of module config. Switcher module will then look for a certain key in the data coming from above, and depending on the value of that key, it will show the subtree of modules whose "group" matches that value and hide the rest. 
+      </p>
+      <p>
+        So at a practical level, using a Pulldown module with a Switcher module acts a lot like the Splunk UI's PulldownSwitcher.   Likewise a Tabs module plus a Switcher module acts a lot like the old TabSwitcher. 
+      </p>
+      <p>
+        However, the Switcher module has some looser or if you will "dumber" behavior that makes it useful in a wider variety of situations.  Also by the very nature of that separation, many interesting use cases are opened up.  We'll talk about this but not quite yet. 
+      </p>
+      <p>
+        In this view we'll start by using a Switcher module and a Pulldown module together.
+      </p>
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">groupName</param>
+    <param name="label">Show </param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">section 1</param>
+        <param name="value">section1</param>
+      </list>
+      <list>
+        <param name="label">section 2</param>
+        <param name="value">section2</param>
+      </list>
+      <list>
+        <param name="label">section 3</param>
+        <param name="value">section3</param>
+      </list>
+    </param>
+
+    <module name="Switcher" group=" ">
+      <param name="selectedGroup">$groupName$</param>
+
+      <module name="HTML" group="section1">
+        <param name="html"><![CDATA[
+          This is the content for section 1<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+
+      <module name="HTML" group="section2">
+        <param name="html"><![CDATA[
+          This is the content for section 2<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+
+      <module name="Search" group="section3">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats count by series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            This is the content for section 3, which has not just a single module, but a whole subbranch of modules. <br>
+            $$groupName$$ = $groupName$<br>
+          ]]></param>
+        </module>
+
+        <module name="ProgressIndicator" />
+
+        <module name="Pager">
+          <param name="entityName">results</param>
+
+          <module name="Table" />
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Here the Pulldown outputs a "groupName" key.  Then on the other side the Switcher is configured with "selectedGroup" set to "$groupName$".  This means it will look for the value sent down by Pulldown.
+        </li>
+        <li>
+          Note that if you're using a Switcher inside a dashboard panel,  the dashboard panel system also uses group attributes, so to prevent a green header from appearing here saying "section1",  we have to set <b>group=" "</b> on the Switcher module itself. 
+        </li>
+        <li>
+          The upper example shows a simple case where there are 3 options in the Pulldown, and 3 groups of modules below the switcher.  
+        </li>
+        
+        <li>
+          The next example has two additional subtleties.  First, there are <b>two</b> subbranches that have group="section3" and both of those subbranches show when 'section3' is selected.   Second, there is a subbranch of the Switcher that has no group attribute at all.  This subbranch is never shown or hidden by this Switcher, so it remains visible throughout.
+        </li>
+        <li>
+          The third example shows a more complex situation,  using the fact that both the selectedGroup values, and the group attributes on the subbranches,  can have multiple values separated by commas.   So put simply,  more than one "group" can be selected at a time, a module can have more than one group,  and a given module is visible only if *all* of its groups are in the list of selected groups.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Switcher" target="_blank">Switcher and its params</a>.
+        </li>
+        <li>
+          Go back to the <a href="pulldown1_static">Pulldown documentation</a> if you need to review it again.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="name">groupName</param>
+    <param name="label">Show </param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">section 1</param>
+        <param name="value">section1</param>
+      </list>
+      <list>
+        <param name="label">section 2</param>
+        <param name="value">section2</param>
+      </list>
+      <list>
+        <param name="label">section 3</param>
+        <param name="value">section3</param>
+      </list>
+    </param>
+
+    <module name="Switcher" group=" ">
+      <param name="selectedGroup">$groupName$</param>
+
+      <module name="HTML" group="section1">
+        <param name="html"><![CDATA[
+          This is the content for section 1<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+
+      <module name="HTML" group="section2">
+        <param name="html"><![CDATA[
+          This is the content for section 2<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+
+      <module name="HTML" group="section3">
+        <param name="html"><![CDATA[
+          This is the content for section 3<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+
+      <module name="HTML" group="section3">
+        <param name="html"><![CDATA[
+          This is a second subbranch of content, that <b>also</b> has group="section3"<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          This subbranch has no group attribute so it is always visible<br>
+          $$groupName$$ = $groupName$<br>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="name">groupName</param>
+    <param name="label">Show </param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">section 1</param>
+        <param name="value">section1</param>
+      </list>
+      <list>
+        <param name="label">section 2</param>
+        <param name="value">section2</param>
+      </list>
+    </param>
+    
+    <module name="Checkbox">
+      <param name="name">showHelp</param>
+      <param name="label">show help text</param>
+      <param name="onValue">showHelp</param>
+      
+      <module name="Switcher" group=" ">
+        <param name="selectedGroup">$groupName$,$showHelp$</param>
+
+        <module name="HTML" group="section1,showHelp">
+          <param name="html"><![CDATA[
+            This is the "showHelp" content within section 1.<br>
+            This help content will only show if the checkbox is checked AND section1 is selected.
+          ]]></param>
+        </module>
+        <module name="Search" group="section1">
+          <param name="search">index=_internal source="*metrics.log" group="per_index_thruput" | stats count by series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <param name="entityName">results</param>
+            <module name="Table" />
+          </module>
+        </module>
+        
+
+        <module name="HTML" group="section2,showHelp">
+          <param name="html"><![CDATA[
+            This is the "showHelp" content within section2.<br>
+            This help content will only show if the checkbox is checked AND section2 is selected.
+          ]]></param>
+        </module>
+        <module name="Search" group="section2">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats count by series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="ProgressIndicator" />
+          <module name="Pager">
+            <param name="entityName">results</param>
+            <module name="Table" />
+          </module>
+        </module>
+        
+
+      </module>
+      
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+</view>

@@ -1,0 +1,114 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - multiple selection</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - multiple selection</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      Sometimes you want to allow multiple selection.   You can just configure Pulldown with a 'size' param of 2 or 3 or higher.  This example shows size set to "4".  Ctrl-click to select more than one option.
+      <br>
+      <br>
+      However.... the newer and probably better way to do this is to switch over to the <a href="checkbox_pulldown1">CheckboxPulldown</a> module.
+      ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="size">4</param>
+      <param name="template">series="$value$"</param>
+      <param name="staticOptions"></param>
+      <param name="valueField">series</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes$ | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          
+          <module name="Table"></module>
+
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetypes is: <b>$selectedSourcetypes$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>Again, the <a href="checkbox_pulldown1">CheckboxPulldown</a> module is a newer and in almost all cases better tool for multiple selection. The multiple selection abilities of the Pulldown module will of course remain as legacy functionality but going forward check out <a href="checkbox_pulldown1">CheckboxPulldown</a></li>
+        <li>
+          To use a Pulldown module in multiple selection mode, the first step is setting the 'size' param to an integer greater than 1
+        </li>
+        <li>
+          When size&gt;1, two other params can be used -- 'separator' and 'outerTemplate'.  Note that the 'template' param.  
+        </li>
+        <li>The order goes like this -- <br>
+          <ol type="a">
+            <li>EACH of the selected elements is washed through the 'template' param.</li>
+            <li>The results are all joined together using the 'separator' param.</li>
+            <li>The result of that is washed through the 'outerTemplate' param.</li>
+            <li>The final result is what gets sent downstream to the other  modules.</li>
+          </ol>
+        </li>
+
+        <li>
+          Now, taking the example at the left, the specific config is as follows: 
+        <pre>
+&lt;param name="name"&gt;selectedSourcetype&lt;/param&gt;
+&lt;param name="template"&gt;series="$$value$$"&lt;/param&gt;
+&lt;param name="separator"&gt;+OR+&lt;/param&gt;
+&lt;param name="outerTemplate"&gt;( $$value$$ )&lt;/param&gt;
+</pre>    
+        </li>
+
+        <li>
+          Now say that the user selects 'audittrail' and 'scheduler'. Here's how it plays out: 
+          <ol type="a">
+            <li>
+              The template param kicks in. <b>scheduler</b> becomes <b>series="scheduler"</b> and <b>audittrail</b> becomes <b>series="audittrail"</b>
+            </li>
+            <li> 
+              The separator param kicks in and the two are combined into one string: <b>series="scheduler" OR series="audittrail"</b>
+            </li>
+            <li>
+              The outerTemplate param kicks in and the whole thing becomes <b>( series="scheduler" OR series="audittrail" )</b>
+            </li>
+            <li>
+              That final value is what gets sent downstream from the Pulldown as $$selectedSourcetypes$$
+            </li>
+          </ol>
+        </li>
+      </ol>
+
+    ]]></param>
+  </module>
+</view>

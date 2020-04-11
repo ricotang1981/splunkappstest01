@@ -1,0 +1,40 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html">
+  <label>about</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>About Everything</h1>
+    ]]></param>
+  </module>
+
+
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+    <h2>About Sideview, LLC and its products</h2>
+      <p>
+        Sideview LLC develops its own Splunk apps and brings them to market.  We are also a Splunk Reseller and we commonly sell Splunk licenses/support/etc along with our commercial apps.   Our most important product is probably Sideview Utils, because it has thousands of companies using it in production, and because it revolutionizes how you create dashboards in the Splunk UI. If you have any questions about Sideview Utils licensing they are probably answered in the <a href="http://www.sideviewapps.com/apps/sideview-utils/licensing-faq/" target="_blank">Licensing FAQ</a>.
+      </p>
+      <p>
+        Aside from Sideview Utils many of our other products can be downloaded as 90 day trial versions <a href="http://www.sideviewapps.com">from the website</a>.  <a href="https://sideviewapps.com/contact">Contact us</a> if you have any questions. 
+      </p>
+
+      </p>
+
+    <h2>About Nick</h2>
+      <p>
+        Sideview was founded by Nick Mealy in September 2010.   Nick was the 7th employee at Splunk and worked there between 2005 and 2010.  He held various titles over those 5 years like Principal User Interface Engineer, User Interface Manager, and Mad Scientist.  You may have run into him on <a href="http://answers.splunk.com/users/136/nick">answers.splunk.com</a>.   Feel free to <a href="mailto:nick@sideviewapps.com">email me at nick@sideviewapps.com</a> if you have questions and I will write back. 
+      </p>
+      
+    ]]></param>
+  </module>
+
+
+</view>

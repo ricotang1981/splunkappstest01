@@ -1,0 +1,200 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>embedding HTML and including $foo$ values</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Embedding HTML and including $$foo$$ values</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Including $$foo$$ tokens is about printing out selected values from upstream UI modules. Some more adventurous splunkers have discovered that the SimpleResultsHeader module will do $$foo$$ replacement so you can say "45 login attempts by user bob"  where "bob" is the value that the user selected just a second ago. 
+      </p>
+      <p>
+        The HTML module takes this idea much further. With the HTML module you can do any $$foo$$ replacement, but into whatever HTML you like, not just a simple header.
+      </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">myTestPulldown</param>
+    <param name="label">Test Pulldown:</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">Robert Satterthwaite</param>
+        <param name="value">rsatterthwaite</param>
+      </list>
+      <list>
+        <param name="label">Mildred Winterbottom</param>
+        <param name="value">mwinterbottom</param>
+      </list>
+      <list>
+        <param name="label">Rick Astley</param>
+        <param name="value">rastley</param>
+      </list>
+    </param>
+
+    <module name="HTML" layoutPanel="panel_row2_col1">
+      <param name="html"><![CDATA[
+        Here we put the selected text-label into an &lt;h2&gt; tag,  the 
+        selected value into a smaller &lt;h4&gt; tag below it. <br>
+
+        <h2>myTestPulldown.label = $myTestPulldown.label$</h2>
+        <h4>myTestPulldown = $myTestPulldown$</h4>
+        (and if you like referring to 'value' specifically, you can do that too: myTestPulldown.value = $myTestPulldown.value$ )
+        
+        <br>
+        <br>
+
+        <p>
+          Now in the same HTML module we use the option's value a second 
+          time to prepopulate a form field.  Although this form field is by 
+          default completely inaccessible from the Splunk UI modules, it can 
+          be useful to do this either when you want this form to POST/GET to a 
+          URL anyway*, or when you are able to wire up the form's behavior 
+          with custom javascript at the app level.
+        </p>
+        <p>
+          *Note that with Sideview's URLLoader in the target view you can have 
+          your form send its data via GET to another view in the Splunk UI if 
+          you like.
+        </p>
+        
+        <label>Username</label> <input type="text" value="$myTestPulldown$" />
+        
+      ]]></param>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Repeating the user's selection in a header really helps them understand views that have many form elements and charts because it allows you to label things more clearly and definitively.  For example:  "Showing audit activity by bobwoodward" is a lot cooler than "Showing activity by selected user and activity type".
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.HTML" target="_blank">HTML and its params</a>.
+        </li>
+        
+      </ol>
+      ]]></param>
+  </module>
+
+
+  <!--  ******************************************************************* -->
+  
+  <module name="Pulldown" layoutPanel="panel_row3_col1" group="showing 'rawValue' which is useful you're using Pulldown's 'template' param." autoRun="True">
+    <param name="name">myTestPulldown</param>
+    <param name="label">Test Pulldown:</param>
+    <param name="template">user="$value$"</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">Robert Satterthwaite</param>
+        <param name="value">rsatterthwaite</param>
+      </list>
+      <list>
+        <param name="label">Mildred Winterbottom</param>
+        <param name="value">mwinterbottom</param>
+      </list>
+      <list>
+        <param name="label">Rick Astley</param>
+        <param name="value">rastley</param>
+      </list>
+    </param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        Note that 'value' now shows the value after it gets wrapped by the 'template' param. If you specifically want the unwrapped raw value right off the form element, you can just use 'rawValue'<br>
+
+        <h2>myTestPulldown.label    = $myTestPulldown.label$</h2>
+        <h4>myTestPulldown    = $myTestPulldown$</h4>
+        <h4>myTestPulldown.rawValue = $myTestPulldown.rawValue$</h4>
+        
+        
+        ]]></param>
+    </module>
+  </module>
+
+
+  
+
+  
+  
+
+
+  <!--  ******************************************************************* -->
+  
+  <module name="Pulldown" layoutPanel="panel_row4_col1" group="What if I actually need to print a dollar sign?" autoRun="True">
+    <param name="name">myTestPulldown</param>
+    <param name="label">Test Pulldown:</param>
+    <param name="template">user="$value$"</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">Robert Satterthwaite</param>
+        <param name="value">rsatterthwaite</param>
+      </list>
+      <list>
+        <param name="label">Mildred Winterbottom</param>
+        <param name="value">mwinterbottom</param>
+      </list>
+      <list>
+        <param name="label">Rick Astley</param>
+        <param name="value">rastley</param>
+      </list>
+    </param>
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h3>This is small but very important.</h3>
+        <p>
+          Anything wrapped in two single dollar signs will be substituted from data in the upstream modules (for example, $myTestPulldown$).  
+        </p>
+        <p>
+          However two consecutive dollar signs will not result in dynamic replacement and instead the module will replace them with a single dollar sign.
+          <br>
+          for example: $$foo$$
+        </p>
+        <ol>
+          <li>Or you can use the XML entity like this: &#36;</li>
+          <li>This rule applies to all Sideview modules that do any $$foo$$ replacement.  (However it does not apply to the handful of core Splunk modules that do $$foo$$ replacement.)
+          </li>
+          <li>Note that your token names themselves (ie foo) can NOT themselves contain literal dollar signs.  But you wouldn't do that anyway because you're not that mean. 
+          </li>
+        </p>
+        <p>
+          Below are some more complex examples that I use to verify corner cases in the functionality. Feel free to ignore them.<br>
+          $$I should be wrapped in singledollars$$<br>
+          $$10,000 is a lot of money. Unless you want to donate it to Sideview out of gratitude.<br>
+          Here is a dollar sign in XML entity form:  &#36;<br>
+          Here are two of them: &#36;5 is more than &#36;2<br>
+          Here are two of them consecutively: &#36;&#36;<br>
+          
+          <!-- because at that point we are WITHIN a token, the pair of 
+          consecutive dollars in the middle should be treated as the divider 
+          between two consecutive tokens. Both will get replaced as 
+          dynamic tokens and since there are no such dynamic values 
+          the text will thus dissappear. -->
+          There should be nothing after this sentence.  $should not appear $$ also should not appear$
+        </p>
+
+      ]]></param>
+    </module>
+  </module>
+
+  <!--  ******************************************************************* -->
+
+
+ 
+
+
+</view>

@@ -1,0 +1,252 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - drilldown</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - drilldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+
+    
+
+    <module name="Search" layoutPanel="panel_row1_col1" group="straight up drilldown">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index
+      ]]></param>
+      <module name="Button">
+
+        <module name="Table">
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              sourcetype = $row.fields.sourcetype$<br>
+              sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+              source = $row.fields.source$<br>
+              source (raw) = $row.fields.source.rawValue$<br>
+              <br>
+              click.searchTerms = $row.searchTerms$<br>
+              <br>
+              click.cell0.name = $row.cell0.name$<br>
+              click.cell0.value = $row.cell0.value$<br>
+              click.cell0.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              click.cell2.name = $row.cell2.name$<br>
+              click.cell2.value = $row.cell2.value$<br>
+              click.cell2.rawValue = $row.cell2.rawValue$<br>
+              <br>
+              click.value = $row.value$<br>
+              click.rawValue = $row.rawValue$<br>
+              click.name = $row.name$<br>
+              <br>
+              click.modifierKey = $row.modifierKey$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row1_col1" group="drilldown, with hidden fields">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index
+      ]]></param>
+
+      <module name="Button">
+
+        <module name="Table">
+          <param name="hiddenFields">count sourcetype</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              sourcetype = $row.fields.sourcetype$<br>
+              sourcetype (raw) = $row.fields.sourcetype.rawValue$<br>
+              source = $row.fields.source$<br>
+              source (raw) = $row.fields.source.rawValue$<br>
+              <br>
+              click.searchTerms = $row.searchTerms$<br>
+              <br>
+              click.cell0.name = $row.cell0.name$<br>
+              click.cell0.value = $row.cell0.value$<br>
+              click.cell0.rawValue = $row.cell0.rawValue$<br>
+              <br>
+              click.cell2.name = $row.cell2.name$<br>
+              click.cell2.value = $row.cell2.value$<br>
+              click.cell2.rawValue = $row.cell2.rawValue$<br>
+              <br>
+              click.value = $row.value$<br>
+              click.rawValue = $row.rawValue$<br>
+              click.name = $row.name$<br>
+              <br>
+              click.modifierKey = $row.modifierKey$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="_time -custom earliest and span">
+      <param name="search"><![CDATA[
+                | stats count | eval _time=1325404920 | timechart count | rename _time as epochtime _span as duration
+      ]]></param>
+      <param name="earliest">1325404800</param>
+      <param name="latest">1325408400</param>
+
+      <module name="Button">
+        <module name="Table">
+          <param name="count">5</param>
+          <param name="earliestTimeField">epochtime</param>
+          <param name="durationField">duration</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h2>S/B dictated by epochtime and duration</h2>
+              $$row.fields.epochtime$$ = $row.fields.epochtime$<br>
+              $$row.fields.duration$$ = $row.fields.duration$<br>
+              <br>
+              
+              
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              $$search.timeRange.label$$ = $search.timeRange.label$<br>
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+
+
+    <module name="Search" layoutPanel="panel_row3_col2" group="_time -custom latest ">
+      <param name="search"><![CDATA[
+                | stats count | eval _time=1325404920 | timechart count | eval latest=_time+_span | fields - _time
+      ]]></param>
+      <param name="earliest">1325404800</param>
+      <param name="latest">1325408400</param>
+
+
+      <module name="Button">
+      
+        <module name="Table">
+          <param name="count">5</param>
+          <param name="latestTimeField">latest</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h2>S/B dictated by latest and _span</h2>
+              $$row.fields.latest$$ = $row.fields.latest$<br>
+              $$row.fields._span$$ = $row.fields._span$<br>
+              <br>
+              
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              $$search.timeRange.label$$ = $search.timeRange.label$<br>
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+
+    <module name="Search" layoutPanel="panel_row4_col1" group="only earliest present">
+      <param name="search"><![CDATA[
+                | stats count | eval _time=1325404920 | timechart count | rename _time as earliest | fields - _span
+      ]]></param>
+      <param name="earliest">1325404800</param>
+      <param name="latest">1325408400</param>
+
+
+      <module name="Button">
+        <module name="Table">
+          <param name="count">5</param>
+          <param name="earliestTimeField">earliest</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h2>S/B dictated by earliest</h2>
+              $$row.fields.earliest$$ = $row.fields.earliest$<br>
+              <br>
+              
+              
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              $$search.timeRange.label$$ = $search.timeRange.label$<br>
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row4_col2" group="only latest present">
+      <param name="search"><![CDATA[
+                | stats count | eval _time=1325404920 | timechart count | rename _time as latest | fields - _span
+      ]]></param>
+      <param name="earliest">1325404800</param>
+      <param name="latest">1325408400</param>
+
+
+      <module name="Button">
+        <module name="Table">
+          <param name="count">5</param>
+          <param name="latestTimeField">latest</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <h2>S/B dictated by latest</h2>
+              $$row.fields.latest$$ = $row.fields.latest$<br>
+              <br>
+              
+              
+              $$search.timeRange.earliest$$ = $search.timeRange.earliest$<br>
+              $$search.timeRange.latest$$ = $search.timeRange.latest$<br>
+              $$search.timeRange.label$$ = $search.timeRange.label$<br>
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row5_col1" group="escaping quotes">
+      <param name="search"><![CDATA[
+        index=_internal | head 21 | streamstats count | table count sourcetype source index | eval message="I am row " + count + " and I \"have some quoted text\""
+      ]]></param>
+      <module name="Button">
+
+        <module name="Table">
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              $$row.fields.message$$ = $row.fields.message$
+            ]]></param>
+          </module>
+
+          <module name="Search">
+            <param name="search"><![CDATA[
+              | stats count | eval drilldownFoo="$row.fields.message$"
+            ]]></param>
+            <module name="Table"/>
+          </module>
+        </module>
+      </module>
+    </module>
+
+  </module>
+
+</view>

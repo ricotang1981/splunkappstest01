@@ -1,0 +1,10 @@
+.mainSearchControls .Button input.searchButton,
+.viewHeader .Button input.searchButton {
+    height:22px;
+}
+
+
+.splSearchControls-inline .Button input.searchButton {
+    height:27.6px
+}
+

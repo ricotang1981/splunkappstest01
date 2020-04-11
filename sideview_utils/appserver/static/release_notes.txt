@@ -1,0 +1,1756 @@
+3.4.11 (January 8th, 2020)
+>
+
+3.4.10 (January 2nd, 2020)
+> Resolved an issue where the 'export' functionality of the SearchControls
+  module would fail with an error because the previous page would try to
+  autocancel the job being exported.
+
+3.4.9 (September 23rd, 2019)
+> Added a change to help users who have both Sideview Utils and Canary
+  installed on Splunk Enterprise 8.0, seamlessly redirect to their Sideview
+  view in the Canary UI instead of the Advanced XML UI.
+> Fixed a problem around a change in browser behavior in the last few years,
+  where browsers no longer execute the "unload" handler when the user leaves
+  the page. Since this is the mechanism that the advanced xml uses to cancel
+  jobs that will be orphaned by  leaving the page, the end result is jobs tend
+  to build up every time you leave the page.  Essentially replacing this
+  with a new implementation that triggers on the "beforeunload" event and it
+  seems to work well and restore the original Splunk developer's intention.
+
+3.4.8 (April 29th 2019)
+> Fixed a bug where if CheckboxPulldown had no checkboxes selected, opening
+  and closing the checkbox list without making any changes, caused downstream
+  UI elements to refresh unnecessarily.
+> Patched a UI regression introduced by Splunk in Splunk 7.2.5 that breaks the
+  TimeRangePicker's "relative", "real time" and "advanced" modes within
+  "Custom Time".  The manifestation of the regressions is that the UI for
+  those other three modes never appears when you click on the control that's
+  supposed to activate them.
+
+3.4.7 (March 1st 2019)
+> REST module now supports DELETE in addition to POST method.
+> REST module now displays HTTP status codes in errorMessages properly.
+> Layer module's default css now puts a min-width of 400px.
+
+3.4.6 (January 14th, 2019)
+> Fixed a regression caused by Splunk in 7.2 or 7.1 where all TimeRangePicker
+  modules got a "default times.conf label" entry that when clicked ran an
+  "all time" search.
+> Report module now supports _time axis reports having $xFieldBins$ args
+  apply to the time axis.
+
+3.4.5 (October 12th, 2018)
+> removed the "fishies" search from savedsearches.conf, and commented out the
+  realtime timeranges on 2 disabled testcase searches used by one of the
+  SavedSearch module's example views.
+  NOTE: this release only exists to workaround an appinspect + cloud vetting
+  problem.
+
+3.4.4 (September 19th, 2018)
+> Fixed a bug in some advanced functionality that parses SPL to some extent,
+  where handling of "*" characters in search expressions led to literals
+  being erroneously recognized as fields.
+> Fixed some cosmetic (CSS) issues with CheckboxPulldown and FieldPicker.
+> Some improvements to Layer, Rest and Switcher to support them being used to
+  implement complex UI's whereby end users can create and edit Splunk
+  knowledge objects directly from your views.
+> Implemented some CSS fixes for 7.2.
+
+3.4.3 (July 6th, 2018)
+> Added some troubleshooting logic to the Table module to help cases where
+  logic in a given view is flawed such that a postprocess search becomes
+  malformed and splunk then returns a confusing 404.
+> Fixed a cosmetic problem in Splunk 7.1 where the text in custom date/time
+  picker fields was rendering slightly too large and getting clipped.
+> Fixed a problem in the Report module, where if it was working with a binned
+  split-by field (zFieldBins), and the bins integer was higher than 10, it
+  would not set the same argument as a limit in timechart/chart, resulting in
+  many values falling into "OTHER".
+> Significant improvements to the prototype modules "Layer" and "REST".
+> Fixed a bug in the SearchControls module where the print button didn't
+  work in Splunk 7.1+
+
+3.4.2 (May 7th, 2018)
+> Added a "nullTemplate" param to ArrayValueSetter.  With this it now has a
+  way to generically handle the same kind of null entries that the form
+  element modules can process with their own nullTemplate params.
+> Fixed a regression in CheckboxPulldown introduced in 3.4.1, where if one
+  option was selected the control's label wouldn't update at all.
+
+3.4.1 (April 24th, 2018)
+> Updated the version of the jquery multiselect control used by the
+  CheckboxPulldown module.  Fixed various functional and positioning bugs
+  when the module is loaded in Splunk 7.1
+> Fixed various look and feel bugs in the SearchControls, Pulldown and Button
+  modules when they are loaded in Splunk 7.1.
+> Fixed a bug in CheckboxPulldown's selectAllOptimization param, where if the
+  control ever found itself in the strange situation of having only a single
+  entry, the optimizations wouldn't be applied. Now they are.
+
+3.4 (November 1st, 2017)
+> Fixed a bug in the export controller causing it to always give the Save File
+  dialog a file extension of "csv" even if you picked json or xml as the
+  output mode.
+> Switched all URL's to Sideview Docs to use https instead of http.
+> Removed the Sideview Editor from the app.  It is now packaged inside the
+  "Sideview Admin Tools" app.
+> Removed the Lookup Updater from the app.  It is now packaged inside the
+  "Sideview Admin Tools" app.
+> Fixed a bug in the DateTime module where $search.timeRange.earliest$ and
+  the $search.timeRange.latest$ keys wouldn't be respected properly when
+  received from upstream.
+> Fixed a regression that occurs in Splunk in 6.6 and newer in the DateTime
+  module, where 'zoom to selected' interactions with the ZoomLinks module
+  were not working.
+
+3.3.18 (September 26th, 2017)
+> Added new sample interfaces "Metrics Explorer" and "User Activity".   Both
+  to showcase advanced functionality of the more advanced modules, and also
+  because the views themselves can be quite useful.
+> Added a "hideOnEmpty" param to the CheckboxPulldown module,  for cases
+  where you want to hide it completely if it ever has no options to present.
+> Improvements to 2 prototype modules - Layer and REST.  Testcases added.
+
+3.3.17 (May 25th, 2017)
+> Fixed a bug where the menus in the SearchControls module could get stuck
+  open.
+> in the SideviewUtils module, the customStylesheet and customJavascript
+  params now accept "appName/fileName" values, so developers can import
+  files from other shared apps.
+> CheckboxPulldown can now accept upward travelling contexts in advanced
+  inline drilldown cases.
+> In advanced reporting interfaces where there is a split-by field
+  AND optional binning options to bin continuous split-by fields,  AND there
+  is generic drilldown configured on the report drilldown, where drilldown
+  fields not mapping to explicit form fields in the redirect,  need to be
+  captured in a generic search term field,  the drilldown will now correctly
+  capture zFieldName>=LOWER_BOUND zFieldName<UPPER_BOUND for the click.
+  This is the "split by" side of the "group by" work done in 3.3.10.
+
+3.3.16 (April 4th, 2017)
+> Fixed a problem whereby the Lookup Updater would throw an exception when
+  you tried to upload an entirely new CSV.
+> Patched a problem in Splunk's code whereby JSChart's convoluted loading
+  accidentally breaks references to all code in the splunk.* namespace.
+  The two known symptoms concern the loss of splunk.time.* and are
+  1) that the "Custom" mode in the TimeRangePicker wouldn't work in views
+  containing 1 or more JSChart modules,  and 2) that certain interactions
+  with the Sideview ZoomLinks module wouldn't work in such views either.
+
+3.3.15 (February 21st 2017)
+> Fixed the Table module's ascending vs descending arrow icons which had
+  gotten reversed.
+> Fixed a logical problem in CheckboxPulldown where if you used the
+  selectAllOptimization=omit, the $foo.rawValue$ keys were still defined.
+> Fixed a bug in Redirector where if you set the mergeDrilldownKeys param
+  (both optional and very advanced) to "False", it would ignore you.
+> Fixed a very obscure problem around advanced time ranges that are only
+  bounded on one side.
+> Added another useful example to the Table Embedding docs - using a simple
+  HTML module to craft a 'filler gauge' visualization in each table row.
+> Added prototype version of the REST module.
+
+3.3.14 (November 21st, 2016)
+> Fixed a problem in the SearchControls module that caused the jobControls
+  buttons (play/pause/background/inspect/export/print) to not work. The
+  problem was introduced in version 3.3.13.
+
+3.3.13 (November 11th, 2016)
+> fixed a regression in Pager where it would occasionally render blank. This
+  was introduced in 3.3.12 in the rewrite to eliminate the python endpoint.
+> Added a warning to the Lookup Updater's "Reupload" tab, advising users not
+  to use the reupload feature if they have multiple search heads or
+  similarly complex deployments.
+> Fixed a bug in the Lookup Updater, introduced in 3.3.5, where various form
+  fields were visible as editable text boxes instead of being hidden.
+> Fixed a bug in the Table module where if you had a field "foo" listed in the
+  hiddenFields param, AND if the user explicitly picked that field in an
+  upstream module to pick fields (generally FieldPicker),  then the module
+  would incorrectly keep the field hidden.  Now it will show it.
+> Fixed a regression in the Pager module that was introduced in 3.3.12.  If
+  you did not explicitly specify the "count" param with a different upstream
+  module, too many results would be displayed below. (Note that the exact
+  number shown would be somewhat dependent on the downstream modules.)
+> Fixed a bug in the Radio module where if you had configured it to have only
+  static radio buttons, and you placed it in a part of the hierarchy where no
+  search had already been dispatched, it would force a search to get
+  dispatched there. If no search string was then defined there this resulted
+  in a "*" search being run over all time..
+> Added a warning for developers who forget to configure requiredKeys when
+  they set requiredKeysMode on ValueSetter.
+> Fixed a complex bug in CheckboxPulldown that affected only views using
+  URLLoader to prepopulate CheckboxPulldowns where the view was also setting
+  the "selectAllOptimization" param to "omit" on that CheckboxPulldown.
+> Altered the default timeformat in the Table module to not have both 24 hour
+  clock hours and also AM/PM.  Now the AM/PM is omitted.
+> New prototype version of the Layer module. a testcase view exists but no
+  documentation yet.
+
+3.3.12 (August 18th, 2016)
+> Fixed a regression where Redirector would not pass CheckboxPulldown
+  arguments correctly when more than one item was selected.  This bug was
+  introduced by our HTML injection fixes in 3.3.3.
+> Table module now follows our standard convention where holding the Ctrl
+  key (meta key on macs) while clicking a drilldown-enabled row will now
+  load the new URL in a new window/tab.
+> Fixed a bug where the raw $search$ token wouldn't work properly if used
+  directly and by itself as the value of a Redirector param.
+> Multiplexer now wraps each multiplexed blocks of modules in a pair of divs
+  so as to enable a number of advanced CSS customization use cases as
+  well as to greatly simplify simpler cases. See updated Multiplexer docs
+> Under the hood in some advanced sideview reporting logic, now  if something
+  upstream has already figured out or specified the splitByField, downstream
+  logic will defer to that instead of trying to infer it there.
+> Drilldown logic now first looks for the new standard key $foo.splitByValue$,
+  and only looks for the legacy $foo.name2$ key after.
+> Pager module rewritten to eliminate its custom python endpoint. The module
+  no longer makes any calls to the server and logic to render the page links
+  is purely client-side.
+
+3.3.11 (March 11th, 2016)
+> Fixed a bug where in specific circumstances where time was not explicitly
+  listed in a fieldPicker's list, the Table module would display the "time"
+  field as the last column.
+> Fixed a bug where if Redirector was used on a page to simply pass on a
+  value it had received from URLLoader (ie a value passed from the previous
+  page),  that the value would end up doubly-escaped on the subsequent page.
+  This bug was introduced as a side effect of the work in 3.3.3 closing
+  script-injection holes.
+> Fixed a bug that affected views that used Sideview's form prepopulation
+  feature for views that allow users to save searches and reports - selected
+  values that included non-HTML-safe chars would not work correctly.  this
+  was also related to the the script-injection work back in 3.3.3.
+> Improved behavior in the reporting framework - when Report module sees a
+  binning form element for the group-by field, it will now automatically use
+  makecontinuous on that field to fill in missing values.
+
+3.3.10 (February 18th, 2016)
+> UI error, warn and info messages now appear again in Sideview UI.  Through
+  an inadvertent change Splunk introduced in 6.3, all UI messaging including
+  search language error messages and all info/warn/error messaging, stopped
+  appearing in all advanced xml views.
+> Really a part of the previous change but the SearchControls module's status
+  messages and feedback messages have returned now.
+> Fixed a regression where if you had a drilldown on a Table module, and it
+  was displaying timechart results and you also were also using the
+  generalSearchTermField mechanism to implement a universal drilldown, the
+  module would not only narrow to the timerange but also add a generic search
+  term of "time=1455732915
+> Advanced improvement for views wiring up generic reporting UI (see the
+  Report module) and also exposing a generic Binning option to the end user,
+  (see Report module's xFieldBins param) and also implementing generic
+  drilldown to other complex form search views. (See Redirector's
+  generalSearchTermField param)  On drilldown the system will now correctly
+  unwind categorically-binned xaxis values like "10-20" into "foo>=10 foo<20".
+> Fixed a bug where the legacy Splunk token $search$ could not be used in the
+  value of a Redirector module's arg.* param.
+> Within the SearchControls module, the "Save search" option under the Save
+  button now changes to say "Save report" if the search being saved has any
+  non-streaming transforming search commands.
+
+3.3.9  (January 25th, 2016)
+> Added a selectAllOptimization param to CheckboxPulldown that defaults to
+  "False". Other allowed values are "*" and "omit".  See CheckboxPulldown
+  docs inside Sideview Utils itself for more details.
+> Added a new UI module called NavBar that can be used to replace Splunk's
+  AppBar module.  The look and feel of the menus is different, but when
+  saved reports are run, now they will again work correctly and load in the
+  view in which they were saved (this was broken in Splunk 6.3)
+> Fixed a problem in the Pulldown module when using the "Chosen" mode
+  (mode="advanced"). The most common bug you might have seen as a result of
+  this problem was where a dynamic pulldown didn't work properly when you
+  tried to select its very first option.
+
+
+3.3.8 (November 18th, 2015)
+> Fixed a minor issue in Search module as well as SearchControls module that
+  Splunk 6.3 started flagging in web_service.log as a "Misconfigured View".
+  Those modules specified a set of values for the float and preview params
+  respectively but specified no explicit default.
+> Fixed a bug in Table module where if you were using it in conjunction with
+  a FieldPicker it wouldn't display its nicely string-formatted "time" field.
+
+3.3.7  (October 5th, 2015)
+> Fixed a bug where $foo$ tokens from the URL that contained html-unsafe
+  chars, would get html-escaped if you plugged them directly into a Search
+  module's searches.   (This was a side effect of 3.3.3, when we started html
+  escaping all URLLoader tokens by default).
+> When you're using the Sideview SearchControls module, the search/dashboard
+  menus will now refresh themselves properly when new searches/dashboards are
+  saved by the user. This was core functionality in the AppBar module back in
+  4.X but was broken in a later Splunk release . Patch is applied only to 6+.
+> CheckboxPulldown now has a param "selectedByDefault" that defaults to "True".
+  If set to False, its default behavior preserving selection states will
+  reverse so that options load unselected.
+> Fixed a problem that affected Splunk 5.X customers if they were passing
+  multivalued $foo$ tokens in drilldowns to new views.  The target page
+  would hang onload with a JS TypeError "div.text(...).html is not a function"
+> Fixed a bug where drilldown views attempting to display multivalued $foo$
+  tokens in HTML modules would cause the pageload to fail with an error 500.
+> Fixed a subtle regression in certain complex scenarios involving both
+  multivalued $foo$ tokens and drilldowns to new views where the array-valued
+  value on the target page would get accidentally flattened to a
+  comma-separated string.  Possibly this has only been seen in our test cases.
+
+
+3.3.6  (August 19th, 2015)
+> Fixed some bugs in Sideview Editor where param values that happened to
+  look like valid json couldn't be submitted.
+> Fixed various critical and fatal bugs in the Sideview Editor if you were
+  using root_endpoint config in web.conf, ie if you had implemented SSO or
+  were otherwise putting Splunk behind a reverse proxy.
+> Fixed a number of problems in the Sideview Editor if you were using recent
+  versions of Firefox.
+> Fixed bugs in the Sideview Report Builder where stack mode could get
+  inadvertently turned on for linecharts which is extremely unintuitive and
+  thus very confusing.
+> Fixed an obscure bug if you used the obsolete SimpleResultsTable module and
+  also did not specify its "displayRowNumbers" param, and also were using
+  drilldown with the $click.fields.fieldName$ feature, the field values were
+  off by one.
+> Patched a longstanding bug in Splunk's JobProgressIndicator module where
+  in complex scenarios involving form searches and/or switcher logic, the
+  page could load with the module shown, erroneously in a ~60% complete state,
+  when the search it was attached to had not even started.
+> "View the XML for this page" links now work even when SSO is implemented
+  with a defined ROOT_ENDPOINT.
+> Fixed a problem that was preventing a lot of Sideview XML views from working
+  in Splunk 5.X. Sideview Utils had come to depend on $.isNumeric however that
+  function did not exist in the jquery versions that shipped with Splunk 5.X.
+> working prototype version of CheckboxDropdownView (for SplunkJS Dashboards).
+
+3.3.5  (May 8th, 2015)
+> Fixed Lookup Updater that had broken when Splunk made an underlying and
+  undocumented framework change in 6.2 concerning csrf token availability.
+> Gave the little-known Report module new params xFieldBins and zFieldBins
+> Changes to the General Report interface to make it much harder for users
+  to construct nonsensical reports.
+> Changes to the General Report interface so that if a numeric field is
+  specified on either the x-axis or as a split-by field, the field values are
+  are automatically binned and a pulldown appears for the user to specify
+  how many bins to use.  The new pulldowns default to 15 bins.
+
+
+3.3.4  (April 21st, 2015)
+> fixed a bug in CheckboxPulldown that could cause it to unselect all options
+  unexpectedly when UI elements upstream in the page were used.
+
+3.3.3  (April 6th, 2015)
+> ShowHide module now does $foo$ substitution before calculating selectors
+  to show and hide.
+> Table module now has a param "allowSorting" that defaults to True. if set to
+  False, the column headers no longer have sort arrows and the user can not
+  sort the data by clicking the column headers.
+> Work to close a number of script injection holes.  URLLoader will now HTML
+  escape all arguments passed on the URL, and specific form element modules
+  do some extra work to nonetheless correctly prepopulate their selections.
+> In Browse calls the time listed is now the start time of the call's first
+  call leg.  Formerly it was the start time of the call's last call leg.
+> The bold report title displayed in the General Report interface now will
+  correctly mention the "split by" field.
+
+3.3.2  (January 19th, 2015)
+> added a "dateFormat" param to the DateTime module. the default is still
+  "mm/dd/yy", but in your views you can now set it to "dd/mm/yy".
+> The old svconsole, accessible by putting ?showsvconsole=1 on any view URL
+  is now working again.  (Although made largely obselete by the Sideview
+  Editor's Runtime Debug mode, svconsole is still in use out there.)
+> Resolved a CSS inconsistency between label elements in form element modules.
+  TextField and Checkbox font-sizes now match that of the other modules.
+> Added a maxRows param to Multiplexer. This param applies only to unpaged
+  Multiplexers and acts as a failsafe on the number of rows being multiplexed.
+> Fixed a bug where Multiplexed Radio modules would behave a single giant
+  set of radio buttons - (ie only one radio could be selected across all
+  multiplexed Radio module instances).
+> Fixed a longstanding problem in the underlying Splunk UI's use of
+  prototype.bind that was causing a great deal of UI slowness.
+> When users click the associated label elements in multiplexed Checkbox and
+  Radio modules, the associated input becomes checked/unchecked
+> Fixed a bug around the Multiplexing of Multiplexer modules. (yes this is
+  supported), where the wrong dom insertion point would sometimes be used.
+> Fixed a bug where in some cases Redirector modules downstream from Button
+  modules would not redirect until the Button was clicked a second time.
+
+3.3.1 (December 1st, 2014)
+> Fixed bug in Radio module where $moduleName.label$ would not work to
+  display the readable label of the selected radio button.
+> Fixed bug in DateTime module where times were always displayed and
+  calculated in browser timezone and DST instead of the server's.
+> Fixed bug in Timeline module where times were always displayed in browser
+  timezone and DST instead of server's.
+> Many internal changes eliminating dependencies on SplunkWeb and Splunk User
+  Interface libraries.
+> Added a $results.eventSearch$ key for certain advanced Redirector use cases
+> Added a new token $results.expandedSearch$ that will give the search string
+  with all macros expanded. See the "overview of all the $foo$ tokens" page.
+> Fixed a bug in the Editor where the CheckboxPulldown's staticOptions
+  param did not render with appropriate value/label/selected fields.
+
+3.3 (August 19th, 2014)
+> Search module now has a "preview" param. This obsoletes Splunk's more
+  complicated "EnablePreview" module.
+> CheckboxPulldown's "select all by default" behavior now reimplemented so as
+  to avoid bugs and confusing interactions.  Now the module remembers all of
+  the options that the user has ever *deselected*. Thus everything is
+  selected when it first appears and if deselected options disappear from the
+  list and come back later, they will still be unselected.
+> Fixed a bug in CheckboxPulldown where the check-all / uncheck-all button
+  area took up an extra row.
+> In the Sideview Editor,  Sideview vs Splunk modules are now differentiated
+  by the presence of a little orange mark in top left corner.
+> Sideview Editor no longer adds extra trailing whitespace to CDATA'ed params.
+> Sideview Editor no longer creates <param name="group"></param> nodes when
+  you add a group attribute, and these params are now pruned away from the
+  given module when the edit form is submitted.
+> Fixed bug in Sideview Editor where null-valued entries in the Pulldown's
+  staticOptions param could not be entered.
+> Sideview Editor now displays the module's Id in the help text panel, when
+  you pick a module to edit, purely as a convenience for developers.
+> Sideview Editor now gives an error if you try to add a Sideview module to
+  the view before adding the required SideviewUtils module.
+> Fixed a bug in the Table module introduced in 3.2.8 - if you set one or
+  more default.* params but did not set selectedIndex, it wouldn't show
+  downstream modules until the user clicked a row.
+> Added docs and examples page covering the Table module's "default.*" params
+  as well as the newer "selectedIndex" param.
+> Changed the "embedded button" example in the Table Embedding docs, to hit a
+  custom python controller instead of running a search with a custom command.
+
+3.2.9  (August 11th, 2014)
+> Fixed a bug where $click.searchTerms$ and $row.searchTerms$ would not work
+  in chart/table drilldown cases where the search rendering the chart
+  contained linebreak characters
+> Added an example to the Multiplexer docs of how to multiplex single-value
+  style displays with dynamic background colors.
+> Fixed a bug introduced in 3.2.8 where if you were using *both* Table
+  embedding and drilldown on a single Table module, the hidden modules used
+  for the embedding feature would be visible below the Table.
+> Fixed a bug in the Lookup Updater where rows could not be deleted if any
+  value contained a "$" character.  (similar to the bug in 3.2.8 with edit)
+> Fixed some bugs in the Lookup Updater that prevented it from working if one
+  of the fields was _time. (However _time handling is still a little wonky,
+  due to some weird behavior in the Splunk Search API itself. )
+
+3.2.8 (July 23rd, 2014)
+> Fixed a bug in the Table module where copy and paste out of a Table module
+  would give you unwanted linebreaks in non-multivalue data cells.
+> Fixed a bug in the Lookup Updater where edits would fail if one or more
+  values contained a $ character.
+> Gave Table module a "selectedIndex" param. You can set this to "0" and it
+  will treat the first rendered row as selected by default.
+> Improved functionality in Table such that if you have given it default.*
+  params, and all of them match a given row, the first such row is
+  highlighted, drilldown tokens from that row are pushed downstream.
+> Improved functionality in table such that if your default.* match a row,
+  the drilldown tokens contain the keys from the other cells as well.
+
+3.2.7 (June 21st, 2014)
+> Patched a bug in JSChart whereby clicks on timecharts were not setting a
+  framework flag correctly for inline drilldown cases involving postprocess
+> Fixed an obscure bug in ResultsValueSetter where $foo$ substitution could
+  get run twice if PostProcess was used.
+> Added a $foo.rawValue$ token to Checkbox module's output for consistency.
+> Added a $foo.labels$ token to CheckboxPulldown's output for consistency.
+> Multiplexer now disables Splunk's legend color synchronization as this
+  led to infinite loops and crashes when JSCharts were multiplexed with
+  a paged Multiplexer or with Table Embedding.
+> Fixed a code-formatting problem in the 'detecting sideview utils' docs.
+> Fixed a bug in the Events module where postprocess changes would not always
+  cause the events to re-render.
+> Removed the Pager from the Lookup Updater's "Add" tab, as this had made it
+  very hard to add rows to lookups with more than 10 fields.
+> Removed the setting that had turned off JS minification, as this had the
+  unpleasant side effect of making all of Splunk's Simple XML views and views
+  made with the 6.0 web framework load incredibly slowly.
+
+3.2.6 (May 2nd, 2014)
+> Fixed CheckboxPulldown which was broken in Splunk 4.X and 5.X. A conflict
+  between Splunk's jquery and a jquery Extension also used by core Splunk
+  broke functionality that CheckboxPulldown needed. (By Splunk 6 they had
+  quietly fixed the conflict so the bug never appeared there.)
+> Improved functionality of the ZoomLinks module so that it can pick up
+  subrange selection events from FlashTimeline and offer functionality like
+  "zoom to selected range".
+
+3.2.5 (April 30th, 2014)
+> Fixed a bug in Pager where a second Pager at the bottom, when used in
+  a small subset of advanced configurations, would erroneously trip a
+  runtime check and complain that it had no downstream modules.
+> Fixed a bug in the Sideview Editor whereby in Reattach mode if you had
+  invalid input in the "new parent" module field, submitting the form would
+  effectively delete the detached module(s) from the view.
+> Improved error messaging in some areas of the Sideview Editor.
+
+3.2.4 (April 23rd, 2014)
+> Fixed a bug in the Link module where if it had only a single Redirector child
+  (and thus was doing smart things with ctrl-clicks and right-clicks) you
+  could get into states where upstream changes would trigger the redirect.
+
+3.2.3 (April 14th, 2014)
+> Fixed a problem in CheckboxPulldown where statically configured pulldowns
+  configured to have some options manually selected would incorrectly select
+  all options on page load.
+> Patched a bug in the jquery-ui multiselect widget used by CheckboxPulldown
+  where the control would break if option values contained double quotes.
+> Added a "nullTemplate" param where the developer can now specify how to
+  template null option values (eg  "NOT $name$=*")
+> Fixed a bug in Events module where use cases involving clickable field
+  values that also used Splunk's legacy intention systems could end up
+  double-escaping backslash characters.
+> Removed a config check from Pager that was more trouble than it was worth
+  in that it was exposing us to a class of bugs in the core Splunk
+  framework's "context staleness" code.
+
+3.2.2  (March 27th, 2014)
+> Fixed a syntax problem in SearchControls module that prevented it
+  from working on older IE browsers while in "Compatibility Mode".
+> Fixed a bug in Radio module where individual radios couldn't have null
+  values.
+
+3.2.1 (March 25th, 2014)
+> Changed CheckboxPulldown to not by default add an "all/*" option.
+> Fixed a problem in ArrayValueSetter that made the module unusable in IE8
+  if microsoft's "compatibility mode" was on.
+> Fixed a typo introduced in 3.2 that made all Sideview modules not work in
+  IE8 if microsoft's "compatibility mode" was on.
+
+3.2 (March 18th, 2014)
+> Added a CheckboxPulldown module. This is much like a Multiple selection
+  Pulldown except that it allows the multiple selection via checkboxes next
+  to each option and it only takes as much screen space as a regular Pulldown.
+  Unlike normal multiple selection mode, here all checkboxes are checked by default.
+> Changed the Pulldown module so that separator and outerTemplate can be
+  omitted.  Defaults are "+OR+"  and "( $value$ )" respectively.
+> Added a prototype version of a new TreeMap module with zoom interaction and
+  drilldown support.
+> Added an early prototype version of a new SankeyChart module.
+> Fixed problems in the example configs for the Link module, where the
+  arguments weren't getting passed on the URL.
+> improved search API usage in Pulldown,Checkboxes,Radio,Tabs and
+  ResultsValueSetter so searches are dispatched with status_buckets=0 much
+  more often. This will greatly speed up searches, especially in distributed.
+
+3.1.1 (February 17th 2014)
+> Fixed the Link module so that if it only has a Redirector module downstream
+  then it behaves as you might hope when the link is right-clicked or control-
+  clicked etc..
+> Removed the Link module's recently-added and problematic param
+  "hideUntilSearchDispatched", as this concept was flawed.  Replaced with
+  a "hideUntilPushReceived" param that defaults to True.
+
+3.1  (February 11th 2014)
+> Improved how modules with "template" params handle double quotes in
+  the values specifically when their template then wraps those values in
+  double quotes. Such cases now get the inner quotes backslash-escaped.
+> Gave the DateTime module a "showTimepicker" param to mirror the underlying
+  config in datetimepicker itself. Boolean-valued. Does what you would expect.
+> added *prototype* version of the ShowHide module. As with all prototypes,
+  this module is subject to change or outright removal.
+> added float, clear and cssClass params to the SearchControls module.
+> added $results.isDone$, and $results.doneProgressPercent$ to the standard
+  keys we provide about the current search results.
+> Improved behavior in the Link module so that it hides itself until
+  the search is dispatched. This can be turned off with a param.
+> Improved the AutoRefresh module so that if you place it just upstream from
+  the dispatch point, it'll restart the refresh timer whenever that point is
+  refreshed by some other push from upstream.
+> Fixed a bug in Link module and Button module where if allowAutoSubmit was
+  set to False then downstream modules would continue thinking the page was
+  loading and so might do strange things like ignore the next push.
+> Fixed a bug in the Sideview Editor where string values wrapped in quotes
+  like "$value$" would get their quotes stripped off when submitted.
+> Changed the Editor so that if you click a module in the preview pane, it
+  selects and centers that module in the Schematic pane.
+> Button module can now determine allowAutoSubmit based on whether autoRun is
+  present explicitly in the URL by setting allowAutoSubmit to $autoRun$.
+> Patched Splunk dashboard panel vertical-resizing code so that it no longer
+  messes with any rows that only have one panel to begin with.
+> Patched Splunk dashboard panel resizing code so it now works properly instead
+  of making the panels jitter briefly at the wrong heights.
+> Fixed a bug in DateTime where if you were using URLLoader to prepopulate it
+  from the page URL, it would sometimes reset to the URL value again later.
+> Fixed a bug in Pulldown and also in DateTime where you couldn't wire up
+  complex applyContext scenarios mixing legacy intention techniques with
+  Sideview "filter" techniques.
+
+3.0.1  (January 23 2014)
+> Added the Search Exploder view,  which allows you to paste in a complex
+  search expression and explore results and fields at each intermediate pipe.
+> Added the Search w/PostProcess view, which is much like the core search
+  view except it includes a field for postprocess - useful for debugging.
+> Fixed a bug in DateTime around when 2 of them are used as absolute time
+  controls, and URLLoader is managing back button and forward button.
+> Fixed a subtle but longstanding bug in Pulldown around complex applyContext
+  scenarios.
+> Patched an ugly problem created if you use Splunk's SearchMode module.
+> Gave the Table module some error messaging so if there's a malformed
+  postprocess search, then instead of just dying with a 404, it tells the user
+  an error occurred, and that the error likely concerns postprocess syntax.
+> Fixed a bug in the Link module where downstream modules were not initially
+  hidden when allowAutoSubmit was false.
+> Fixed a bug in the Link module where clicking the link would reset scroll
+  position to the top of the page.
+> Made the CSS of the Pulldown's "advanced" mode (ie using Chosen library),
+  have css text sizes and spacing more in line with the other modules.
+> Fixed a bug in the Link module where the literal $foo$ tokens would appear
+  initially on the page until the first push came down.
+> Fixed a bug in the Sideview Editor where the "show all params" radio would
+  not work correctly unless you clicked the label.
+
+3.0 (December 24th 2013)
+> Added the DateTime module, a module that gives the user a user friendly
+  way to pick an absolute date and time.  Commonly used in pairs to set an
+  absolute timerange.
+> Added the AutoRefresh module, including docs and a working example.
+> SearchControls module uses a new Sideview export controller for streaming
+  export, and unlike the core splunk export the exported results will
+  correctly account for postprocess searches.
+> Added a new controller "freshmaker" for the FreshMaker to hit, to replace
+  Splunk's core refresh endpoint which can be extremely slow in 6.0.
+> Sideview Editor's "show all params" vs "show only selected params" control
+  is now a radio button instead of a pulldown.
+> Timeline module's drag selection now highlights as you drag instead of only
+  highlighting when you release the mouse button.
+> Timeline module design change - lower time granularities are now below.
+> Fixed a problem whereby the app's search and report views collided with
+  new core Splunk views of the same names introduced in 6.0.
+> Fixed some timerange header rendering bugs in the Timeline module.
+> Fixed a bug in the Editor where strange things would happen if you set a
+  module param to "0" or "-1".
+> Fixed a bug in the Editor where you could not enter emptystring values
+  in "list" params like staticOptions.
+> Fixed a bug in the Sideview Editor where the "foo.*" type of module params
+  were not getting their contextual help text shown while editing.
+> Fixed a bug in SearchControls where the updated image sprite file in
+  Splunk 6 broke the export icon in the SearchControls module.
+> Fixed a bug where the "default.*" params of the Table module did not do
+  $foo$ substitution.
+> Fixed a bug in Multiplexer where if the multiplexed value(s) had tags
+  associated with it, then the tag names would glom onto the end of the
+  multiplexer field value(s).
+> Fixed a bug in the Table module so that you can now Table-embed a
+  Multiplexer module and thus create portals to other dimensions.
+
+2.7.1 (November 26th 2013)
+> Fixed a bug in the Filters module where certain back-button and
+  forward-button scenarios would lead to inconsistent UI state.
+> Fixed a bug in the Timeline module where it wouldn't call abandonJob
+  which made it not filter correctly for "transforming" searches.
+> Fixed a bug in the Lookup Updater where if you entered a space or
+  a comma while editing it would submit the edit.  Now the only way to
+  submit it while typing is to hit Enter.
+
+2.7 (October 14th 2013)
+> added columns.someFieldName.class and columns.someFieldName.style to Table
+  module.  This is much like rowClass and rowStyle params of the Table's
+  "rendering" feature set, except for individual cells and columns.
+> Added prototype of the "Link" module, which works basically just like
+  Button, but which will make it easier to do lots of "SingleValue" style
+  dashboard config. When multiplexed it gives simple link lists.
+> Added the ability for Checkboxes modules to select all checkboxes if they
+  receive an upstream key with their same name, and a value of "*"
+> Fixed a bug where selected="True" on statically defined checkboxes in the
+  Checkboxes module wouldn't work.
+> Added an export controller that supports postProcess, so app developers can
+  build their own export workflows that leverage postProcess searches on
+  existing jobs.
+
+2.6.5 (September 30th 2013)
+> Added an "htmlEscapeKeys" param to HTML, so that users can choose to escape
+  html-unsafe chars in their $foo$ tokens.  Default assumption remains that
+  the inserted text might actually be HTML markup.
+> Updated Sideview Editor so that now when adding a module you get module.conf
+  description displayed contextually as you flip around through the modules.
+> Implemented the sparkline() convention in the Table module, so you can now
+  do "| stats sparkline(count) by foo" and Tables will render sparklines.
+> Patched a bug in core Splunk UI whereby certain interactions like zooming
+  into a selected range on a FlashTimeline would have odd effects like hiding
+  the FlashTimeline module. Views using Sideview Utils are no longer affected.
+> Fixed a bug in Pager where in some cases it would display before it
+  received its first push from upstream.
+> Fixed a bug in Pager where if you had it downstream from a FlashTimeline
+  module, but dispatching a transforming search, when a new timerange was
+  clicked in FlashTimeline it wouldnt draw the right number of page links.
+> Fixed another corner case in "chosen"-style Pulldown prepopulation.
+> Fixed a bug in ResultsValueSetter where it would improperly hold on to prior
+  values when a later search returned zero results.
+> Fixed a bug where selected="True" on statically defined radio buttons in
+  the Radio module wouldn't work.
+> Fixed a regression in the Lookup Updater introduced in 2.5, where rows with
+  null cells would get deleted when any update was submitted.
+
+2.6.4 (August 23rd 2013)
+> Updated Table-Embedding so that when you use $row.fields.fieldName$ in
+  embedded modules, backslashes and quotes are escaped. For non-search uses
+  within embedded modules, there's also now $row.fields.fieldName.rawValue$.
+> Broadened the Multiplexer module by allowing you to configure it with more
+  than one field. For each row in search-results and thus each multiplexed row
+  each of the given fields will be available as $foo$ tokens.
+> Fixed a problem in SavedSearch module where if you used group attributes in
+  dashboard template, with a scheduled search where useHistory was on, it
+  would display "NaNd ago" on the right side of the panel header.
+> Fixed a small bug in Tabs where you could use the postProcess param and
+  specify $postProcess$ therein to pick up upstream postProcess but short of
+  that it would not pick up upstream postProcess searches.
+> Added a requested feature to Tabs where it will now do $foo$ replacement
+  into *static* tab values before it outputs them downstream.
+> Fixed another Firefox bug that only appeared with recent Firefox versions
+  that would break the Sideview Editor sometimes when you edited views that
+  were using $results[0].fieldName$ syntax in HTML modules.
+> Fixed a bug in the new fancy "chosen" Pulldowns, where purely static config
+  didn't prepopulate from the url. Note this mode still has prototype status.
+> Improved behavior with chosen multiselect Pulldowns when explicit width
+  isn't set.
+> Fixed a regression in the Checkboxes module dating from 2.6.1.
+
+2.6.3 (August 8th 2013)
+> Fixed a regression introduced in 2.6.2 in the Sideview Editor where most
+  module edits would fail with errors.
+> Introduced new prototype "mode" param on Pulldown. Allows you to replace
+  <select> elements with more usable dropdowns using the chosen jquery plugin.
+
+2.6.2 (August 7th 2013)
+> Updated the Sideview Editor to fix view-attribute-editing in Splunk 6.0.
+> Updated the JSChart patch to make the expanded set of drilldown tokens
+  work with certain modifications made to JSChart in Splunk 6.0. The patch of
+  course remains backwards compatible with Splunk 5.X and 4.X
+
+2.6.1 (July 29 2013)
+> Fixed a bug where if you used HTML module's "src" param, $foo$
+  tokens in included content HTML didn't work at runtime.
+> Reverted quote-character-escaping changes made in 2.6 to Pulldown,TextField,
+  Checkboxes,Radio and Tabs modules. What is a clear improvement to tables
+  and charts turned out to be extremely problematic in these other modules.
+
+2.6 (July 26 2013)
+> Added a feature to ValueSetter whereby you can have it output different
+  values depending on whether different conditions are true regarding
+  upstream keys.
+> Added a feature to ValueSetter where you can now use it to set more than
+  one value at a time. Instead of setting "name" and "value" params, you
+  set an "arg.name1" param to "value1" and "arg.name2" to "value2".
+> Fixed a bug in Advanced Search view, where resizing the chart led to
+  broken states or didnt work depending on browser.
+> Fixed a bug in Advanced Search view, where if your base search contained
+  other search commands, the chart drilldowns would fail.
+> Fixed search term highlighting in Events module which broke due to some
+  underlying CSS changes in Splunk 5.0
+> Fixed a bug in the JSChart and FlashChart patches whereby the new
+  $click.searchTerms$ key could have double backslash-escaping on split-by
+  searchterms.
+> Fixed a number of cases particularly in drilldown logic where literal
+  backslash characters were being escaped for the search language but literal
+  double quote characters were not.  Changes were made both to core Sideview
+  code and to Sideview patches on FlashChart/JSChart/SimpleResultsTable.
+> Fixed some weird bugs that would happen if you put two SearchControls
+  modules on the same page.
+> Fixed a bug in Events module around clicking the field=value elements.
+> Fixed a bug where $foo$ replacement failed on keys whose name suggested the
+  array-valued syntax, but were actually simple string keys, eg  "$foo[0]$".
+  This was affecting some advanced prepopulation cases.
+
+2.5 (July 3rd 2013)
+> Added the new and kind of amazing "Advanced Search" view to Sideview
+  Utils.  It is hard to describe but easy to use.
+> Added "urlEncodeKeys" param to HTML, so simple url-encoding use cases
+  don't need the baggage of a ValueSetter module.
+> Lookup Updater now remains on same page if you update or delete a row
+  rather than resetting to Page 1.
+> Added filtering fields to Lookup Updater's edit mode so you can search
+  and filter down to just the rows you want to edit.
+> Patched JSChart and FlashChart modules so that the legacy keys it uses for
+  drilldowns are now also backslash-escaped (formerly only Sideview-style
+  keys were backslash-escaped)
+> Added official documentation for the Gate module.
+> Fixed a bug in the Events module that appeared in Splunk 5.0 around the
+  workflow actions menus.
+> Fixed a bug in the Events module where a "waiting for results..." message
+  could get stuck mixed in with the events.
+> Added a troubleshooting method Sideview.utils.whyHidden() that takes
+  a module ID and tells you why that module is currently hidden.
+> Finally fixed a longstanding problem with the Editor that became greatly
+  exacerbated recently with a firefox update or windows update.
+> Sideview Editor now works on Google Chrome.
+> Switcher module now checks and if it's in a dashboard template, it fires
+  resize at the end of onContextChange.
+
+2.4.10 (June 11 2013)
+> Changed behavior of ArrayValueSetter so that by default it will trim
+  whitespace from the individual values.
+> Changed how Switcher modules implement show/hide for downstream modules
+  to match best practices and not conflict with Gate functionality.
+> Fixed a regression introduced in 2.4.8 that broke the $click.searchTerms$
+  key in the patches for FlashChart and JSChart modules.
+
+2.4.9 (May 24th 2013)
+> Fixed a bug in Multiplexer where the multiplexed modules would be invisible
+  if the topmost module in the multiplexed branch was a "hidden" module.
+> Fixed a minor bug with paged tables where if you nested one inside another,
+  any count param from the outer set would overrride all count params you
+  had on the inner set.  Fix applied to both Table and SimpleResultsTable.
+> Removed some String.trim() calls that had crept in, causing bugs on IE8
+> customized views based on the Lookup Updater (oem customer only) can now
+  pass 'redirectOverride' URL to send user after successful reupload actions.
+> Improved exception handling in the Lookup Updater's reupload tab
+> Added a warning if you try to use the Lookup Updater to update a lookup
+  marked "private".  Such lookup files cannot be opened by SplunkWeb reliably
+  so our only recourse is to not try. User is directed to first share the
+  lookup with all users of the app.
+> Fixed a problem in the Lookup Updater where editing a row could change the
+  column order (bug in Splunk's outputlookup/inputlookup commands) and then
+  subsequent attempts to reupload from scratch would fail due to a difference
+  in the column names.  Reupload now tolerates differences in column order.
+> Added a 'results per page' pulldown to the Lookup Updater
+
+2.4.8 (May 10th 2013)
+> Changed the allowAutoSubmit param on Button to now allow $foo$ tokens.
+> Patched the Splunk.Search class to clear "status buckets" and "required
+  field list" properties instead of leaking them down to drilldown searches.
+  This is expected to have a very significant positive effect on performance
+  in form search views using realtime windowed searches and probably a large
+  across the board performance improvement, the extent of which is unknown.
+> Fixed a bug in the Table module where you could not sort and then page
+  through the results with the selected sort criteria - the sorting would
+  reset as soon as you changed the page number.
+> Fixed an obscure bug where autoRun attributes attached directly to Button
+  modules wouldn't work in some cases.
+> Fixed a bug where the $row.searchTerms$ and $click.searchTerms$ keys
+  were not correctly escaping internal backslash characters in searchterms.
+> Fixed a bug where the use of the limit keyword in timechart reports
+  would confuse the automatic split-by-term-detection that generates the
+  $click.searchTerms$ key.
+> Fixed a bug in Multiplexer where underneath Switchers and certain other
+  complex config, the Multiplexed modules might be shown at incorrect times.
+> Fixed a bug in very advanced cases using the Filters module and the
+  Sideview filters convention, where backslash-escaping sometimes happened
+  at the wrong layer.
+> Added first version of the Gate module and testcases.
+> Added documentation and examples page for Radio module
+> Added documentation and examples page for ValueSetter module.
+> Added documentation and examples page for Filters module.
+
+2.4.7 (April 15th 2013)
+> Fixed a subtle bug affecting only IE, where when certain modules were
+  embedded into Table module rows, it wouldn't render the Buttons when
+  you changed the page.
+> Removed a marginally useful WARN from the Context patch because it was
+  actually dragging down UI performance in some cases.
+> Added a docs example showing inline drilldown on a JSChart module.
+
+2.4.6 (April 10th 2013)
+> Fixed a regression introduced in 2.4.4 in the Pager module where secondary
+  Pagers (second Pagers below Tables) stopped working correctly.
+> Fixed a problem in multiplexed modules and table-embedded modules where
+  Redirector modules would think the page was still loading and not respond
+  the first time you interacted with them.
+
+2.4.5 (April 2nd 2013)
+> Fixed a bug in Checkboxes module where selection of exactly one
+  dynamically rendered checkbox would sometimes get cleared.
+> Added the new Radio module, which you configure much like Pulldown,
+  Tabs and Checkboxes.
+> Fixed a bug in the SearchControls module where the export button was
+  being enabled before the job was completed.
+> Rewrote and reorganized the postProcess intro docs.  Also fixed the
+  example searches to work when Splunk is installed on windows.
+
+2.4.4 (March 26 2013)
+> Fixed a general performance problem that was most severe on pages that
+  contained lots of Pulldowns, and particularly severe on IE.
+> Added "default.*" params to the Table module that allow you to specify
+  values that should be made available to drilldown config *before* any row
+  is actually clicked.  When one or more is set, the downstream config will
+  not be hidden when the page loads.
+> Fixed a problem in the general postProcess fix in 2.2.7, such that the Table
+  module now will forget about the upstream postProcess like other modules.
+> Removed redundant requests in Table module that were causing some aborts().
+> Fixed a never-reported bug in Table whereby changes to postProcess but not
+  to search would fail to reset the drilldown tokens being sent downstream.
+> Various docs improvements responding to customer feedback.
+
+2.4.3 (March 3rd 2013)
+> Fixed a problem that was introduced 2 days ago by the savedsearch fix in
+  2.4.2.  SVU once again installs and runs on Splunk 4.3.X  as well as 5.0.X
+
+2.4.2 (March 1st 2013)
+> Fixed a bug where in views using Sideview-style savedsearch system,
+  non-admin users would end up with the sideview keys not saved, which meant
+  all the form elements would not reload correctly later.
+> Fixed a menu alignment issue in the SearchControls module if you had a
+  complex page with floated or absolute positioned layouts and the menus
+  came very near the right edge of the window.
+> Fixed a mistake in the app's metadata where a key macro for the report
+  builder ('get_fields_for_report_pulldowns') was only readable by admins.
+> Fixed a bug where if you inserted customJavascript using the SideviewUtils
+  module and your app name had a hyphen in it, it would fail and display
+  an error about legal characters in app names.
+> Lookup Updater's redirect after reupload action was hardcoded to
+  sideview_utils/update_lookup. Now returns to the original app+view names.
+> Fixed a problem on Windows where Lookup Updater's reupload function would
+  sometimes only work once per lookup.
+
+2.4.1 (February 21st 2013)
+> Enabled the HiddenSavedSearch and EnablePreview modules in the Sideview
+  Editor
+> Fixed term highlighting and click behavior in the Events module which had
+  quietly broken due to an underlying change to Splunk 5.0
+> Fixed a bug in the "search" sample interface whereby the FlashTimeline
+  and SearchControls modules were always hidden.
+> Fixed a bug in Pulldown where if you were using Sideview's methods to save
+  form element state into the saved search, multiple selection would not get
+  saved correctly and would thus not prepopulate correctly on load.
+
+2.4 (February 12th 2013)
+> Fixed a problem in the Checkbox module that prevented it from saving its
+  state into savedsearches.conf correctly, and populating itself from saved
+  searches.   Testcases added.
+> Updated context serialization to not preserve $results.*$ keys into
+  savedsearches.conf
+> Added a new "rows" param to TextField so you can have multiline input.
+> Added a new "ArrayValueSetter" module to add more flexibility around using
+  selections from multiselectPulldowns, as well as multiline textfields, or
+  using multivalued keys (?foo=bar&foo=baz&foo=bat) from URLLoader.
+> Added a new "Checkboxes" module that you use and configure much like a
+  multiselect Pulldown module, except that it renders static and dynamic
+  checkboxes instead of multiselect pulldown options.
+> Officially added a lot of previously unofficial testcase views.
+> Worked around a problem in how advanced XML handles whitespace-valued
+  params, such that you can now specify "\n" as the delim in ValueSetter.
+> Fixed a problem where Checkbox click behavior wasn't quite right on IE
+> Fixed a bug in Table where if you clicked exactly on the sort arrows the
+  click would be ignored.
+> Fixed a bug in Table where if you clicked slightly below the actual table
+  or on a column header it would get interpreted as an inline drilldown click.
+
+2.3 (January 16th 2013)
+> Added optional "target" and "windowFeatures" params to the Redirector module.
+> Added an optional "cssClass" param to all visible Sideview modules.  When
+  set, the module's container div will get the given css class(es). At runtime
+  the module will automatically replace $foo$ tokens into these values.
+> Fixed a bug in the Table module where transformed searches feeding it
+  wouldn't get redispatched when the timerange was narrowed by the
+  FlashTimeline module specifically.
+> Fixed a typo in testcases_for_results_value_setter.xml that was forcing a
+  confirmation prompt on Splunk restarts.
+> Reverted the patch that had been applied to JSChart in 2.2.9.  Root cause is
+  now fixed in a way that does not disable the chart's resizing feature.
+> Added optional customBehavior param to Multiplexer module.
+> Fixed issue in SearchControls where it would flash a bit as dynamic Pulldown
+  modules loaded upstream.
+> Added a "checkAutoRunAttributes" param to the SideviewUtils module. Off by
+  default, this can be used to check views for autoRun problems. See
+  SideviewUtils.conf for more details.
+> Added an empty onResultsRendered template method to Table, to make some
+  customizations easier.
+> Improved a Sideview patch for a bug in JSChart so as to avoid a problem that
+  came up in ESS.
+
+2.2.10 (January 3rd 2013)
+> Pruned away some internal keys that were being serialized into saved contexts
+> Fixed some docs pages that were accidentally not visible in the nav.
+> Removed a trailing comma that caused several problems specifically on IE7.
+> Fixed a rare but significant problem with the "view XML for this page" links.
+
+2.2.9 (December 17th 2012)
+> Fixed a subtle bug in the Table module where the embedding feature would
+  explicitly clear the cloned modules' container divs rather than calling
+  their resetUI methods.
+> Added a patch to the JSChart module so that it doesn't erroneously use a
+  placeholder div as its rendering container. Unpatched this leads to
+  there being two placeholder divs which breaks vertical alignments.
+> Added more details docs for the Table module, around both its "custom
+  rendering" features and its "custom embedding" features.
+
+2.2.8 (December 4th 2012)
+> Fixed a bug in Redirector where the mergeDrilldownKeys code could
+  inadvertently backslash-escape keys that weren't supposed to be
+  backslash-escaped.
+> Enabled the Multiplexer to show up as a legal module in the Sideview Editor.
+
+2.2.7 (November 28th 2012)
+> Removed a JSChart patch that was interfering with chart resizing.
+> Fixed a bug in the Editor where true and false would get rewritten to
+  True and False.
+> Made a change to the underlying Splunk UI Framework so that postprocess
+  searches will be automatically cleared in drilldown searches rather than
+  reapplying to those drilldown searches.
+> Fixed a bug in Redirector's autoDrilldown handling around split-by fields.
+> Fixed a bug in how Table+Redirector handled drilldowns on timecharts.
+> Improved the Pulldown module so that it will only reload its dynamic
+  options when necessary, rather than reloading them every time it receives
+  new data from above.
+> Fixed a bug in the Pulldown module where it would ignore the PostProcess
+  modules from upstream and only ever listen to its own postProcess param.
+
+2.2.6 (November 15th 2012)
+> CSS additions to the Table module to clear floats by default and enable
+  horizontal scrolling.
+> Added new functionality to Lookup Updater - create new row,  update
+  existing row,  delete existing row.
+> Updated Table to allow runtime $foo$ replacement into the hiddenFields and
+  fields params.
+> search view now correctly ignores FieldPicker's selected fields when
+  displaying transformed results
+> Added "no results found" messaging to the Table module.
+> Switcher module now hides its children on page load, and doesn't show any
+  child branches until the first push.
+> Multiplexer now hides it's single child on page load rather than waiting
+  for the first push to do so.
+
+2.2.5 (November 2nd 2012)
+> Multiplexer now gives an error targeted at developers if it's given more than
+  one child.
+> Pager now works in cases when paged Tables are downstream from drilldowns on
+  other paged Tables, or downstream from paged Multiplexers.
+> Fixed a problem in the Table module where when a row was selected and the
+  page was then changed, it would output unpredictable drilldown keys.
+> Fixed an old problem where the CSS we packaged in Sideview Utils to help
+  replace SingleValue with HTML, was inadvertently disabled.
+
+2.2.4 (October 30th 2012)
+> patch added to Sideview Utils to fix the Sideview Report Builder and Sideview
+  Chart view to work with Splunk 5.0.  This patches an unexpected change in
+  Splunk 5.0 whereby saved search names in @go URL's changed to be full entity
+  paths, and also a bug in Splunk 5.0 where part of those entity paths were
+  doubly url-encoded.
+> Found an inconsistency where saved searches over all time, when loaded by the
+  URLLoader module, weren't setting the explicit all/all timerange.
+
+2.2.3 (October 26th 2012)
+> Fixed a bug in the Table module where if you used both the "fields" param
+  and the "hiddenFields" param, it wouldn't request the hiddenFields.
+
+2.2.2 (October 10th 2012)
+> Fixed two bugs in the Table module that disrupted functionality in IE6,IE7.
+
+2.2.1 (October 8th 2012)
+> Updated the Table module to render multivalue fields with a linebreak
+  between each value.
+
+2.2 (October 6th 2012)
+> Fixed a problem in the Sideview report builder where there was no little
+  green progress bar when you made the field pulldowns reload.
+> Improved error messaging in the Editor if you submit Reattach forms with
+  logically invalid arguments.
+> Fixed a bug in the Editor specifically around the multivalued <list> params
+  where values with quote characters in them became uneditable.
+> Added some feedback to the report builder to prompt people to run the first
+  search. (the other fields dont even appear until you submit a search).
+> Fixed the time-boundary headers in the Events module so that at the hour
+  granularity they display a more intuitive header.
+> Fixed a subtle exception handling problem in the Sideview Editor.
+> Added Table module.
+> added rtsearch,sorting,postprocess,drilldown support to Table module.
+> added module-embedding feature to Table module.
+> added hiddenFields, fields params to Table module.
+> added rowClass and rowStyle params to Table module.
+> added support for $foo$ tokens in the Button module's label param.
+> Major rewrite of the Multiplexer module for its public release.
+> Rewrote Sideview Utils docs homepage.
+> Modified the JSChart patch to make JSChart clonable in Sideview client-side
+  templating and the Sideview Multiplexer module.
+> Improved Redirector module so that the url can itself have querystring var(s)
+  and the extra args get mixed in correctly.
+
+2.1.2 (August 24 2012)
+
+> Fixed a bad bug in the Sideview Editor, where often when you added a module
+  the schematic view would lock up requiring that the user reload the entire
+  editor.
+> usability improvements in the Sideview Editor. In reattach and add modes,
+  after modifications are made, the schematic view remains selected at or
+  near the area of the hierarchy rather than resetting to the top level.
+> Fixed a typo in the sample customBehavior on the customBehavior docs page.
+
+2.1.1 (August 14 2012)
+
+> Fixed a regression introduced in 2.1 whereby autoRun key in URL's stopped
+  working properly.
+> Updated the Events module so that if you drag-select text it doesn't think
+  you're trying to click a segment.
+
+2.1 (August 8 2012)
+
+> Added customJavascript and customStylesheet parameters to SideviewUtils,
+  with which you can add one or more CSS and JS files to be included from
+  a given app, or from the current app.
+> Launched the new "Runtime Debug" mode in the Sideview Editor.
+> Fixed a bug in the Sideview Editor where core Splunk modules that neglected
+  to specify all param labels in their .conf files could not be edited.
+> Improved contextual help and messaging across the Sideview Editor.
+> Added a new tool called the Lookup Updater.  It's a simple user interface
+  that admin users can use to edit an existing file-based lookup.
+> Updated the TimeRangePicker patch, such that the explicit 'All Time' syntax
+  of all/all, (support for which has been quietly in the SVU codebase for
+  some time), now triggers TimeRangePicker prepopulation.  the normal or
+  'implicit' All Time timeranges still do not trigger prepopulation.
+> Updated URLLoader to preserve 'all time' time ranges with the explicit
+  all/all form, so that the all time will finally work correctly in back
+  and forward button use cases, in all views where keepUrlUpdated=true.
+> Fixed a recent regression (2.0.10) in the Events module where events
+  wouldn't render if the search had an all-time timerange.
+> Updated the HTML to not log errors when the search results are completely
+  empty.  There was no functional bug here but the error logging looked bad.
+> Fixed a bug in Pulldown where in some configurations the little built-in
+  progress bars wouldn't show the progress of the job.
+
+2.0.10 (July 31 2012)
+
+> Added print.css to make Sideview UI elements print better.
+> Fixed a bug in HTML module where multiple selection args in the URL could
+  cause problems in the target view.
+> Added time headers to the Events module (endless scroller) so that as you
+  scroll past major time boundaries in the search results you get a nice
+  header clueing you into the change.
+
+2.0.9 (July 24 2012)
+
+> Updated HTML, Pulldown, ResultsValueSetter, Pager and Tabs modules to be
+  compatible with the new json search results format in the Splunk 5.0 beta.
+  (Note that we are also still compatible with the old 4.X format.)
+> Fixed a bug in the Sideview Editor where when you first added some params
+  like 'staticOptions', the values would not be set correctly.
+> Updated the Sideview Editor so that if a param is marked deprecated and it
+  is not set,  it will not display in the add/edit forms.
+
+2.0.8 (July 13 2012)
+
+> updated URLLoader to pass the savedsearch name as $search.name$.
+> improvements and bugfixes for the Sideview Search view.
+> Fixed a bug where the SearchBar module wouldn't prepopulate correctly in
+  certain hybrid permalink cases.
+> added a new "custom_keys" view to the documentation that talks about the
+  large number of $foo$ keys like $search.timeRange.label$,
+  $click.searchTerms$,  and $results.sid$ that are available when you use
+  Sideview Utils.
+> Fixed the docs for Switcher - the advanced example wasn't set up correctly.
+> Changed core CSS on the Tabs module to improve rendering on IE.
+> Added some patches to JSChart to patch some bugs around scheduled saved
+  searches, handling during postProcess, and to reduce some unnecessary
+  requests to the server that were causing aborts.
+> Fixed a bug in the Sideview Chart interface where the 'expand all macros'
+  link pointed to the Splunk's charting view instead of Chart.
+> Updated the JSChart patch to preserve the new "render throttling" code
+  which was added in Splunk 4.3.3.
+> removed the 'prototype' disclaimer from the new Search interface. Added it
+  to the nav under 'Sample interfaces'.
+
+2.0.7 (June 18 2012)
+
+> Emergency workaround for a bug I discovered in Splunk's JS minification.
+  (comments at the end of the module JS files disrupt the page load.). The
+  comment has now been removed so as to not trigger the bug.
+
+2.0.6 (June 13 2012)
+
+> Fixed a recent regression in Redirector where the drilldowns into the
+  'misc terms' textFields wouldn't work correctly.
+> Updated the Editor to work when SplunkWeb's root_endpoint is set.
+> new SearchControls module.  Obsoletes JobStatus and offers app-developers
+  a much more flexible and configurable version of similar functionality.
+> Fixed a subtle bug in the multiple-selection Pulldowns when the URLLoader
+  is in keepURLUpdated mode, where the selection state would in some cases
+  reset away from a null aka 'all' selection.
+> Updated the patch to the SearchBar so that it has more support for legacy
+  "?q=" cases.
+> Patched a bug in JSChart, where it would die if you gave it a context with a
+  click.* value that was not string-valued.
+> new feature on Redirector - if an arg is set to a $foo$ token that is an
+  array-valued token (such as selected state from a multivalued Pulldown)
+  then the array value is serialized into the final URL so that a multivalued
+  Pulldown in the target view can prepopulate it correctly.
+> new feature - the correct splitByField for drilldowns can be inferred by
+  the system even in the absence of a Report module (and without intentions).
+> Added a param called 'autoDrilldown' on Redirector.  Although very advanced,
+  and requiring use of the 'generalSearchTermsField' param, this allows you to
+  construct a view wherein chart and table drilldowns from timechart/chart/
+  stats/top/rare reports will happen automatically (with of course none of
+  the "intentions" system being used).
+
+2.0.5 (May 18 2012)
+
+> When you add a module in the Sideview Editor the schematic view
+  no longer resets your selection to the root node.
+> Fixed a bug in the Editor where the "foo.*" params weren't loading
+  contextual help.
+> Cleaned up the XML formatting as displayed in the view controller's
+  show endpoint, to use the standard Sideview patches for readability.
+> added messaging for when no wildcard "foo.*" args are set yet on a module.
+> Gave the Editor a warning message for Chrome users until we can work around
+  the Chrome bug where JS loses the ability to access other frames.
+
+2.0.4 (May 16 2012)
+
+> Fixed a typo in the dynamic pulldown docs that prevented the example from
+  loading correctly.
+
+2.0.3
+> Considerable design and interaction improvements on all 4 of the new sample
+  interfaces - search / chart / report / explore.
+> including those sample interfaces in the nav along with an overview.
+> Fixed some CSS rendering bugs around using the Events module in the
+  search template.
+> Fixed a bug where the actions menus in the Events module could stop
+  working properly.
+> Made Redirector's 'generalSearchTermsField' functionality work correctly
+  in all cases when the current terms contain multiple search commands.
+
+
+2.0.2
+> Fixed a bug in the endless scroller module (Events), where the events
+  would render on top of the typeahead layer.
+> Fixed a bug where the Editor wouldn't launch properly because of URL's
+  that still used the old 'sideview' directory name.
+
+2.0.1
+> Sideview Editor's "schematic panel" now works on IE7.
+> Fixed some of the OTHER/NULL logic that wasn't quoting field values.
+> added the ability to refer to $results.doneProgress$ along with the
+  other keys like $results.scanCount$.
+
+2.0 (April 18 2012)
+
+> Changed the FreshMaker to accommodate root_endpoint config in SplunkWeb.
+> New Report module.  Makes it easy to build views that act as full fledged
+  general reporting interfaces.
+> Patched FlashChart to output drilldown keys that make it trivial to implement
+  simple drilldown cases, and merely "easy" to implement complex ones.
+> new Switcher module.  Can be wired up to an existing module, eg: 'Pulldown'
+  or 'ResultsValueSetter'. Based on dynamic values it will then hide/show
+  different content on the page as appropriate.
+> Updated the Pulldown such that instead of the old and complex
+  "searchFieldsToDisplay" param, you can set much simpler params "valueField"
+  and "labelField".  Note the old xml-valued param will still work.
+> Updated the Pulldown so that you can set a key called "staticOptions"
+  instead of the old and awkward name "staticFieldsToDisplay".
+  Behavior of the new param is the same as the old, and the old param will
+  still work.
+> All documentation, examples and testcases updated with new Pulldown params.
+> Search module now does $foo$ substitution into earliest and latest params,
+  meaning you now have more flexibility to build custom UI around timeranges.
+> Fixed a minor problem in Utils' internal testcase code, where some of the
+  customBehaviors stopped working.
+> $foo$ replacement now works with array-valued context keys.  They can now
+  be accessed like so:  "$foo[0]$".  Testcases added.
+> The absolute timerange of the job itself can now be accessed using
+  $results.timeRange.label$,  $results.timeRange.earliest$,  and
+  $results.timeRange.latest$.  This is useful in some complex cases.
+> Added a 'useHistory' param to SavedSearch module.  values are True,False
+  and Auto, with Auto being the default.
+> Added new docs around inline drilldown.
+> Added new "mergeDrilldownKeys" param to the Redirector module.  When true,
+  the module works with existing code to automatically merge the click
+  arguments from tables/charts,  into explicit URL arguments
+> Added "Filters" module,  which needs a little customBehavior to do it's
+  intended job, but which allows you to implement custom
+  filtering/breadcrumb behavior.
+> minor change to the Events module to allow more useful copy/paste behavior
+> Fixed a bug in the TimeRangePicker patch, where if you were using
+  URLLoader and keepURLUpdated=True, zoom-in and zoom-out interactions
+  would sometimes reset to older values from the URL.
+
+1.3.5 (Jul 25 2012)
+
+> Updated all copy to notify users that the latest version of Sideview Utils is
+2.0.9 and is freely available from the Sideview Site for internal use.
+> Updated HTML, Pulldown, ResultsValueSetter, and Pager modules to be
+compatible with the new json search results format in the Splunk 5.0 beta.
+(Note that we are also still compatible with the old 4.X format.)
+
+1.3.4 (Feb 22 2012)
+
+> Fixed a regression introduced in 1.3.3, around the FlashChart race
+  conditions in complex views. See release notes for 1.3.1 and 1.3.2.
+
+1.3.3 (Feb 17 2012)
+
+> Fixed a minor bug in Search, where in some cases  the $search.timeRange.*$
+  keys wouldn't work correctly in the "search" param.
+> Fixed a strange problem that showed up suddenly in IE, where appearance and
+  behavior of window.console started leading to js errors everywhere on at
+  least one system.
+
+1.3.2 (Feb 15 2012)
+
+> Improved the FlashChart patch to avoid a problem where in simpler views
+  the FlashChart would not load the first time and the user would have to
+  either submit a second search or interact further to make it appear.
+
+1.3.1 (Feb 13 2012)
+
+> Fixed a bug in the HTML module, where $foo$ substitution within the
+  actual value of the "src" param was not done properly.  added testcase.
+> Patched a problem in the FlashChart module that has been the cause of
+  many race conditions around page load in complex views.
+> Fixed a problem in the Pulldown module where CSS changes in Splunk 4.3
+  caused the module's internal progress bar to be misaligned.
+
+1.3 (Jan 27 2012)
+
+> Fixed a bug on Internet Explorer, with dynamically-loaded Pulldown
+  modules, if they had enough entries to warrant an automatic scrollbar,
+  would have some pixels of the longest options obscured.
+> Implemented code around how Sideview applies its "customBehaviors", to fix
+  a subtle bug in certain cases where customBehaviors would not take effect
+  until after the autoRun sequence had started.   Note that the old methods
+  to apply customBehaviors from your apps will continue to work, although
+  they are subject to this bug around autoRun.
+
+1.2.5 (Dec 15 2011)
+
+> Fixed a bug where dynamically-loaded Pulldown modules would have their
+  width param ignored on Internet Explorer.
+> Improved the integration between the ZoomLinks module and the Timeline
+  module.
+> Ongoing improvements and bugfixes in the new Timeline module.
+> Reworked TextField to make customBehaviors for input validation easier.
+> Implemented Button's long lost 'allowAutoSubmit' param.
+> Fixed a bug where if an HTML param under an autoRun node used the "src"
+  param instead of "html" param, it would not display its content.
+> Gave the HTML module the ability to replace dynamic tokens in the value
+  of it's "src" param, (but *only* with values from the querystring)
+> Added some high level docs about the advanced XML framework .
+
+1.2.4 (Nov 15 2011)
+
+> Fixed a bug in 2-level table drilldowns that used the Pager module.
+  Clicking the second Pager would drive changes in the first taking
+  away the second Pager and second table.
+> First functional version of the Timeline module. (Larger release to
+  follow within a month or two)
+
+1.2.3 (Oct 20 2011)
+
+> In apps that implemented the new experimental viewstate circumvention (only
+  Sideview apps have done this), if you went to a savedsearch URL in a view
+  where the back button functionality was enabled, the back and forward
+  buttons would not work correctly.
+> Fixed a bug on Internet Explorer that caused [object Object] to
+  get substituted for the search string in a class of drilldown cases.
+
+1.2.2 (Oct 18 2011)
+
+> Fixed a problem in ValueSetter if you were using uriEncodeKeys to encode
+  the actual 'search' key.
+> Changed Sideview.utils.contextToQueryString so that it no longer preserves
+  minor keys like 'foo.value', 'foo.rawValue' and 'autoRun'
+
+
+1.2.1 (Oct 12 2011)
+
+> Fixed typo in homepage HTML that caused the first panel to be invisible.
+> Fixed a bug in ValueSetter whereby you couldn't use custom Sideview keys
+  like $results.sid$ in the value param. Testcase added.
+> Fixed a bug in the endless scroller where an upstream change to the
+  selected fields wouldnt re-render the layers.
+> Added a prototype view to the app that is basically flashtimeline but with
+  both an endless scroller and back button support.  Note the custom behavior
+  still has some CSS bugs on IE. I'll give it more attention soon.
+
+1.2 (Sep 28 2011)
+
+> Added the first version of a new Events module. The module is similar to
+  EventsViewer except it works in an 'endless scrolling' mode so you dont
+  need to paginate it. Docs and testcases added.
+> Complex cases involving transformed searches and FlashTimeline drilldown
+  interactions now supported correctly.
+> HTML module now has a 'src' param that you can use as an alternative to the
+  'html' param. When src is set to 'foo.html' the module will look for its
+  content at '/appserver/static/foo.html'.
+> if you hold down Ctrl (Cmd on macs) when you click, the Button module
+  now works with Redirector to launch the URL in a new window.
+> Added some docs for how to go about using HTML instead of SingleValue.
+> Added some docs to explain the finer points of using the Redirector and
+  URLLoader modules.
+> homepage now has 'bump' warning only for Splunk versions before 4.2.3.
+
+
+1.1.9 (Sep 02 2011)
+
+> Adding new readme file so that the 'checking for typos' messages on startup
+  no longer flag the new Sideview keys as typos.  (This will only have an
+  effect for Splunk versions >= 4.2.3).
+> Fixed a bug where if you nested SimpleResultsTables but gave them
+  inconsistent values for 'displayRowNumbers', the table drilldown keys
+  could be off. Testcase view added.
+> 'all' is now a valid timerange argument in URLs for both earliest and latest.
+  Most significant practical effect is that when Redirector sends an 'all time'
+  range somewhere, it will use 'all' for the arguments, thus allowing patched
+  TimeRangePickers in the target view to prepopulate correctly.
+> All time headers across the system will now use the 'header_label' key from
+  times.conf automatically if the time arguments match the stanza's values.
+> Fixed a bug where if you pasted into a TextField using the right-click menu
+  or the 'Edit' menu up top, you could end up with an inconsistent UI.
+  (Splunk core modules also suffer this bug.)
+> Fixed a bug where if you had a mixed URL combining search.name=foo with
+  timerange args, on page load you would get an erroneous error message.
+> Fixed a bug in certain complex cases involving customBehavior where
+  TextField edits wouldn't make it to the final search unless you hit return.
+> Fixed a JS error on views with only HTML modules and other static modules.
+> When using the slide left/right links in ZoomLinks, it no longer jumps back
+  to old zoomed-in or zoomed-out ranges previously set.
+
+1.1.8 (Aug 04 2011)
+
+> Fixed a bug in Pager where if you had both a real-time timerange and
+  a postProcess search, it would always render zero links.
+
+1.1.7 (Jul 29 2011)
+
+> Fixed a typo in ResultsValueSetter.
+> Some Technical Difficulties caused me to accidentally remove the
+  CustomBehavior module.
+
+1.1.6
+> Fixed a bug in the Pager module where it left the 'prev' link disabled
+  on page 2.
+> Added a new optional param to Pager called 'collapseWhenEmpty' which
+  defaults to True.  If set to False,  then the Pager will not collapse
+  itself vertically when it has no page links to render.
+> Fixed a bug in ResultsValueSetter where it will only work when there is
+  exactly one row in the search results. Now it still only grabs values
+  from the first row but it doesnt care if there are other rows.
+> Button module neglected to actually register its customBehaviors.
+> in the Pulldown module now when the 'value' field is not present in a
+  given row, an error is logged and "(no value found") is the label for
+  the option element.
+> in the Pulldown module if the 'value' field is present in a given row
+  but the 'label' field is not, it logs a warn to the console and uses
+  the value.
+> when Pulldown is used in multiple-selection mode, you can actively deselect
+  the last option and it no longer reselects when the Pulldown reloads.
+
+1.1.5.1
+> Patched the SimpleResultsTable module to escape backslashes in the
+  cell and column values when it is providing keys to downstream
+  modules  Note that unescaped values are available now via
+  $click.fields.fieldName.rawValue$ and $click.cell3.rawValue$.
+> Patched a Splunk bug so that now the ctrl-click on SimpleResultsTable
+  and Redirector patterns pops up a new window even when drilldownPrefix
+  is not set to "click".
+
+
+1.1.5 (Jun 22 2011)
+
+> Added the Button module. Behaves basically the same as SubmitButton
+  but with cleaner code. And as with all sv modules, you can easily
+  define custom behavior.
+> changed form prepopulation for saved reports to not persist internal
+  callbacks in the encoded value.
+> Fixed a bug in Pulldown where if dynamic results had tags, the tag
+  values would get concatenated onto the values and labels.
+> Sped up Pulldown module rendering by using outputMode=json instead
+  of xml.
+> Fixing a bug where you couldnt use the width param on a multiple
+  select Pulldown, and the 'width=xxx' would appear in the UI.
+
+1.1.4.1
+> Updating SavedSearch.conf to require the 'name' param, so users dont
+  smack into 500 errors and mako stack traces.
+
+
+1.1.4 (Jun 01 2011)
+
+> Added the ResultsValueSetter module. (Picture ValueSetter, but with
+ the power to fill values from fields in search results.)
+> Still Experimental:: Added a custom module CustomRESTForSavedSearch, that
+ exposes a python endpoint to insert serialized context and 'edit view'
+ information into saved searches.
+> Still-Experimental: JobSpinner module.
+> Pager now takes up no space when empty
+> Pager can now account for postProcess searches even when rendering events
+> Redirector can now redirect array-valued context values that come from
+  multiselect Pulldowns
+> ValueSetter now has a param that can be set called allowClobber, which
+  defaults to True. If you set it to false it backs off and does nothing
+  if the value that it would normally set was set from above. This is needed
+  for prepopulating multiple-selection Pulldowns from the URL even when there
+  is a fallback default specified by ValueSetter.
+> ValueSetter has an optional param called 'delim'. If set, the string value
+  will be split on this value and returned downstream as an array. This allows
+  ValueSetter to set default values on multiple-selection Pulldown modules.
+> Fixed a bug where TimeRangePicker could later reselect itself to an old
+  value in the page URL.
+> Patched SimpleResultsTable to not output the name2/value2 keys if the user
+  clicks on the first column.
+> Patched an IE bug where Pulldowns could overlap eachother
+> if Pulldowns, TextFields and Checkboxes have null 'label' params, now no
+  label gets emitted at all.
+> Fixing a number of CSS alignment issues across form elements and labels
+> Improved performance in HTML module by switching to outputMode=json
+
+1.1.3 (May 06 2011)
+
+> Fixed an event handling bug in the TextField module.
+> Fixed a bug where ui element prepopulation would make the value not
+>  available for passive use in other subbranches of the view.
+
+1.1.2 (May 06 2011)
+
+> Fixed a generic problem around how URLLoader transferred context keys to
+ the elements it was prepopulating.
+> Fixed a set of problems when a set of form search controls included elements
+ that ran searches, like dynamic Pulldowns. Specifically we no longer use
+ resetUI, but created a new method called resetToDefault instead.
+> Fixed more subtleties around TimeRangePicker prepopulation cases.
+> Fixed a longstanding core problem where TextField edits would seem to get
+ ignored when it was mixed with dynamic Pulldown elements in a form search
+ view.
+
+1.1.1 (May 04 2011)
+
+> Fixed a problem where the patched TimeRangePicker modules were not picking
+ up URL arguments correctly
+
+1.1 (May 04 2011)
+
+> URLLoader now can reload from 'soft keys' in the document hash as well as
+ from 'hard keys' in querystring. new cases in testcase view.
+> URLLoader, when present upstream and configured with
+ keepURLUpdated = true, works with Pulldown, TextField, Checkbox SearchBar
+ and TimeRangePicker modules to preserve selection state in document hash.
+> URLLoader, when present upstream and configured with
+ keepURLUpdated = true,  supports back/forward button interaction. back and
+ forward buttons will work to restore state of those same 5 modules.
+> URLLoader now supports multivalued selections when deserializing
+ request.ui_context.   new case added to testcase view.
+> url arg "search_name" is now "search.name".
+> TextField, Pulldown, Checkbox will now detect upstream-travelling contexts
+ and try to select themselves to any matching value.  If successful
+ the push will stop travelling upstream.  If no more keys remain in the
+ Context, they will initiate a new push.  testcases added.
+> URLLoader will now detect upstream-travelling contexts and serialize any
+ values into the document.hash.  testcases added.
+> URLLoader's optional earliestTimeArg and latestTimeArg params no longer
+ support $foo$ substitution.  It didnt seem like anyone was ever going to use
+ it, and it made my head hurt.  Now you simply set them to straight argument
+ names. Defaults are "earliest", and "latest".
+> URLLoader's 'autoRun' param changed to also not allow $foo$ substitution,
+ and renamed to 'autoRunFieldName' to avoid conflicts with the autoRun
+ attribute.
+> Fixed the svconsole to work in chrome.
+> tiny patch to Splunk's JS logging code so that we can get working console
+ output in Chrome.
+> Fixed a bug on Chrome where TextField modules could get populated with noise
+ when you use the back button.
+> added documentation around URLLoader's back button support.
+> added a view similar to 'flashtimeline', except that it has support for the
+ back and forward buttons.  In the future this will probably be released in a
+ different app alongside possibly some new generic report builders.
+> new SavedSearch module, which can pull out saved searches and their time
+ ranges, and any serialized context keys they were saved with. This is a work
+ in progress, as it has some notable gaps, like it has no way to load the
+ jobs that may have been previously used by the scheduler. (coming soon)
+
+
+1.0.5.6 (Apr 14 2011)
+
+> TextField.conf, as an older workaround for annoying "None" issues in 4.1,
+ had 'default=""'  in its conf file.  in 4.2 this is now interpreted as a literal
+ value of two double quote chars,  which was unfortunate. Fixed now.
+> Added docs and sample code showing developers how to check for the
+ Sideview Utils app from their app and make sure it matches a minimum
+ required version.
+> Adding the 'greater than or equal' symbol whenever HTML is displaying result
+ or event counts, and the job is still running.
+> Made the SV console show the timerange args not just the toConciseString()
+ output.
+> Refining ZoomLinks module to
+ a) use the selected FlashChart timerange if there is one.
+ b) remember a stack of zoom levels when zooming in and out.
+ c) use the icons in the default splunk skin.
+>patching a bug in SimpleResultsTable about hiding downstream modules when it
+ first loads.  (A typo in the splunk code prevents intended behavior.)
+> Giving the Pulldown module a simple cue to tell the user how much progress
+ the search is making.
+
+1.0.5.5 (Mar 31 2011)
+
+> Added the entity_refresher view, for other app-developers out there tired of
+ using the raw refresh URL's.
+> Added the Pager module, which displays page links but also automatically
+ accounts for postProcess searches.
+> nailing down the CSS for all our "invisible" modules.  SideviewUtils.css now
+ makes them all invisible.
+> removing the previous 'fix' for backslashes, as it was actually pretty naive.
+> adding a proper implementation to auto-escape backslashes.  Only the noisy
+  input from TextField and from Pulldown module's is backslash-escaped now,
+  and only the $value$ portion.
+> Just in case anyone wants to do something really weird in the future,
+  ValueSetter now has a backslashEscapeKeys param although there's a stern
+  warning in the docs - if you think you need it, you probably dont.
+> some refactoring to clean up ValueSetter which was looking a little creaky.
+> Extracting a templatize method from Pulldown and TextField and pulling it
+ out into SideviewUtils.
+> Fixing a bug in Checkbox where it had a 'checked' param but didnt use it.
+> Patching a framework race condition around dispatchAlreadyInProgress
+> the Splunk.Logger class sometimes freaks out and kills the page with
+  'trace is not a function'.  Too much complexity there to debug it so we
+  dont use that class anymore- our tiny equivalent in SideviewUtils seems fine.
+> Writing hidden testcase views for Checkbox and ValueSetter.
+
+1.0.5.4 (Mar 21 2011)
+
+> Fixed a bug in HTML where if it was sitting downstream from a FlashTimeline
+ module and the user clicked on a bar in the FlashTimeline, it wouldnt trigger
+ a redispatch.
+> Fixed a bug in ValueSetter where you couldnt refer to the standard
+ $search.timeRange.earliest$ keys in the value param.
+> When Search does $foo$ substitution now it replaces slashes so that the
+  search will get run correctly by splunkd.
+> Fixed a bug when the URLLoader's pageTitle param was used, whereby the text
+ would get lowercased.
+
+1.0.5.3 (Mar 17 2011)
+
+> added simple version detection for other apps and modules to use when
+  they rely on sideview_utils.
+> adding a width param for Pulldown (which sets the width of the select box)
+> caught a few more 'None' cases in the label params.  Basically patching
+  bugs in splunkWeb's python code. (It converts null values into string
+  literals of u"None".)
+> pulled out another template method on Redirector to make customizations
+  easier.
+> The 'name' param of the ValueSetter module now supports $foo$ substitution.
+  This is sort of a brainbender but it's really amazingly powerful when you
+  need it.
+> I'd forgotten to add the checkbox view into the navigation.  So people
+  probably only saw it if they walked through using the 'next' links.
+> TextField module's label param was not doing $foo$ replacement at runtime,
+  (onContextChange)
+> Pulldown and TextField label params werent allowing the customary $name$ as
+  shorthand for the module's name param.
+> Further improvements to Pulldown and TextField CSS so that they float
+  better in complex floated layouts.
+> minor copy changes in some example views.
+
+1.0.5.2 (Mar 04 2011)
+
+> Updated the HTML module to accept $results.count$ and all the
+  eventCount/scanCount/cursorTime keys from the job object, in addition
+  to the $results[0].fieldName$ keys that it already supported.
+  This now *really* obsoletes SimpleResultsHeader.
+> Checkbox module - now officially exists and is packaged with an example
+  view.
+> Fixed the customization we do to SearchBar, so that the value doesnt have
+  that random 'search ' prefix. Developers wont expect this here and it
+  doesnt do anyone any good.
+> Gave URLLoader the power to set the pageTitle.
+> small but important fix in PostProcess - now extends DispatchingModule not
+  AbstractModule.
+  also fixed a small postProcess logic mistake in CanvasChart
+> fixed some obscure corner-case problems where rarely-used null param values
+  came out as 'none' if set to explicit null values.
+> fixed vertical alignment issues and other CSS issues in Pulldown across some
+  single-selection and multiple-selection cases.
+> Pulldown - gave the outerTemplate param a default of "$value$" as it was
+  too easy for users to leave it unset in multiple selection cases (disaster),
+  or worse set it to emptystring in multiple selection cases (when they
+  really wanted $value$)  I also put in explicit error detection in case
+  people fall into these problematic situations anyway
+> Fixed a minor mistake in how URLLoader implemented the autoRun param.
+> Gave various "label" or label-like params the appropriate localization flags
+> Fixed a bug in the HTML module where multiple dynamic HTML modules on one
+  page would do weird things.
+> Fixed a bug in the HTML module where in certain dynamic cases it would
+  'flash' a bit.
+> Fixed a bug where the Pulldown module wasnt deduping it's
+  requiredFieldsList.
+> Fixed a bug in the Pulldown module where multiple selection cases could
+  leave an unclosed div tag.
+> Added the first batch of UI performance benchmarking
+> Fixing a minor bug in HTML whereby it made unnecessary requests.
+> Commenting out the patch that circumvents viewstates.conf until the other
+  pieces are done.
+
+1.0.5 (Feb 14,2011)
+
+> HTML now accepts $results[0].myFieldName$ and it will make a request to the
+  current job.   That request will use postProcess to get back minimal XML
+  to fulfill all such tokens that are specified in the html param. This
+  obsoletes the SingleValue module as well as SimpleResultsHeader.  XML in a
+  real app scenario is cut down to approximately 30% of what it would take to
+  do it with SingleValue modules. And far fewer requests means a faster UI.
+> Significant examples added to cover most of that new functionality.
+> Making postProcess more careful so you can refer to upstream postProcess
+  strings as $postProcess$.  It's not uncommon that you want to just tack on
+  a little somethin extra and you dont want to repeat it.
+> making the Pulldown module's CSS work a bit better in both
+  multipleSelection cases and single-selection cases.
+> Pulling out and normalizing some code to expose
+  $search.timeRange.earliest$ and $search.timeRange.latest$ consistently
+  across the modules.
+> adding a patch to TimeRangePicker to output the same standard keys
+  ($search.timeRange.earliest$ and $search.timeRange.latest$ )
+> Refactoring Redirector.js which had gotten a bit messy. Noticed it because
+  it had become hard to customize in particular apps.
+> improving the Patch we make to SimpleResultsTable so you can get to the
+  secret epochTime value (when there's a _time column)
+> some reorganization of the example views.
+> Lots of copy edits in the example views.
+
+1.0.4.7 (Feb 2 2011)
+
+> Changed Pulldown so that you can omit the 'label' from the items in
+  staticFieldsToDisplay and it will implicitly use the 'value' field as the
+  label. (I'd already done this for search fields but I hadn't made the same
+  improvement to the static fields)
+> Added a PostProcess module that is extremely simple and allows you to set
+  the postProcess arg. While this is nothing new, it does automatic $foo$
+  substitution which opens up a ton of stuff that couldn't be done before.
+> added 2 example views for how to use the PostProcess module.
+
+
+1.0.4.6 (Jan 26 2011)
+
+> Pulldown's optional requiredFields param had a default that does no harm but
+  doesnt make much sense.
+> Pulldown incorrectly preselected "loading..." in a couple multiple
+  selection cases.
+> Pulldown needed improved validation to catch people configuring postProcess
+  without configuring any search fields
+> Pulldown's requiredFieldsList logic changed to ensure that both the value
+  and the label fields are specified
+> Pulldown changed to allow $foo$ replacement in its specification for
+  searchFieldsToDisplay, including $name$ to refer to the 'name' param
+> URLLoader formerly used Splunk.util.queryStringToProp() which doesnt
+  account for multivalued URL args correctly. This was then blocking correct
+  prepopulation of multiple-selection configs
+> fixed a bug in the multiple-selection documentation, which caused part of
+  the example config to not display
+> added a (hidden) page of new testcases to track various more complex
+  handling in prepopulation.
+> Much of the module param documentation in the module.conf files was written
+  under the quite sensible key description=foo. However this is not what
+  SplunkWeb uses, so now i've changed them all to the proper label=foo. So if
+  you thought I'd been lazy and only documented half of my params you can now read them.
+> fixed the links to module documentation that were hardcoded links to
+  localhost:8000/modules.
+
+
+1.0.4.5 (Jan 22 2011)
+
+> Fixed embarassing typos in 2 of the 4 mailto links.
+> included the module's parentId in the SV console output.
+> Fixed a context staleness bug in TextField. You'd hit it whenever you had
+  more than 1 TextField chained together and you edit the upstream one, focus
+  away and click something further downstream to start the search. Reviewed
+  other event handler issues more thoroughly.
+
+
+1.0.4.4 (Jan 21 2011)
+
+> Fixed a bug in ValueSetter where i was shadowing a variable from higher up.
+> added a 'count' param to the Pulldown module. The results endpoint has an
+  implicit count of 100 which meant the option lists could get truncated. new
+  param is optional and defaults to 5000.
+> Fixed a bug in ValueSetter. Some of the 'requiredKeys' logic was backwards.
+> Had to add some new stuff to the SV console. Needed to differentiate between
+  context keys inherited from upstream vs context keys that the module itself
+  is contributing. The code itself is pretty hacky but I dont care - it's a
+  debug console. Not a load bearing poster. move along.
+
+1.0.4.3 (Jan 18 2011)
+
+> First public release. For this version and prior there are no release notes.

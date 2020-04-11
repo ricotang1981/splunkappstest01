@@ -1,0 +1,331 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for URLLoader</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <div style="float:right;">
+    Let the page load. Everything should load green.  Click the green button. Everything should load green again.  Click the "go" link.  Green again.  Click green button. Green again.  Hey not so hard.<br>
+    <br>
+    known issues - ots library in CheckboxPulldown has a bug where labels with < or > get rendered with &amp;gt;,&amp;lt; instead.
+    </div>
+   
+    <h1>Testcases for URLLoader</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+
+    <module name="Button">
+      <param name="label">push again</param>
+    
+      <module name="HTML" layoutPanel="viewHeader">
+        <param name="html"><![CDATA[
+         <h3>$title$</h3>
+         script_tag = $script_tag$ (not present in initial HTML)<br>
+         script_tag_in_array = $script_tag_in_array$ (not present in initial HTML)<br>
+         alnum_values_in_array = $alnum_values_in_array$  (S/B present in initial HTML)
+
+        ]]></param>
+      </module>
+      
+      <module name="Link">
+        <param name="label">Go</param>
+
+        <module name="ValueSetter">
+          <param name="name">script_tag_in_array</param>
+          <param name="delim">,</param>
+          <param name="value"><![CDATA[<script>alert('hi I am from the array (position 0!')</script>,<script>alert('hi I am from the array (position 1!')</script>]]></param>
+          
+          <module name="ValueSetter">
+            <param name="name">alnum_values_in_array</param>
+            <param name="delim">,</param>
+            <param name="value"><![CDATA[foo,bar,baz,mildred,foo18]]></param>
+
+            <module name="Redirector">
+              <param name="url">testcases_for_urlloader</param>
+              <param name="arg.script_tag"><![CDATA[<script>alert('hi!')</script>]]></param>
+              <param name="arg.script_tag_in_array">$script_tag_in_array$</param>
+              <param name="arg.alnum_values_in_array">$alnum_values_in_array$</param>
+              <param name="arg.textField">foo>12</param>
+              <param name="arg.checkboxPulldown"><![CDATA[foo>12]]></param>
+              <param name="arg.checkboxPulldownDynamic"><![CDATA[foo>12]]></param>
+              <param name="arg.pulldown"><![CDATA[foo>12]]></param>
+              <param name="arg.pulldownDynamic"><![CDATA[foo>12]]></param>
+              <param name="arg.checkbox"><![CDATA[foo>12]]></param>
+              <param name="arg.checkboxes"><![CDATA[foo>12]]></param>
+              <param name="arg.checkboxesDynamic"><![CDATA[foo>12]]></param>
+              <param name="arg.radio"><![CDATA[foo>12]]></param>
+              <param name="arg.radioDynamic"><![CDATA[foo>12]]></param>
+              
+            </module>
+          </module>
+        </module>
+      </module>
+
+      <module name="TextField" layoutPanel="panel_row1_col2">
+        <param name="name">textField</param>
+        <param name="label">Script tag -- $script_tag$</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $textField.label$<br>
+            <br>
+          ]]></param>
+        </module>
+      </module>
+
+      <module name="TextField" layoutPanel="panel_row1_col2">
+        <param name="name">textField</param>
+        <param name="label">Script tag array  -- $script_tag_in_array$</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $textField.label$<br>
+            <br>
+          ]]></param>
+        </module>
+      </module>
+
+      <module name="TextField" layoutPanel="panel_row1_col2">
+        <param name="name">textField</param>
+        <param name="label">Script tag array[0]  -- $script_tag_in_array[0]$</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $textField.label$<br>
+            <br>
+          ]]></param>
+        </module>
+      </module>
+
+      <module name="Pulldown" layoutPanel="panel_row1_col2">
+        <param name="name">pulldown</param>
+        <param name="label">Script tag -- $script_tag$</param>
+        <param name="staticOptions">
+          <list><param name="value">1</param></list>
+          <list><param name="value">2</param></list>
+        </param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $pulldown.label$<br>
+            <br>
+          ]]></param>
+        </module>
+      </module>
+
+
+      <module name="Pulldown" layoutPanel="panel_row1_col2">
+        <param name="name">pulldown</param>
+        <param name="label">Script tag array  -- $script_tag_in_array$</param>
+        <param name="staticOptions">
+          <list><param name="value">1</param></list>
+          <list><param name="value">2</param></list>
+        </param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $pulldown.label$<br>
+            <br>
+          ]]></param>
+        </module>
+      </module>
+
+
+      <module name="Pulldown" layoutPanel="panel_row1_col2">
+        <param name="name">pulldown</param>
+        <param name="label">Script tag array[0]  -- $script_tag_in_array[0]$</param>
+        <param name="staticOptions">
+          <list><param name="value">1</param></list>
+          <list><param name="value">2</param></list>
+        </param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            $pulldown.label$<br>
+            <br>
+          ]]></param>
+        </module>
+      </module>
+
+
+      <module name="TextField">
+        <param name="name">textField</param>
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="foo>12">$textField$</span>]]></param>
+        </module>
+      </module>
+
+      <module name="CheckboxPulldown">
+        <param name="name">checkboxPulldown</param>
+        <param name="label">types</param>
+        <param name="staticOptions">
+          <list>
+            <param name="value">Fred</param>
+          </list>
+          <list>
+            <param name="value">foo>12</param>
+          </list>
+        </param>
+        <module name="HTML" >
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="( foo>12 )">$checkboxPulldown$</span>
+          ]]></param>
+        </module>
+      </module>
+
+      <module name="Search">
+        <param name="search"><![CDATA[| stats count | fields - count | eval foo=split("fred,foo>12,foo<=13",",") | mvexpand foo]]></param>
+
+        <module name="CheckboxPulldown">
+          <param name="name">checkboxPulldownDynamic</param>
+          <param name="label">CheckboxPulldownDynamic</param>
+          <param name="valueField">foo</param>
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="( foo>12 )">$checkboxPulldownDynamic$</span>]]></param>
+          </module>
+        </module>
+      </module>
+
+      <module name="Pulldown">
+        <param name="name">pulldown</param>
+        <param name="label">pulldown</param>
+        <param name="staticOptions">
+          <list>
+            <param name="value">Fred</param>
+          </list>
+          <list>
+            <param name="value">foo>12</param>
+          </list>
+        </param>
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="foo>12">$pulldown$</span>]]></param>
+        </module>
+      </module>
+
+      <module name="Search">
+        <param name="search"><![CDATA[| stats count | fields - count | eval foo=split("fred,foo>12,foo<=13",",") | mvexpand foo]]></param>
+
+        <module name="Pulldown">
+          <param name="name">pulldownDynamic</param>
+          <param name="label">PulldownDynamic</param>
+          <param name="valueField">foo</param>
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="foo>12">$pulldownDynamic$</span>]]></param>
+          </module>
+        </module>
+      </module>
+
+      <module name="Checkbox">
+        <param name="name">checkbox</param>
+        <param name="label">Checkbox</param>
+        <param name="onValue"><![CDATA[foo>12]]></param>
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="foo>12">$checkbox$</span>]]></param>
+        </module>
+      </module>
+
+      <module name="Checkboxes">
+        <param name="name">checkboxes</param>
+        
+        <param name="staticCheckboxes">
+          <list>
+            <param name="value">staticValue1</param>
+          </list>
+          <list>
+            <param name="value"><![CDATA[foo>12]]></param>
+          </list>
+          <list>
+            <param name="value">staticValue3</param>
+          </list>
+        </param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="( foo>12 )">$checkboxes$</span>]]></param>
+        </module>
+      </module>
+
+      <module name="Search">
+        <param name="search"><![CDATA[| stats count | fields - count | eval foo=split("fred,foo>12,foo<=13",",") | mvexpand foo]]></param>
+        <module name="Checkboxes">
+          <param name="name">checkboxesDynamic</param>
+          <param name="valueField">foo</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="( foo>12 )">$checkboxesDynamic$</span>]]></param>
+          </module>
+        </module>
+      </module>
+
+      <module name="Radio">
+        <param name="name">radio</param>
+        
+        <param name="staticRadios">
+          <list>
+            <param name="value">staticValue1</param>
+            <param name="selected">true</param>
+          </list>
+          <list>
+            <param name="value"><![CDATA[foo>12]]></param>
+          </list>
+          <list>
+            <param name="value">staticValue3</param>
+          </list>
+        </param>
+        <module name="HTML">
+          <param name="customBehavior">highlightPassesAndFails</param>
+          <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="foo>12">$radio$</span>]]></param>
+        </module>
+      </module>
+
+      <module name="Search">
+        <param name="search"><![CDATA[| stats count | fields - count | eval foo=split("fred,foo>12,foo<=13",",") | mvexpand foo]]></param>
+        <module name="Radio">
+          <param name="name">radioDynamic</param>
+          <param name="valueField">foo</param>
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+            <span class="shouldBe" s:shouldBe="foo>12">$radioDynamic$</span>]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    Filters 
+
+    
+    Tabs
+
+
+  </module>
+    
+
+
+
+  
+
+
+
+</view>

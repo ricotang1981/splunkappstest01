@@ -1,0 +1,89 @@
+<% 
+# Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<%
+    def isPopulated(pName, module) :
+        if (pName in module and module[pName]) :
+            return True
+        else:
+            return False
+    def allowsMultipleSelection(module) :
+         if (module.get("size")!= "1"): 
+             return True
+         return False
+%>
+
+<%def name="buildOption(label, value='', selected='False')"><% 
+    selectedAttr = ('selected="selected"') if selected.lower() == "true" else '' 
+    if (value==None): value=""
+    if (label==None): label=value
+    %><option ${selectedAttr} value="${value | h}">${label | h}</option></%def>
+
+## if the label begins and ends with $, we do $foo$ substitution, 
+## straight from the URL
+<%def name="buildLabel(module)">\
+    <%
+    staticLabel  = _(module.get('label', ''))
+    %>
+    % if len(staticLabel)>2 and staticLabel[0]=="$" and staticLabel[-1]=="$" :
+        <label for="${module['moduleId']}_select">${qs.get(staticLabel[1:-1],"") | h}</label>
+    % elif (len(staticLabel)>0) :
+        <label for="${module['moduleId']}_select">${staticLabel|h}</label>
+    % endif
+</%def>\
+
+
+
+##ie doesnt do a good job with vertical-align unless 
+##we put it on both the select and the label.
+% if allowsMultipleSelection(module): 
+    <div class="multipleSelect">
+% endif
+## we're not supposed to use nobr anymore but hey the whitespace CSS attribute is 
+## wonky, so I'm going with what works.
+        <div class="progressTop"></div><nobr><%self:buildLabel module="${module}" />
+        <select id="${module['moduleId']}_select"
+% if allowsMultipleSelection(module): 
+            multiple="multiple" size="${module['size']|h}"
+% endif 
+% if module.get("width",False): 
+            style="width:${module['width']|h}" 
+% endif
+        >
+<%
+if "staticOptions" not in module and "staticFieldsToDisplay" not in module and not (allowsMultipleSelection(module)) :
+    module["staticFieldsToDisplay"] = [{"label":"All", "value":"*"}]
+%>
+% if (isPopulated("staticOptions",module)):
+    % for field in module['staticOptions']:
+        % if field and field.get('value', False)!=False :
+    <%self:buildOption label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" />
+        % else :
+    <option> Pulldown.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</option>
+        % endif
+    % endfor
+% elif (isPopulated("staticFieldsToDisplay", module)):
+    % for field in module['staticFieldsToDisplay']:
+        % if field and field.get('value', False)!=False :
+    <%self:buildOption label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" />
+        % else :
+    <option> Pulldown.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</option>
+        % endif
+    % endfor
+% endif
+
+%if (isPopulated("searchFieldsToDisplay",module) or isPopulated("valueField",module)):
+    <option class="dynamic" value=""
+    % if not allowsMultipleSelection(module): 
+        selected="selected" 
+    % endif
+    >${_("Loading...")|h}</option>
+% endif
+
+</select></nobr>
+
+% if allowsMultipleSelection(module): 
+    </div>
+% endif
+

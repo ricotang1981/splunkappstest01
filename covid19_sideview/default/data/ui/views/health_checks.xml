@@ -1,0 +1,107 @@
+
+<view>
+  <label>health checks</label>
+  <label>analysis</label>
+  <module name="TopNav" layoutPanel="appHeader" />
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <!-- this legacy Sideview Utils module is only here as a workaround since Splunk has not yet released
+any mechanism whereby Sideview XML views can specify what URI should handle Users who to to the legacy
+Advanced XML views. This is also why the "Sideview Utils" app is still required, incidentally. -->
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+        <h1><a href="analysis">Home</a> &gt; Run Health Checks</h1>
+      ]]></param>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row1_col1">
+      <param name="search"><![CDATA[
+| stats count | fields - count
+| eval severity_level=split("critical,info",",")
+| mvexpand severity_level
+| eval section_title=if(severity_level=="critical", "Critical Health Checks", "Other Health Checks")
+      ]]></param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <p>
+            This page will run a series of health checks.  <br>
+            If you see failures here or have questions about this page, email Sideview support at <a href="mailto:support@sideviewapps.com">support@sideviewapps.com</a>.
+          </p>
+
+        ]]></param>
+      </module>
+
+      <module name="Multiplexer">
+        <param name="fields">severity_level,section_title</param>
+
+        <module name="Search">
+          <param name="search"><![CDATA[
+| rest /servicesNS/-/-/configs/conf-checklist splunk_server=local
+| rename eai:appName as app search as searchToRun
+| search title="$severity_level$_*"
+| fields app searchToRun drilldown
+| search app="covid19_sideview"
+| eval drilldownLabel=if(isnull(drilldown),"see health check results","run troubleshooting search")
+| eval drilldown=if(isnull(drilldown),searchToRun,drilldown)
+          ]]></param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             <h2>$section_title$</h2>
+            ]]></param>
+          </module>
+
+
+          <module name="Pager">
+           <param name="count">20</param>
+
+            <module name="Multiplexer">
+              <param name="fields">app,searchToRun,drilldown,drilldownLabel</param>
+
+              <module name="Search">
+                <param name="search">$searchToRun.rawValue$ | sort - severity_level |  table severity_level metric</param>
+
+                <module name="ProgressIndicator"/>
+
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                   <p class="checklistConfSeverity$results[0].severity_level$" style="margin-bottom:0px;">
+                      $results[0].metric$
+                    </p>
+                  ]]></param>
+                </module>
+
+                <module name="Link">
+                  <param name="label">$drilldownLabel$</param>
+
+                  <module name="Redirector">
+                    <param name="url">search</param>
+                    <param name="arg.q">$drilldown$</param>
+                    <param name="arg.earliest">0</param>
+                    <param name="arg.latest">now</param>
+                  </module>
+
+                </module>
+
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                   <br>
+                  ]]></param>
+                </module>
+
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+
+
+    </module>
+  </module>
+</view>

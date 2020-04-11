@@ -1,0 +1,57 @@
+<view refresh="-1" template="dashboard.html" stylesheet="custom.css">
+  <label>Testcase for clearing postProcess</label>
+  <module name="AccountBar" layoutPanel="appHeader"/>
+  <module name="AppBar" layoutPanel="navigationHeader"/>
+  <module name="SideviewUtils" layoutPanel="appHeader"/>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html">
+      filler text
+    </param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="search">index="_internal" source=*metrics.log group="per_sourcetype_thruput" OR group="per_host_thruput" | stats count by group series</param>
+    <param name="earliest">-4h</param>
+
+    <module name="ProgressIndicator"/>
+
+    <module name="TextField">
+      <param name="name">series</param>
+      <param name="label">Series</param>
+
+      <module name="Button">
+        <param name="allowSoftSubmit">True</param>
+        <param name="label">Search</param>
+
+        <module name="PostProcess">
+          <param name="search">|search series="*$series$*" </param>
+
+          <module name="Pager">
+            <param name="count">50</param>
+
+            <module name="Table">
+
+              <module name="HTML" layoutPanel="panel_row1_col2">
+                <param name="html">i've selected  $row.fields.group$ $row.fields.series$</param>
+              </module>
+                
+              <module name="Search" layoutPanel="panel_row1_col2">
+                <param name="search">index=* OR index=_* ( sourcetype="$row.fields.series$" OR source="$row.fields.series$" OR sourcetype="$row.fields.series$" OR host="$row.fields.series$") | stats count by sourcetype source host index</param>
+                <param name="earliest">-1m</param>
+
+                <module name="Pager">
+                  <param name="count">50</param>
+
+                  <module name="Table">
+                    
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

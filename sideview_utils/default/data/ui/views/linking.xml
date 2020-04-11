@@ -1,0 +1,160 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>linking - Intro</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>linking - Intro</h1>
+    ]]></param>
+  </module>
+  
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <h3>Link to your cake and eat it too.</h3>
+      <p>
+        By using Sideview's Redirector module and URLLoader module, you can finally link from any view to any other view and prepopulate the pulldowns in the second view - however you like. 
+      </p>
+
+      <h3>How to use these modules</h3>
+      <p>
+        In Splunk's linking model, you have to use ConvertToIntention and HiddenSearch to turn your UI tokens into a search and then give that search to a ViewRedirector module.
+      </p>
+      <p>
+        In this new model those extra steps are gone.  Now you will simply give the UI tokens directly to a Sideview module called Redirector module.  Redirector module will send the user to another URL of your choice (not necessarily a Splunk URL and the URL's value can itself be dynamic).  What's more, you can pass any dynamic or static values you like as querystring variables. 
+      </p>
+      <p>
+        Then when the user loads the target view, you will have placed another module called URLLoader module near the top level of that view's XML, and URLLoader will load all key-value pairs from the URL and make them available to all downstream modules as normal keys.
+      </p>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+
+      <h3>URLLoader</h3>
+
+      <p>
+        URLLoader module is pretty simple.  You put it near the top of the view, high enough so that it 'contains' all of the modules that you wish to get prepopulated with values from the URL.  It technically takes several parameters, but they're all optional and 99.5% of the time you will not need them, so leave them unspecified. Also it almost always is where you want to put your autoRun="True" attribute.
+      </p>
+      <pre>
+&lt;module name="URLLoader" layoutPanel="viewHeader" autoRun="True"&gt;
+  ... all your other module config goes here
+&lt;/module&gt;
+      </pre>
+]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+
+      <h3>Redirector</h3>
+
+      <p>
+        You always need to specify arguments for the Redirector module, so here's how those arguments work.  
+      </p>
+      <p>
+        You can specify a 'url' param, and then any number of params of the form 'arg.something'.  Each such param will make a 'something=&lt;someValue&gt;' argument appear in the final URL. 
+      </p>
+      <p>
+        However, you're not restricted to hardcoding URL's and arguments.   Everything in the Redirector module can incorporate $$foo$$ tokens.  The argument values can incorporate any number of $$foo$$ tokens.  The URL param can as well, which means the view itself can be determined by something the user selected on the page.  Also, in some very specialized cases, you might want not just the argument values to be dynamic but the argument names themselves - this is possible by setting an arg like:   arg.$$someToken$$.  
+      </p>
+      <p>
+        Here's an example that sends current selections and current timerange to a custom view: 
+      </p>
+      <pre>
+&lt;module name="Redirector"&gt;
+  &lt;param name="url"&gt;my_custom_form_search_view&lt;/param&gt;
+  &lt;param name="arg.user"&gt;$$user.rawValue$$&lt;/param&gt;
+  &lt;param name="arg.earliest"&gt;$$search.timeRange.earliest$$&lt;/param&gt;
+  &lt;param name="arg.latest"&gt;$$search.timeRange.latest$$&lt;/param&gt;
+&lt;/module&gt;
+      </pre>
+
+
+      <p>
+        If your view had a 'mode' selector that allowed the user to switch between analyzing users and analyzing 'sessions', and you had a session_view and a user_view, you might do this: 
+      </p>
+      <pre>
+&lt;module name="Redirector"&gt;
+  &lt;param name="url"&gt;$$mode$$_view&lt;/param&gt;
+  &lt;param name="arg.user"&gt;$$user.rawValue$$&lt;/param&gt;
+  &lt;param name="arg.earliest"&gt;$$search.timeRange.earliest$$&lt;/param&gt;
+  &lt;param name="arg.latest"&gt;$$search.timeRange.latest$$&lt;/param&gt;
+&lt;/module&gt;
+      </pre>
+
+
+      <p>
+        Note the use of the $$user.rawValue$$ token.    It is important to remember the rule - $$foo$$ is for use in the Splunk search language.   $$foo.rawValue$$ is for things you want to display to the user and for when you are sending values to another view.
+      </p>
+
+      <p>
+        Also, if your target view has no autoRun="True" attribute, you might need to send an autoRun="True" arg to tell the URLLoader in that target view to kick everything off. 
+      </p>
+      <pre>
+&lt;param name="arg.autoRun"&gt;True&lt;/param&gt;
+      </pre>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h3>VERY Advanced Redirector Stuff</h3>
+      <p>
+        Redirector module takes a param called "mergeDrilldownKeys" that defaults to true.  This is a very advanced functionality, but it can do amazing things. You use it in conjunction with the Report module and other modules, to package a custom 'report builder' view in your app, and to make it so that that 'report builder' has a kind of 'endless drilldown' functionality. 
+      </p>
+
+      <ul>
+        <li>Let's say you have a nice custom reporting view.</li>   
+        <li>You are using a number of <a href="pulldown1_static">Pulldown modules</a> and/or <a href="text_field1">TextField modules</a> at the top that let the user filter the events down.   </li>
+        <li>One of these filters is a <a href="text_field1">TextField module</a> that accepts arbitrary search terms.
+        <li>Then you're using the <a href="search1_intro">Search module</a> to use these values in a search where each result row is a field in your indexed data.
+        <li>Then you're using some more <a href="pulldown1_static">Pulldown modules</a> and <a href="text_field1">TextField modules</a> to let the user pick a statistic like "avg", or "max", and to let them pick some fields to report on, split-by, etc... 
+        <li>Then you're using the <a href="report1">Report module</a> to put all these ingredients together.
+        <li>...</li>
+        <li>Now...  You have a FlashChart or a SimpleResultsTable module that you're using to let the user see the results of this fancy report that they picked. </li>
+        <li>Well,  you say,  this isn't enough.  I want the user to be able to click <b>anything</b> in this table or in this chart,   and I want the interface to do the right thing,  to 'drill into' that data and bring them to this interface or some other interface, with the correct criteria prepopulated.</li> 
+        <li>OK.</li>
+        <li>The only 3 things you have to do is a) make sure that the 'name' params of all filtering Pulldowns/TextFields are identical to the names of the extracted fields.   b) set the "generalSearchTermField" param to tell the Redirector module which field up there is the "general search terms" field.   c) do what you're supposed to do always, and use $$foo.rawValue$$ in Redirector keys instead of just $$foo$$.
+        <li>The end result is that no matter what report the user picks, no matter what element the user clicks on, it will figure it out, prepopulate the correct Pulldown or TextField when appropriate,  dump the values into the 'general search terms' box. </li>
+        <li>This will even be the case if the user gets tricky and clicks on "OTHER" in a chart, or "NULL", or if they click a legend item.  </li>
+      </ul>
+
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          To use the currently selected timerange, you use these two keys -- $$search.timeRange.earliest$$  and $$search.timeRange.latest$$.   If you want to use the pretty description of the timerange, like 'last 24 hours', you can use $$search.timeRange.label$$.  These keys are valid not just in the Redirector module, but anywhere where a Sideview module accepts a $$foo$$ token.
+        </li>
+        <li>
+          It is very important when you're taking current user input from Pulldown and TextField modules,  to use the $$foo.rawValue$$ output by those modules instead of $$foo$$.   The rawValue value will NOT have been backslash-escaped or templated and as such it's the rawValue that will prepopulate correctly in the target view.   Remember the rule:  $$foo$$ is for the search language and $$foo.rawValue$$ is for links and displaying things to humans.
+        </li>
+        <li>Make sure you only have one autoRun="True" attribute.  If you have more than one in any given subbranch of the XML, a) your view will be dispatching and cancelling lots of searches unnecessarily, and b) it can cause bugs.   Also note that autoRun="False" is meaningless and can be deleted whenever you see it.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Redirector" target="_blank">Redirector and its params</a>
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.URLLoader" target="_blank">URLLoader and its params</a>
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+  
+
+
+  
+
+</view>

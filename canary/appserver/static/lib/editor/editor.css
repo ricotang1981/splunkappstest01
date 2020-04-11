@@ -1,0 +1,176 @@
+/* Copyright (C) 2010-2017 Sideview LLC.  All Rights Reserved. */
+
+body {
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:12px;
+    color:#f4f4f4;
+    padding:0px;
+    margin:0px;
+}
+body,
+.resultsArea {
+    background-color:#222;
+    background-image:none;
+}
+
+a,
+a:link,
+a:active,
+a:visited {
+    text-decoration:none;
+    color:#aabbcc;
+}
+
+a.clearParam {
+    display:block;
+    background: url(../../../img/skins/default/icon_circle_delete.png) no-repeat left center;
+    margin-top:5px;
+    width:11px;
+    height:1px;
+    padding-top:11px;
+    overflow:hidden;
+}
+
+div.outerWrapper {
+    padding:5px 10px;
+}
+tr.activeInputElement {
+    background-color:#f5e998;
+    color:#222;
+}
+input.submit,
+input.cancel,
+input.button {
+    width:auto;
+    height:21px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 12px;
+
+}
+input.submit {
+    border: 1px solid #5E8D3D;
+    color: #FFFFFF;
+    -moz-border-radius: 4px 4px 4px 4px;
+    background: url("/static/img/skins/default/overlay_gloss_28.png") repeat-x scroll left -3px #73A550;
+    border: 1px solid #5E8D3D;
+}
+
+input.cancel {
+    -moz-border-radius: 4px 4px 4px 4px;
+    background: #f3f3f3 url(/static/img/skins/default/overlay_gloss_28.png) repeat-x left -3px;
+    border: 1px solid #666;
+}
+td.buttonCell {
+    text-align:right;
+}
+ /*
+#loading {
+    background-color:#9e3b16;
+}
+*/
+
+table.editorTable,
+table.viewerTable{
+    width:100%;
+    clear:both;
+}
+table.editorTable td {
+    vertical-align:top;
+    margin:0px;
+    padding:5px 10px;
+}
+table.editorTable table td {
+    padding:4px;
+}
+table.viewerTable td {
+    vertical-align:top;
+    margin:0px;
+    padding:0px 10px 0px 10px;
+    border-top:1px solid #ccc;
+}
+table.viewerTable td.values {
+    font-family:monospace;
+}
+table.viewerTable tr.header td {
+    border-top:1px solid #999;
+    padding:2px 10px 2px 0px;
+}
+table.viewerTable tr.spacer td {
+    border-top:0px;
+    height:10px;
+}
+table.viewerTable h4 {
+    margin:0px;
+    padding:0px;
+}
+td.labelCell {
+    width:100px;
+}
+td.clearCell {
+    width:10px;
+}
+td input, textarea {
+    width:100%;
+}
+td input.radio {
+    width:auto;
+}
+textarea {
+    min-height:120px;
+}
+input.defaultValue {
+    color:#999;
+}
+
+span.required {
+    font-weight:bold;
+    color:#f00;
+}
+
+tr.hidden {
+    display:none;
+}
+
+
+
+.success {
+    padding:5px 10px;
+    background: url(/static/img/skins/default/overlay_gradient_28_plus.png) repeat-x top left;
+    background-color:#e8f8ff;
+    margin-bottom:20px;
+}
+.fail {
+    padding:5px 10px;
+    background: url(/static/img/skins/default/overlay_gradient_28_plus.png) repeat-x top left;
+    color:#eee;
+    font-weight:bold;
+    background-color:#a62f2f;
+    margin-bottom:20px;
+}
+
+
+.splView-controls .Pulldown {
+    float:left;
+}
+.splView-controls input.searchButton {
+    height:22px;
+}
+
+.addNewLink {
+    text-align:right;
+}
+
+h2 {
+    margin-top:0px;
+}
+h2.withHelpLink {
+    float:left;
+}
+div.helpLink {
+    float:right;
+}
+
+
+.appHeaderWrapper {
+    min-height:0px;
+}

@@ -1,0 +1,54 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Datetime module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>the Datetime module</h1>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      DateTime is a module that allows the user to pick a single date and time using intuitive controls.
+      Here is an example showing a single DateTime control to set the earliest time of a timerange.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="DateTime" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">earliest</param>
+    <param name="label">Search all events after</param>
+
+    <module name="Search">
+      <param name="search">| metadata index=* type="sourcetypes"</param>
+
+      <module name="ProgressIndicator" />
+      <module name="Pager">
+        <module name="Table"/> 
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+  
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>at the moment DateTime's "name" param can only be set to "earliest" or "latest". While this may change in the future, it also may not...</li>
+        <li>Note that you can use the "dateFormat" param to specify a date format other than "mm/dd/yy". Most commonly you would use this if you and your users are more accustomed to "dd/mm/yy".  Note that the library used by the module is a little peculiar, in that "yy" is their shorthand for a *four* digit year, not a two digit year. 
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.DateTime" target="_blank">DateTime and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+</view>

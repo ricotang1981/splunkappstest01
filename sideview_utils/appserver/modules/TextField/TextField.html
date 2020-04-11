@@ -1,0 +1,44 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+## if the label begins and ends with $, we do $foo$ substitution, 
+## straight from the URL
+<%def name="buildLabel(module)">\
+<%
+    staticLabel  = module.get("label","")
+    # Splunk is silly and gives us, not explicit None values in the config, 
+    # but literally the string "None".  Thanks Obama.
+    if(staticLabel=="None") :
+        staticLabel=""
+%>
+<label for="${module['id']}_input"
+% if module.get("rows","1")!="1": 
+class="forTextarea"
+% endif
+>
+%if len(staticLabel)>2 and staticLabel[0]=="$" and staticLabel[-1]=="$" :
+${cherrypy.request.params.get(staticLabel[1:-1],"") | h}
+%elif (len(staticLabel)>0) :
+${staticLabel|h}
+%endif
+</label>
+</%def>\
+
+<%self:buildLabel module="${module}" />
+    % if module.get("rows","1")=="1": 
+<input type="text" id="${module['id']}_input" value="${module['default']|h}" 
+        % if module.get("width",False): 
+            style="width:${module['width']|h}" 
+        % endif
+        />
+    % else :
+<textarea id="${module['id']}_textarea" rows="${module['rows']}"
+        % if module.get("width",False): 
+            style="width:${module['width']|h}" 
+        % endif
+    >${module['default']|h}</textarea>
+    % endif
+    
+

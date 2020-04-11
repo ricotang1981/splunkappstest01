@@ -1,0 +1,141 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Radio</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Radio</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+
+    <module name="Button">
+      <param name="label">once more, with feeling</param>
+
+      <module name="Radio" group="static config" layoutPanel="panel_row1_col1">
+        <param name="name">test1</param>
+        
+        <param name="staticRadios">
+          <list>
+            <param name="label">firstStaticLabel</param>
+            <param name="value">staticValue1</param>
+          </list>
+          <list>
+            <param name="label">secondStaticLabel</param>
+            <param name="value">staticValue2</param>
+          </list>
+          <list>
+            <param name="label">thirdStaticLabel</param>
+            <param name="value">staticValue3</param>
+          </list>
+        </param>
+        <param name="template">myField="$value$"</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           <p>
+           selected value is:<br>
+            $test1$<br>
+            selected label is<br>
+            $test1.label$<br>
+            <br>
+           </p>
+           
+          ]]></param>
+        </module>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row1_col2" group="dynamic config">
+        <param name="search"><![CDATA[
+          | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+        ]]></param>
+        
+        <module name="Radio">
+          <param name="name">test2</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          <param name="template">myField="$value$"</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             selected value is:<br>
+              $test2$<br>
+              selected rawValue is:<br>
+              $test2.rawValue$<br>
+              selected label is <br>
+              $test2.label$<br>
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+
+
+    
+      <module name="Search" layoutPanel="panel_row1_col3" group="combination">
+        <param name="search"><![CDATA[
+          | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+        ]]></param>
+        
+        <module name="Radio">
+          <param name="name">test3</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          <param name="template">myField="$value$"</param>
+          <param name="staticRadios">
+            <list>
+              <param name="label">firstStaticLabel</param>
+              <param name="value">staticValue1</param>
+            </list>
+            <list>
+              <param name="label">secondStaticLabel</param>
+              <param name="value">staticValue2</param>
+            </list>
+            <list>
+              <param name="label">thirdStaticLabel</param>
+              <param name="value">staticValue3</param>
+            </list>
+          </param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             selected value is:<br>
+             $test3$<br>
+             selected rawValue is <br>
+             $test3.rawValue$<br>
+             selected label is <br>
+             $test3.label$
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row2_col1">
+      <param name="html"><![CDATA[
+        <h3>test prepopulation</h3>
+        <a href="?test1=staticValue2&test2=barValue&test3=staticValue2">preselect secondStatic,  then second dynamic,  and then second static</a>
+      ]]></param>
+    </module>
+  </module>
+            
+
+</view>

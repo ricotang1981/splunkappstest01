@@ -1,0 +1,47 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>licensing</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>About - Licensing</h1>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+    
+      
+      <h3>Is this app free?</h3>
+
+      <p>
+        Yes, it's available for free under the Sideview Internal Use License Agreement which you or possibly someone else at your company accepted when you downloaded the app. 
+      </p>
+
+      <h3>How is it that these modules used to be released as "Sideview Utils" under LGPL 3 and now they're distributed using a non-OSS agreement?</h3>
+
+      <p>
+        We wanted different terms for the new version, so we switched to a different contract. (Since Sideview is the sole contributor to Sideview Utils, the LGPL version is and has always been a fork of the proprietary project.)
+      </p>
+
+      <h3>What if I want to use Sideview Utils for more than just internal use?</h3>
+
+      <p>
+        In most cases, you can do this if you enter into a separate agreement with Sideview. Contact us for more details.
+      </p>
+
+    ]]></param>
+  </module>
+
+
+  
+
+
+</view>

@@ -1,0 +1,124 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="false">
+  <label>form search comparisons</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Form Search Comparisons</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+    
+      <p>
+        I did some benchmarking where I built out the following form search scenario first with core Splunk modules and then with Sideview modules. 
+      </p>
+      <ul>
+        <li>1 TimeRangePicker</li>
+        <li>4 dynamic pulldowns, with each pulldown filtering its results based on the value of its predecessor</li>
+        <li>4 dashboard panels to run actual reports. </li>
+        <li>2 of the 4 panels had custom drilldowns</li>
+        <li>2 of the 4 panels had generic drilldowns</li>
+      </ul>
+
+    ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Here are my findings about key differences in performance and in complexity.
+      </p>
+      <table class="splTable">
+        <tr>
+          <th>test</th>
+          <th>old way</th>
+          <th>new way</th>
+        </tr>
+         <tr>
+          <th class="rowTh"># of searches dispatched</th>
+          <td>8 (4 for pulldowns, 4 for panels)</td>
+          <td>5 (1 for pulldowns, 4 for panels)*</td>
+        </tr>
+        <tr>
+          <th class="rowTh"># of POSTs to the parse endpoint (intentions)</th>
+          <td>7</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th class="rowTh"># of ConvertToIntention modules, not including custom drilldown config.</th>
+          <td>4</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th class="rowTh"># of  ConvertToIntention modules in custom drilldown config</th>
+          <td>8</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th class="rowTh">Deepest indentation level (not including SubmitButton)</th>
+          <td>18</td>
+          <td>10</td>
+        </tr>
+        <tr>
+          <th class="rowTh"># of lines of module+param tags in XML (not including SubmitButton, embedded copy and timing scaffolding)</th>
+          <td>250</td>
+          <td>96</td>
+        <tr>
+          <th class="rowTh"># of seconds to load the 4 pulldowns**</th>
+          <td>9.97</td>
+          <td>4.62</td>
+        </tr>
+        <tr>
+          <th class="rowTh">average # of requests in splunkd_access.log after the button is clicked**</th>
+          <td>134.2</td>
+          <td>83.4</td>
+        </tr>
+      </table>
+
+      <p>
+        *Note that by applying the PostProcess module the Sideview number here can be lowered from 5 to 2 or even to 1, but this depends on the nature of the data.   With core Splunk UI and its HiddenPostProcess module, you could potentially lower it from 8 to 5, but no further than that.
+      </p>
+
+      <p>
+        ** Note that some extra work was required to make the comparison fair like disabling the Jobber patch while running the older version. Also note that all testing was done with the server and browser on the same machine, which may have affected the results. I intend to repeat the tests on more appropriate hardware when I have time.
+      </p>
+
+      <p>
+        If you want to see the views that were used for this benchmarking. <a href="comparison2_old_way">old school</a>, <a href="comparison3_new_way">new school</a>. 
+      </p>
+      
+      
+    ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <p>
+        But these kinds of comparisons ignore all the things which the core Splunk UI modules cannot do at all.
+      </p>
+      <ol>
+        <li><a href="post_process1_static">plug user input into postProcess searches</a> instead of always having to run new searches.</li>
+        <li><a href="linking">link to custom form search views and prepopulate pulldowns and textfields in the target view.</a></li>
+        <li><a href="pulldown2_dynamic">make a pulldown element render its dynamic options from a job that we already ran upstream</a> (with or without postProcess).</li>
+        <li><a href="custom_behavior1_overview">apply custom javascript behaviors easily and stably (such as the timing scaffolding used by the benchmark views mentioned above).</a></li>
+        <li><a href="linking">make table, chart, button clicks go straight to other urls and web applications.</a></li>
+        <li><a href="pulldown6_dynamic_multipleselect">allow multiple selection in your pulldowns.</a></li>
+        <li><a href="back_button1">allow your users to use their browser's back button.</a></li>
+        <li><a href="pager2_postprocess">have page links above your tables even when you're using postprocess searches.</a></li>
+        <li><a href="pager2_postprocess">have correct result counts in headers even when you're using postprocess searches.</a></li>
+        <li>replace all your usage of <a href="html3_dynamic_results">SingleValue</a>, <a href="html2_dynamic_ui_tokens">SimpleResultsHeader</a>, <a href="html1_static">StaticContentSample</a> with HTML.  Get the same job done with fewer requests to the server and less wondering why SingleValue is displaying "N/A" today.</li>
+        <li><a href="html3_dynamic_results">make dynamic text link dynamically</a> instead of letting SingleValue stick you with a single static search string.</li>
+        <li><a href="pulldown5_dynamic_noall_notoken">give your pulldowns an option that inserts no value at all, not even foo=*.</a></li>
+        <li><a href="checkbox1">use checkboxes in your form search views.</a></li>
+        <li>Rejoice at the return of the <a href="events1_intro">endless scroller.</a></li>
+
+      </ol>
+      
+      ]]></param>
+  </module>
+</view>

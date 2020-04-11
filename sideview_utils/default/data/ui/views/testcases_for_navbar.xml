@@ -1,0 +1,20 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="search.html" isSticky="False">
+  <label>testcases for NavBar</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  
+  
+  <module name="NavBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>testcases for NavBar</h1>
+    ]]></param>
+  </module>
+  
+  
+
+</view>

@@ -1,0 +1,281 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Overview of all the new $foo$ keys</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Overview of all the new $$foo$$ keys</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        If you're interested in a $$foo$$ key that comes from a particular module,  definitely make sure you've read the documentation for that module.  This page is a high level overview of all the different kinds of $$foo$$ keys that exist and what they're for, as well as a consolidated reference for the $$foo$$ key patterns which are very similar across all the Sideview modules.
+      </p>
+      
+      <b>Wait, what if I want to actually display a $$ character, in a search or in some HTML?</b>
+      <p>
+        Since $$ is such an important control character, when you want to display a literal $$ character you have to use two consecutive dollar characters like so:: $$$$.    
+        Otherwise the Sideview module will try and do $$foo$$-replacement and this will of course garble your string literal and you'll be very confused. 
+      </p>
+    ]]></param>
+  </module>
+
+
+  <!-- EXAMPLE START -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) by series | sort - avg(eps)</param>
+    <param name="earliest">-12h</param>
+    <param name="latest">now</param>
+
+    
+    <module name="ProgressIndicator" />
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h3>$$foo$$ keys that reflect the current search and current timeRange</h3>
+
+        <table class="splTable">
+          <tr>
+            <th>key</th>
+            <th>value</th>
+            <th>description</th>
+          </tr>
+          <tr>
+            <td>$$search.timeRange.earliest$$</td>
+            <td>$search.timeRange.earliest$</td>
+            <td>earliest time argument.  absolute or relative syntax. Might be from a TimeRangePicker or Search, or SavedSearch, etc..  Can be blank. If both are blank the timerange is 'All time'</td>
+          </tr>
+          <tr>
+            <td>$$search.timeRange.latest$$</td>
+            <td>$search.timeRange.latest$</td>
+            <td>latest time argument.  similar to earliest.</td>
+          </tr>
+          <tr>
+            <td>$$search.timeRange.label$$</td>
+            <td>$search.timeRange.label$</td>
+            <td>the human-readable description of the time.
+        Locale aware although outside of english locale the phrasing will fall
+        back to more verbose time formats</td>
+          </tr>
+          <tr>
+            <td>$$search$$</td>
+            <td>$search$</td>
+            <td>The current search string. Generally this will be whatever the last Search module set, including any $$foo$$ substitutions.</td>
+          </tr>
+          <tr>
+            <td>$$postProcess$$</td>
+            <td>$postProcess$</td>
+            <td>The current postProcess search.  Generally this will be whatever the last PostProcess module set, including any $$foo$$ substitutions.</td>
+          </tr>
+        </table>
+      ]]></param>
+    </module>
+
+
+        
+    <module name="HTML" layoutPanel="panel_row3_col1">
+      <param name="html"><![CDATA[
+<h3>$$foo$$ keys that exist when there is a running Job at that point in the hierarchy.  </h3>
+
+NOTE: These keys will NOT be defined at the instand the search is dispatched. They will only be defined a few moments or seconds later when the first full information about the dispatched job returns to the client.  For example if you put an HTML module to display these right at the dispatch point, these tokens will be blank.  If you put the same HTML module as a part of some Table drilldown config on the other hand, they will be defined with the appropriate values from the job.
+
+<table class="splTable">
+  <tr>
+    <th>key</th>
+    <th>value</th>
+    <th>description</th>
+  </tr>
+  <tr>
+    <td>$$results.sid$$</td>
+    <td>$results.sid$</td>
+    <td>the search id of the currently dispatched job</td>
+  </tr>
+  <tr>
+    <td>$$results.count$$</td>
+    <td>$results.count$</td>
+    <td>the current number of result rows. DEPRECATED due to confusion with the Count module's key that it provides downstream</td>
+  </tr>
+
+  <tr>
+    <td>$$results.eventCount$$</td>
+    <td>$results.eventCount$</td>
+    <td>the current number of events matched by the search</td>
+  </tr>
+  <tr>
+    <td>$$results.resultCount$$</td>
+    <td>$results.resultCount$</td>
+    <td>the current number of result rows</td>
+  </tr>
+  <tr>
+    <td>$$results.scanCount$$</td>
+    <td>$results.scanCount$</td>
+    <td>the current number of events that were taken off disk and scanned for the search</td>
+  </tr>
+
+  <tr>
+    <td>$$results.eventAvailableCount$$</td>
+    <td>$results.eventAvailableCount$</td>
+    <td>(the current number of events that are sorted correctly in the set and whose raw text is available for retrieval</td>
+  </tr>
+  <tr>
+    <td>$$results.eventFieldCount$$</td>
+    <td>$results.eventFieldCount$</td>
+    <td>the current number of fields present on the events as reported by the search API</td>
+  </tr>
+  <tr>
+    <td>$$results.doneProgress$$</td>
+    <td>$results.doneProgress$</td>
+    <td>(the current progress of the job as measured by a float in [0,1].</td>
+  </tr>
+  <tr>
+    <td>$$results.runDuration$$</td>
+    <td>$results.runDuration$</td>
+    <td>(the current job's runtime in seconds </td>
+  </tr>
+  <tr>
+    <td>$$results.timeRange.earliest$$</td>
+    <td>$results.timeRange.earliest$</td>
+    <td>Similar to the $$search.timeRange.*$$ keys, except this is always an absolute time range, and it represents the actual time boundary that splunkd actually used to run the search. Like all these $$results.*$$ keys, note that it takes a second or two after the job is dispatched for the information to come down, so the token may not be populated if you're rendering it right away.</td>
+  </tr>
+  <tr>
+    <td>$$results.timeRange.latest$$</td>
+    <td>$results.timeRange.latest$</td>
+    <td>latest time bound of the search.  similar to earliest.</td>
+  </tr>
+  <tr>
+    <td>$$results.eventSearch$$</td>
+    <td>$results.eventSearch$</td>
+    <td>The streaming portion of the search, ie the search including pipes and search commands up until the first command that is a non-streaming command</td>
+  </tr>
+  <tr>
+    <td>$$results.reportSearch$$</td>
+    <td>$results.reportSearch$</td>
+    <td>The non-streaming, ie transforming portion of the search, ie the search including pipes and search commands starting from the first command that is a non-streaming command</td>
+  </tr>
+
+  <tr>
+    <td>$$results.expandedSearch$$</td>
+    <td>$results.expandedSearch$</td>
+    <td>This will be a version of the search string with all macros expanded.</td>
+  </tr>
+
+  
+
+</table>
+      ]]></param>
+    </module>
+
+    
+  </module>
+
+  <!-- EXAMPLE END -->
+
+
+
+
+
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h3>$$foo$$ keys that you use for inline drilldown</h3>
+      <p>
+        These keys are explained in detail on the following page:  <a href="linking2_tables">linking2_tables</a>.    <br>
+        <br>
+        Granted, you'll have to use your imagination ignoring everything that page is saying about the Redirector module, and linking to another view, but aside from that it's quite straightforward. 
+      </p>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row5_col1">
+    <param name="html"><![CDATA[
+      <h3>Overview of $$foo$$ keys that come from Pulldown/TextField/Checkbox</h3>
+
+      <p>First and foremost, you should review the various documentation for the <a href="pulldown1_static">Pulldown</a>, <a href="text_field1">TextField</a> and <a href="checkbox1">Checkbox</a> modules.</p>
+
+      <p>However as a single reference showing the commonalities of those modules,  for any Sideview module with the "name" param set to "someName",  you'll have the following keys available downstream: </p>
+
+<table class="splTable">
+  <tr>
+    <th>key</th>
+    <th>description</th>
+    <th>use this when</th>
+  </tr>
+  <tr>
+    <td>$$someName$$</td>
+    <td>this will be the currently selected value.   If you're using a 'template' param, it will be the templated value.  It will be backslash-escaped to work correctly with the Splunk Search Language</td>
+    <td>you're plugging it into a search string</th>
+  </tr>
+  <tr>
+    <td>$$someName.rawValue$$</td>
+    <td>this will be the currently selected value.  However if you're using a 'template' param, it will be the raw value and NOT the templated value.  It will also NOT be backslash-escaped to work correctly with the Splunk Search Language</td>
+    <td>you're displaying it to the user, or passing the value through Redirector to another page</th>
+  </tr>
+  <tr>
+    <td>$$someName.label$$</td>
+    <td>When applicable, this will be the label of the currently selected element.  This is applicable to Pulldown, but not to TextField</td>
+    <td>you're displaying it to the user, and when the label is preferred to the raw value itself.</td>
+  </tr>
+  <tr>
+    <td>$$someName.value$$</td>
+    <td>There is really no reason to use this.  Just use $$someName$$.  However it's somewhat intuitive and mirrors the ".label" key so I leave it there. </td>
+    <td>when you're in an alternate universe or you're being forced to do silly things against your will</td>
+  </tr>
+  <tr>
+    <td>$$someName.element$$</td>
+    <td>ADVANCED USERS ONLY.  INSTANT DEATH.  $$200 FINE.</td>
+    <td>When you're writing a customBehavior, you really really know what you're doing, and you're not kidding yourself. In all seriousness if you find yourself using this it's very probable that you're overlooking a much simpler way. Ask for advice. </td>
+  </tr>
+  
+</table>
+
+<p>And in addition, you will be able to use $$name$$ and $$value$$ in certain keys.    $$name$$ is a shorthand and it will always output the module's value for its "name" param.   And $$value$$ is shorthand for the currently selected value.  For instance $$value$$ is used in the 'template' param to specify exactly where the raw selected value should be inserted in the template. </p>
+    ]]></param>
+  </module>
+  
+
+  <module name="HTML" layoutPanel="panel_row6_col1">
+    <param name="html"><![CDATA[
+      <h3>Other advanced stuff.</h3>
+
+      <p>There is some.  However I'm not going to tell you about it.  The Report module makes some keys available downstream, to a limited extent some of those same keys also come down from selected SimpleResultsTable/JSChart/FlashChart modules, and those keys are what makes the Redirector module seem weirdly clairvoyant sometimes. </p>
+
+      <p>But telling you about these would just get you in trouble.  As would telling you about the weird method callbacks that are passed down to implement some of the fancier logic. Move along.</p>
+
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+         Check out the <a href="search1_intro">documentation about the Search module and how it does $$foo$$ substition with no intentions.</a>
+        </li>
+        <li>
+          Check out the various pages that document the features of the <a href="pulldown1_static">Pulldown module</a>, <a href="text_field1">TextField</a> and <a href="checkbox1">Checkbox</a> modules.
+        </li>
+        <li>
+          If you're ever confused about what keys are being passed downstream, remember the Runtime Debug mode of the Sideview Editor (ships in the "Sideview Admin Tools" app) can show you the actual keys and values at runtime.
+        </li>
+
+        <li>
+          Check out the tokens that are available for use <a href="linking2_tables">when building an inline drilldown below a SimpleResultsTable, JSChart or FlashChart module</a>.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+  
+
+
+  
+
+</view>

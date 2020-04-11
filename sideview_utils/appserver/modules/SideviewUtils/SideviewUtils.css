@@ -1,0 +1,317 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+.CufonFontRenderer,
+.CustomBehavior,
+.Multiplexer,
+.PostProcess,
+.Redirector,
+.ResultsValueSetter,
+.Search,
+.SavedSearch,
+.SideviewUtils,
+.URLLoader,
+.ValueSetter,
+.ArrayValueSetter,
+.Report,
+.Switcher,
+.Gate,
+.ShowHide {
+    padding:0px !important;
+    height:0px;
+    display:none;
+}
+.viewHeader .TimeRangePicker,
+.mainSearchControls .TimeRangePicker,
+.resultsArea .TimeRangePicker,
+.dashboardContent .TimeRangePicker {
+    min-height:27px;
+}
+
+body.editMode .SplunkModule:hover,
+.selectedModuleForEditing {
+    background-color:#f5e998 !important;
+}
+body.editMode .SplunkModule:hover {
+    cursor:pointer;
+}
+.selectedModuleForEditing {
+    min-height:5px !important;
+    visibility:visible !important;
+    display:block !important;
+}
+tr.mouseoverHighlight {
+    background-color:transparent;
+}
+div.clearFloats {
+    clear:both;
+}
+
+
+
+.valueDisplay { 
+    float:left;
+    margin:0 10px 10px 0;
+}
+.valueDisplay div.inner {    
+    padding:3px 5px;
+    border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25) inset;
+    -box-shadow: 0 0 5px rgba(0, 0, 0, 0.25) inset;
+    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25) inset;
+    background-color: #999;
+    color: #fff;
+}
+.valueDisplay a {
+    color:#dde;
+    text-decoration:underline;
+}
+.valueDisplay div.severe {
+    background-color: #bb2121;
+    color: #fff;
+}
+.valueDisplay div.high {
+    background-color: #e67918;
+    color: #fff;
+}
+.valueDisplay div.elevated {
+    background-color: #e9da34;
+    color: #000;
+}
+.valueDisplay div.guarded {
+    background-color: #4da6df;
+    color: #fff;
+}
+.valueDisplay div.low {
+    background-color: #72c72d;
+    color: #fff;
+}
+
+div.clonedModule,
+.dashboardCell div.clonedModule  {
+     padding:0px;
+}
+
+.hiddenModule {
+    display:none;
+    padding:0px !important;
+}
+
+
+div.dashboardContent {
+    overflow:visible;
+}
+
+
+
+.TimeRangePicker span.timeRangePickerLabel{
+    font-size:11px;
+}
+
+
+
+.svMenu, .svMenu ul {
+    list-style: none outside none;
+    z-index: 500;
+    margin:0px;
+}
+
+.svMenu ul {
+    list-style:none;
+    margin:0px;
+    padding:0px;
+    border:1px solid #bbb;
+    background-color:#fff;
+}
+
+.svMenu ul {
+    z-index:501;
+}
+.svMenu ul ul {
+    z-index:502;
+}
+.svMenu ul ul ul {
+    z-index:503;
+}
+
+/* ALL UL */
+.svMenu li ul {
+    position:absolute;
+    display:none;
+}
+.svMenu li ul.open {
+    display:block;
+    border-radius: 4px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    box-sizing: border-box;
+}
+
+
+/* ALL LI */
+.svMenu li {
+
+}
+
+/* TOP LEVEL LI */
+.svMenu li.topLevel {
+    display:inline-block;
+    font-size: 1em;
+    font-weight: bold;
+    padding:0px;
+    margin:0px;
+    color:#fff;
+}
+
+/* SUBMENU LI */
+.svMenu ul li {
+    font-weight:normal;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    width: 220px;
+    word-wrap: break-word
+}
+
+/* SUBMENU A */
+.svMenu ul a {
+    width:200px;
+    color:#333;
+    text-decoration:none;
+    display: block;
+    padding: 4px 10px;
+}
+
+.svMenu ul a:hover {
+    background-color:#f3ecbb;
+}
+
+.svMenu ul a.hasSubMenu {
+    background: #fff url(../../../static/img/skins/default/white_splunk_menu_arrow.gif) no-repeat right 0.6em;
+}
+
+
+.svMenu ul a.hasSubMenu:hover {
+    background: #f3ecbb url(../../../static/img/skins/default/white_splunk_menu_arrow.gif) no-repeat right 0.6em;
+}
+
+
+
+.splVersion-7_1 .layoutCell,
+.splVersion-7_1 .dashboardCell,
+.splVersion-7_2 .layoutCell,
+.splVersion-7_2 .dashboardCell,
+.splVersion-7_3 .layoutCell,
+.splVersion-7_3 .dashboardCell,
+.splVersion-8 .layoutCell,
+.splVersion-8 .dashboardCell  {
+    position:static;
+}
+
+.splVersion-7_1 .CheckboxPulldown button,
+.splVersion-7_2 .CheckboxPulldown button,
+.splVersion-7_3 .CheckboxPulldown button,
+.splVersion-8 .CheckboxPulldown button {
+    height:22px;
+}
+
+/* in 7.1, they actually lock down styles more specifically but they make 
+buttons huge and it really doesn't work with the number of controls our views
+tend to have.  Shrinking them back down to the old defaults.  */
+.splVersion-7_1 .svMenu a.splButton-primary, 
+.splVersion-7_1 .svMenu a.splButton-secondary, 
+.splVersion-7_1 .svMenu a.splButton-tertiary,
+.splVersion-7_1 .FieldPicker a.splButton-primary,
+.splVersion-7_2 .svMenu a.splButton-primary, 
+.splVersion-7_2 .svMenu a.splButton-secondary, 
+.splVersion-7_2 .svMenu a.splButton-tertiary,
+.splVersion-7_2 .FieldPicker a.splButton-primary,
+.splVersion-7_3 .svMenu a.splButton-primary, 
+.splVersion-7_3 .svMenu a.splButton-secondary, 
+.splVersion-7_3 .svMenu a.splButton-tertiary,
+.splVersion-7_3 .FieldPicker a.splButton-primary,
+.splVersion-8 .svMenu a.splButton-primary, 
+.splVersion-8 .svMenu a.splButton-secondary, 
+.splVersion-8 .svMenu a.splButton-tertiary,
+.splVersion-8 .FieldPicker a.splButton-primary {
+    float:none;
+    font-size:14px;
+    display: block;
+    height:21px;
+    line-height:21px;
+    padding: 0px 5px;
+    margin:0px 2px;
+}
+.splVersion-7_1 .SearchControls a.splButton-tertiary,
+.splVersion-7_2 .SearchControls a.splButton-tertiary,
+.splVersion-7_3 .SearchControls a.splButton-tertiary,
+.splVersion-8 .SearchControls a.splButton-tertiary {
+    font-size:14px;
+    height:21px;
+    padding: 0px 5px;
+    margin:0px 2px;
+}
+.splVersion-7_1 .SearchControls .jobControls a.splButton-tertiary,
+.splVersion-7_2 .SearchControls .jobControls a.splButton-tertiary,
+.splVersion-7_3 .SearchControls .jobControls a.splButton-tertiary,
+.splVersion-8 .SearchControls .jobControls a.splButton-tertiary {
+    margin:0px;
+}
+/* in the old world it was 11px, but with the new custom font that is tiny */
+.splVersion-7_1 .TimeRangePicker span.timeRangePickerLabel,
+.splVersion-7_2 .TimeRangePicker span.timeRangePickerLabel,
+.splVersion-7_3 .TimeRangePicker span.timeRangePickerLabel,
+.splVersion-8 .TimeRangePicker span.timeRangePickerLabel {
+    font-size:14px;
+}
+/* Not quite sure how, but somehow they messed with all selects such that the 
+   area for the little arrow icon on the rhs now is not included in the padding 
+   box model.  Hopefully they'll notice this before GA, but just in case, we're 
+   adding an explicit 15px of padding on the rhs here, so the arrow doesn't get 
+   jumbled into the last few chars of the selected label. */
+.splVersion-7_1 .Pulldown select,
+.splVersion-7_2 .Pulldown select,
+.splVersion-7_3 .Pulldown select,
+.splVersion-8 .Pulldown select {
+    padding-right:15px;
+}
+
+
+
+/* fixing the custom timerange controls, whose text becomes too small when we 
+   globally lowered the default font sizes. */
+.splVersion-7_1 input.customDate,
+.splVersion-7_2 input.customDate,
+.splVersion-7_3 input.customDate,
+.splVersion-8 input.customDate {
+    width:70px;
+}
+.splVersion-7_1 .trpCustomDateTime .dateRangeMode .TimeSpinner,
+.splVersion-7_2 .trpCustomDateTime .dateRangeMode .TimeSpinner,
+.splVersion-7_3 .trpCustomDateTime .dateRangeMode .TimeSpinner,
+.splVersion-8 .trpCustomDateTime .dateRangeMode .TimeSpinner {
+    width:146px;
+}
+.splVersion-7_1 .TimeSpinner input.tsInput,
+.splVersion-7_2 .TimeSpinner input.tsInput,
+.splVersion-7_3 .TimeSpinner input.tsInput,
+.splVersion-8 .TimeSpinner input.tsInput {
+    width:17px;
+}
+.splVersion-7_1 .TimeSpinner input.milliseconds,
+.splVersion-7_2 .TimeSpinner input.milliseconds,
+.splVersion-7_3 .TimeSpinner input.milliseconds,
+.splVersion-8 .TimeSpinner input.milliseconds {
+    width:25px;
+}
+
+.splVersion-7_1 a.ui-multiselect-all span,
+.splVersion-7_1 a.ui-multiselect-none span,
+.splVersion-7_2 a.ui-multiselect-all span,
+.splVersion-7_2 a.ui-multiselect-none span,
+.splVersion-7_3 a.ui-multiselect-all span,
+.splVersion-7_3 a.ui-multiselect-none span,
+.splVersion-8 a.ui-multiselect-all span,
+.splVersion-8 a.ui-multiselect-none span {
+    font-size:13px;
+}

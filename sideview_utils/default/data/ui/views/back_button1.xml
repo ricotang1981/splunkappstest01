@@ -1,0 +1,86 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>back Button - Intro</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Back Button - Intro</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      If you set the URLLoader module's "keepURLUpdated" param to "True",  two things will happen:
+      <ol>
+        
+        <li>Any time a user changes the selected value of a Pulldown, TextField, Checkbox, SearchBar or TimeRangePicker module, their change will be reflected in the page URL.</li>
+
+        <li>After one or more changes, when the user uses the back and forward buttons in your browser, they will take you back and forth between these different states and the UI elements will set themselves accordingly.</li>
+      </ol>
+
+      <p>
+        It goes without saying that this is a dramatic improvement to the overall usability of any interactive views.  If we don't seem as excited about this as we should be, it's because this took a lot of work to pull off.  All Sideview apps going forward are going to be leveraging this technology, and it's yet another reason to jump into Sideview Utils with both feet.
+      </p>
+      
+      ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <p>
+        We don't want to pollute your browser's page history as you are clicking around in these docs, so the links below will open in a new window.
+      </p>
+      <ol>
+        <li>
+          <a href="flashtimeline_with_back_button" target="_blank">An alternative version of the Splunk Search UI, but with back button support.</a><br>
+          
+        </li>
+        <li>
+          <a href="testcases_for_the_back_button1" target="_blank">This is one of the testcase views that we use to test the functionality.</a><br>
+          Note that in the near future, we will either export this view globally from Sideview Utils,  or more likely provide another app that has a globally-exported version of this view.  For now please try it out and <a href="mailto:support@sideviewapps.com">let us know</a> how it works for you.
+        </li>
+      </p>
+       
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          If you don't want this behavior,  just don't set the 'keepURLUpdated' param, because the default value is "False". 
+        </li>
+        <li>
+          Clicks and selections on FlashTimeline, FlashChart and SimpleResultsTable modules are NOT persisted.  This may come in a future version, but it may not.
+        </li>
+        <li>
+          Known bug 1:   The initial state that the SearchBar and the TimeRangePicker load in when the URL is completely blank,  may not restore correctly when you use the back button to return to that initial state before URLLoader started modifying the URL.   We consider this a minor bug because in cases where the very first URL the user comes in on <em>already has</em> searchBar, earliest and latest set in the querystring args, the bug will not manifest.  
+        </li>
+        <li>
+          Known bug 2: Back and forward may sometimes not restore the 'all time' timerange.  
+        </li>
+        <li>
+          Known bug 3: If you build up a few entries in the document hash by running searches and then you explicitly reload the page,  you will only be able to partially restore the previous states before the page was reloaded.
+        </li>
+        <li>
+          If you see anything that looks like a bug, or just seems weird, PLEASE <a href="mailto:support@sideviewapps.com">LET US KNOW</a>. This was a tricky piece of engineering to lay down on top of the Splunk UI and there are probably several bugs still hiding in there.
+        </li>
+        
+      </ol>
+      ]]></param>
+  </module>
+
+
+
+
+
+
+
+  
+</view>

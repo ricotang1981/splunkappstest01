@@ -1,0 +1,41 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - sparklines</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - drilldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+
+    
+
+    <module name="Search" layoutPanel="panel_row1_col1">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | streamstats count | stats sparkline(count) by sourcetype
+      ]]></param>
+      <module name="Button">
+
+        <module name="Table">
+          
+          
+        </module>
+
+          
+          
+      </module>
+    </module>
+
+
+  </module>
+
+</view>

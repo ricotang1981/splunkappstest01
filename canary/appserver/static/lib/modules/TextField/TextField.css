@@ -1,0 +1,19 @@
+/* Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. */
+
+.TextField {
+    min-height:27px;
+    padding-bottom:5px;
+    padding-right:10px;
+}
+
+.TextField input {
+    height:17px;
+}
+.TextField label {
+    vertical-align: middle;
+    padding-right:5px;
+    font-size:1em;
+}
+.TextField label.forTextarea {
+    display:block;
+}

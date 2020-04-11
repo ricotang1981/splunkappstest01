@@ -1,0 +1,161 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Home</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+
+  <module name="AppBar" layoutPanel="appHeader" />
+
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Welcome to Sideview Utils 3.4.11</h1>
+    ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="mainSearchControls">
+    <param name="src">error_messages.html</param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <h2>Get ready for the switch from Sideview Utils to Canary</h2>
+
+      <p>
+        In Splunk 8.0,  the "Advanced XML" systems of SplunkWeb are being removed or disabled, and our new app "Canary" will become the new dependency that you need to run your Sideview XML views and dashboards.
+        If your views are edited according to the best-practices of Sideview Utils, perhaps somewhat surprisingly, you'll be able to run them in the Canary UI even in Splunk 8.0 !
+      </p>
+      <p>
+        Canary is available on Splunkbase but first <a href="https://sideviewapps.com/apps/canary/">read more about the Canary app here.</a>.
+      </p>
+      <p>
+        Don't get rid of Sideview Utils just yet - during a transitional period you'll actually want to have Sideview Utils here to properly redirect users to the appropriate URL in the Canary UI, if their browser should happen to land on legacy Advanced XML URL's.
+      </p>
+      <p>
+        Above all, contact us with any questions either in the #canary channel on the Splunk slack,  or by emailing us at <a href="mailto:support@sideviewapps.com">support@sideviewapps.com</a>
+      </p>
+
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+
+      <h2>If 8.0 is not on your radar yet, switch to Canary anyway!</h2>
+      <p>
+        But ok if you don't want to, if you're going to stay on Splunk 7.X for the foreseeable future, here's what you need to know to get started with Sideview Utils:
+      </p>
+      <ol>
+        <li>
+          that Splunk "views" are composed of "modules", and how modules communicate information "downstream".  If you don't know this <a href="framework_intro">then read this page carefully <b> a few times</b></a>.
+        </li>
+
+        <li>
+          That to use Sideview modules in a view <b>you MUST also include a "SideviewUtils" module in the view</b>.  It is invisible but necessary. Put it at the top of the view so it's out of the way.
+        </li>
+
+        <li>
+          You're ready. Study the examples in this app and use as much or as little as you want/need.
+          <a href="https://sideviewapps.com/apps/sideview-utils/mailing-list/" target="_blank">Get on our mailing list</a> to stay on top of new releases.
+        </li>
+      </ol>
+
+     <a href="https://localhost:8000/en-US/app/sideview_utils/framework_intro">Get Started!</a>
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+
+      <h2>What problems are you looking to solve?</h2>
+    ]]></param>
+  </module>
+
+
+  <module name="URLLoader" layoutPanel="panel_row2_col1" autoRun="True">
+    <module name="Search">
+      <param name="search">| inputlookup module_gallery | eval module=split(module,",") | eval area=split(area,",") | mvexpand module | mvexpand area | stats count by module area</param>
+
+      <module name="Pulldown">
+        <param name="name">area</param>
+        <param name="label">Solution Area:</param>
+        <param name="template">$name$="*$value$*"</param>
+        <param name="valueField">area</param>
+        <param name="postProcess">dedup $name$ | sort $name$</param>
+        <param name="float">left</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">All</param>
+            <param name="value"></param>
+          </list>
+        </param>
+
+        <module name="Pulldown">
+          <param name="name">module</param>
+          <param name="label">Sideview Module:</param>
+          <param name="template">$name$="*$value$*"</param>
+          <param name="valueField">module</param>
+          <param name="postProcess">search $area$ | dedup $name$ | sort $name$</param>
+          <param name="float">left</param>
+          <param name="staticOptions">
+            <list>
+              <param name="label">All</param>
+              <param name="value"></param>
+            </list>
+          </param>
+
+          <module name="TextField">
+            <param name="name">searchterms</param>
+            <param name="label">Search:</param>
+            <param name="template">| eval _raw=problem+" "+module+" "+solution_description+" "+area+" "+page |
+   search $value$ | fields - _raw | sort 0 - value</param>
+
+
+            <module name="Search">
+              <param name="search">| inputlookup module_gallery $searchterms$ | search * $area$ $module$ | table problem description area *</param>
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  <h2>$results.count$ problems and solutions found</h2>
+                ]]></param>
+              </module>
+
+              <module name="Pager">
+
+                <!--  the group=" " is to workaround an annoyance from the
+                dashboard template. Although the Table module's constructor
+                also reaches up and takes away the green header,  putting an
+                empty group attribute like this prevents the text from being
+                there in the first place.
+                -->
+                <module name="Table" group=" ">
+                  <param name="hiddenFields">solution_description,module,page,value</param>
+
+                  <module name="HTML" group="row.fields.description">
+                    <param name="html"><![CDATA[
+                      $row.fields.solution_description.rawValue$<br><br>
+                      <b>Modules:</b> $row.fields.module.rawValue$<br>
+                      <b>Docs and Examples:</b> $row.fields.page.rawValue$<br>
+                    ]]></param>
+                  </module>
+
+                  <module name="Redirector">
+                    <param name="url">$row.fields.page.rawValue$</param>
+                  </module>
+                </module>
+                <module name="Pager"></module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

@@ -1,0 +1,158 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="True" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Checkboxes module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>The Checkboxes module</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        The Checkboxes module will already be very familiar to you if you've used the Pulldown module or the Tabs module.   Ironically, if you're already familiar with the Sideview Checkbox module, you'll find this module really quite different.  Whereas the Sideview Checkbox module implements a single checkbox element on the page,  the Checkboxes module implements a whole group of checkboxes, and implements logic to automatically turn those selected checkboxes into a complex search expression. 
+      </p>
+      <p>
+        As with a multiselect Pulldown or with a Tabs module, zero or more of the options (in this case checkboxes) can be 'statically defined',  ie hardcoded in the module config,  and zero or more can be "dynamically defined", ie where the labels and values of those checkboxes are pulled from field values in the current search results.
+      </p>
+
+      <p>
+        Since the Pulldown and Tabs modules are already extensively documented and this module is really derivative of their behavior,  here we'll just move right to examples of static config, dynamic config, and then a combination of both static and dynamic.   
+      </p>
+    
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    <!-- BEGIN EXAMPLE -->
+    <module name="Checkboxes" group="static config">
+      <param name="name">test1</param>
+      
+      <param name="staticCheckboxes">
+        <list>
+          <param name="label">firstStaticLabel</param>
+          <param name="value">staticValue1</param>
+        </list>
+        <list>
+          <param name="label">secondStaticLabel</param>
+          <param name="value">staticValue2</param>
+        </list>
+        <list>
+          <param name="label">thirdStaticLabel</param>
+          <param name="value">staticValue3</param>
+        </list>
+      </param>
+      <param name="separator">+OR+</param>
+      <param name="template">myField="$value$"</param>
+      <param name="outerTemplate">( $value$ )</param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         <p>
+         selected value is:<br>
+          $test1$
+         </p>
+        ]]></param>
+      </module>
+    </module>
+    <!-- END EXAMPLE -->
+    
+    <!-- BEGIN EXAMPLE -->
+    <module name="Search" layoutPanel="panel_row3_col1" group="dynamic config">
+      <param name="search"><![CDATA[
+        | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+      ]]></param>
+      
+      <module name="Checkboxes">
+        <param name="name">test2</param>
+        <param name="valueField">value</param>
+        <param name="labelField">label</param>
+        <param name="separator">+OR+</param>
+        <param name="template">myField="$value$"</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           <p>
+           selected value is:<br>
+            $test2$
+           </p>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+    <!-- END EXAMPLE -->
+    
+    <!-- BEGIN EXAMPLE -->
+    <module name="Search" layoutPanel="panel_row4_col1" group="combination">
+      <param name="search"><![CDATA[
+        | stats count | eval name="foo,bar,baz" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+      ]]></param>
+      
+      <module name="Checkboxes">
+        <param name="name">test3</param>
+        <param name="valueField">value</param>
+        <param name="labelField">label</param>
+        <param name="separator">+OR+</param>
+        <param name="template">myField="$value$"</param>
+        <param name="outerTemplate">( $value$ )</param>
+        <param name="staticCheckboxes">
+          <list>
+            <param name="label">firstStaticLabel</param>
+            <param name="value">staticValue1</param>
+          </list>
+          <list>
+            <param name="label">secondStaticLabel</param>
+            <param name="value">staticValue2</param>
+          </list>
+          <list>
+            <param name="label">thirdStaticLabel</param>
+            <param name="value">staticValue3</param>
+          </list>
+        </param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           <p>
+           selected value is:<br>
+            $test3$
+           </p>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+    
+
+  <module name="HTML" layoutPanel="panel_row5_col1">
+    <param name="html"><![CDATA[
+      <h3>Illustrating prepopulation</h3>
+      <a href="?test1=staticValue2&test2=barValue&test3=staticValue2&test3=barValue">click this link</a> to preselect the second static checkbox inthe first group, the second dynamic checkbox in the second group,  and then both the second static and the second dynamic checkboxes in the third group.  As you can see, the selected values can be easily prepopulated from the URL, even into a very complicated form search page.  To learn how to make a drilldown click go to such a URL, consult the <a href="linking">documentation for the Redirector and URLLoader modules</a>.
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>Since this module is so similar in almost every way to the Pulldown module when used in multiselect mode, you should carefully study all of the Pulldown documentation and then apply what you learn there to this module. Aside from the "staticOptions" param being "staticCheckboxes", it really is the same stuff to learn so we have not duplicated the documentation.
+        </li>
+        <li>The links to the various Pulldown docs are here: <a href="pulldown1_static">1</a> <a href="pulldown2_dynamic">2</a> <a href="pulldown3_dynamic_templated">3</a> <a href="pulldown4_dynamic_postprocess">4</a> <a href="pulldown5_dynamic_noall_notoken">5</a> <a href="pulldown6_dynamic_multipleselect">6</a>.
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Checkboxes" target="_blank">Checkboxes and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+</view>

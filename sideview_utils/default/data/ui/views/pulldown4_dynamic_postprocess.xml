@@ -1,0 +1,163 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - reusing searches with 'postProcess'</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - multiple pulldowns sharing a search using the 'postProcess' param</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: 2 dynamic pulldowns riding on a single search">
+    <param name="html"><![CDATA[
+      Now we show two dynamic pulldowns whose options are fed by only a single search.  Note, use the postprocess param to not only allow both pulldowns to reuse a single search but also to filter the options of the second pulldown such that they match the term selected in the first pulldown.  If using only core Splunk modules, you would be forced to run one search for each pulldown.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="*_thruput" | search group!="per_source_thruput" | stats count by group, series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">group</param>
+      <param name="label">group</param>
+      <param name="template">group="$value$"</param>
+      <param name="float">left</param>
+      <param name="postProcess">dedup $name$ | sort $name$</param>
+      <param name="valueField">$name$</param>
+      
+      <module name="Pulldown">
+        <param name="name">series</param>
+        <param name="label">series</param>
+        <param name="template">series="$value$"</param>
+        <param name="postProcess">search $group$ | dedup $name$ | sort $name$</param>
+        <param name="valueField">$name$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" $group$ $series$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="Pager">
+            <param name="entityName">results</param>
+            
+            <module name="Table"></module>
+
+          </module>
+
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              group term is: <b>$group$</b><br>
+              series term is: <b>$series$</b><br>
+              the entire search is: <b>$search$</b>
+            ]]></param>
+          </module>
+        </module>
+
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Note how the <b>postProcess</b> param is used.  The two pulldowns are wired up to what we commonly call a 'datacube' search, ie a search that ends in <b>stats count by foo, bar, baz</b>.  The first pulldown has as its postprocess param <b>dedup $$name$$ | sort $$name$$</b>. The second pulldown then has a postprocess param of <b>search $$group$$ | dedup $$name$$ | sort $$name$$</b>*. 
+        </li>
+        <li>
+          This can be done again and again so you can have 5, 10 or more pulldowns chained together, all dynamic, all responding to filters from upstream.  As the number of pulldowns needed grows, the configuration remains relatively straightforward.  If you're using intentions on the other hand, the number of ConvertToIntention modules needed grows non-linearly and the config becomes unmanageable.
+        </li>
+        <li>
+          Note again, the overall convention is using the special tokens $$name$$ and $$value$$ within parameters to refer to the module's own 'name' parameter, as well as to its selected value. 
+        </li>
+        <li>
+          This also shows the use of the 'float' param to align the pulldowns alongside each other. (Normally to achieve this common use case, you would have to apply custom css. There is also a 'clear' attribute.)
+        </li>
+      </ol>
+      
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1" group="showing the same thing WITHOUT postProcess.">
+    <param name="html"><![CDATA[
+      Just for comparison, take a look at the same configuration but WITHOUT using postProcess.   Because this doesnt use the intentions system this is still a <em>little</em> faster than core Splunk UI, but you can see how incredibly slow this is compared to the faster postProcess config you see above.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="*_thruput" | search group!="per_source_thruput" | dedup group | sort group</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">group</param>
+      <param name="label">group</param>
+      <param name="template">group="$value$"</param>
+      <param name="float">left</param>
+      <param name="valueField">$name$</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" $group$ | search group!="per_source_thruput" | dedup series | sort series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pulldown">
+          <param name="name">series</param>
+          <param name="label">series</param>
+          <param name="template">$name$="$value$"</param>
+          <param name="valueField">$name$</param>
+
+          <module name="Search">
+            <param name="search">index=_internal source="*metrics.log" $group$ $series$ | search group!="per_source_thruput" | stats min(eps) avg(eps) max(eps) </param>
+            <param name="earliest">-1h</param>
+            <param name="latest">now</param>
+            
+            <module name="Pager">
+              
+              <module name="Table"></module>
+
+            </module>
+
+            <!-- this HTML module here is just to show you the token values and the search -->
+            <!-- feel free to delete it -->
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                group term is: <b>$group$</b><br>
+                series term is: <b>$series$</b><br>
+                the entire search is: <b>$search$</b>
+              ]]></param>
+            </module>
+          </module>
+
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row4_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          It is MUCH better to become familiar with the postProcess param and how to use it in the example you see above. This example is included only as a comparison.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+</view>

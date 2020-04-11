@@ -1,0 +1,21 @@
+<view template="dashboard.html" isVisible="False">
+  <label>Hello World</label>
+
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="viewHeader" />
+
+  <module name="Button" layoutPanel="panel_row1_col1">
+    <param name="label">Start "pushing" data to the downstream modules</param>
+
+    <module name="Search" >
+      <param name="search">index=* | head 1000 | top sourcetype</param>
+      
+      <module name="Pager">
+        
+        <module name="Table" />
+
+      </module>
+    </module>
+  </module>
+</view>

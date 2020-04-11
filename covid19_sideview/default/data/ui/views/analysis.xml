@@ -1,0 +1,791 @@
+<view>
+  <label>home</label>
+  <module name="TopNav" layoutPanel="appHeader" />
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <!-- this legacy Sideview Utils module is only here as a workaround since Splunk has not yet released
+any mechanism whereby Sideview XML views can specify what URI should handle Users who to to the legacy
+Advanced XML views. This is also why the "Sideview Utils" app is still required, incidentally. -->
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <!-- this a MUCH simplified version of our normal checklist.conf runner. -->
+    <module name="Search">
+      <param name="search"><![CDATA[
+        | `check_canary_version` | stats count by metric
+      ]]></param>
+      <module name="Multiplexer">
+        <param name="fields">metric</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <strong>$metric$</strong>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    <module name="Pulldown">
+      <param name="name">breakApartStates</param>
+      <param name="label">treat provinces/states as countries</param>
+      <param name="float">left</param>
+      <param name="staticOptions">
+        <list>
+          <param name="value">yes</param>
+        </list>
+        <list>
+          <param name="value">no</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search"><![CDATA[
+| `covid_19_csse_daily_reports`
+| `standard_cleanup_and_normalization`
+| `get_country_statistics`
+| stats sum(Sick) as Sick sum(Confirmed) as Confirmed sum(Recovered) as Recovered sum(Deaths) as Deaths by Province_State Country_Region _time
+| `get_country_slash_state_and_spl($breakApartStates$)`
+| `get_count_of_days_since_nth_case(100,Country_Or_State)`
+| search days_since_threshold_passed>-1
+| stats dc(Province_State) as provinces count by Country_Or_State spl
+        ]]></param>
+
+        <!--
+        this ValueSetter is just to preselect entries in our Pulldown.
+        It uses ValueSetter's somewhat bizarre "conditional" params.
+        AND it uses a delim, so that it outputs an array-valued $foo$ token.
+        Because CheckboxPulldown only will select itself accordingly if an
+        array-valued $foo$ token, whose name matches its name, arrives from upstream.
+         -->
+        <module name="ValueSetter">
+          <param name="name">Country_Or_State</param>
+          <param name="allowClobber">False</param>
+
+          <param name="if.$breakApartStates$=no">Country_Region="Italy",Country_Region="Germany",Country_Region="US",Country_Region="Netherlands",Country_Region="Belgium",Country_Region="Spain",Country_Region="France",Country_Region="Iran",Country_Region="South Korea",Country_Region="China",Country_Region="Switzerland",Country_Region="United Kingdom",Country_Region="Japan",Country_Region="Hong Kong",Country_Region="Singapore"</param>
+          <param name="default">Country_Region="Italy",Country_Region="Germany",( Country_Region="US" Province_State="New York" ),( Country_Region="US" Province_State="New Jersey" ),( Country_Region="US" Province_State="Washington" ),( Country_Region="US" Province_State="California" ),Country_Region="Spain",Country_Region="France",Country_Region="Iran",Country_Region="South Korea",( Country_Region="China" Province_State="Hubei" ),Country_Region="Switzerland",Country_Region="United Kingdom",Country_Region="Japan",Country_Region="Hong Kong",Country_Region="Singapore"</param>
+          <param name="delim">,</param>
+
+          <module name="CheckboxPulldown">
+            <param name="name">Country_Or_State</param>
+            <param name="label">countries</param>
+            <param name="valueField">spl</param>
+            <param name="labelField">Country_Or_State</param>
+            <param name="template">$value$</param>
+            <param name="selectAllOptimization">*</param>
+
+            <!-- quite a lot of complexity here, but it's so self-contained that I'm moving it into a pattern -->
+            <pattern name="LinksToResetSelectedCountriesAndStates" />
+
+            <module name="Tabs" layoutPanel="panel_row1_col1">
+              <param name="name">selectedTab</param>
+              <param name="staticTabs">
+                <list>
+                  <param name="label">Cases over time by country or state</param>
+                  <param name="value">cases_over_time_by_country_or_state</param>
+                </list>
+                <list>
+                  <param name="label">Recovery by country</param>
+                  <param name="value">recovery_by_country</param>
+                </list>
+                <list>
+                  <param name="label">Current numbers</param>
+                  <param name="value">countries</param>
+                </list>
+                <list>
+                  <param name="label">US counties (prototype)</param>
+                  <param name="value">us_county_level_prototype</param>
+                </list>
+              </param>
+
+              <module name="Switcher">
+                <param name="selectedGroup">$selectedTab$</param>
+
+                <module name="Pulldown" group="cases_over_time_by_country_or_state">
+                  <param name="name">statistic</param>
+                  <param name="label">Show</param>
+                  <param name="float">left</param>
+                  <param name="staticOptions">
+                    <list>
+                      <param name="label">remaining patients sick or testing positive</param>
+                      <param name="value">Sick</param>
+                    </list>
+                    <list>
+                      <param name="label">Deaths - cumulative</param>
+                      <param name="value">Deaths</param>
+                    </list>
+                    <list>
+                      <param name="label">Deaths - per day</param>
+                      <param name="value">NewDeaths</param>
+                    </list>
+                    <list>
+                      <param name="label">(New) - Expected rise in deaths</param>
+                      <param name="value">ExpectedRiseInDeaths</param>
+                    </list>
+                    <list>
+                      <param name="label">Total cases - cumulative</param>
+                      <param name="value">Confirmed</param>
+                    </list>
+                    <list>
+                      <param name="label">Total cases - new cases per day</param>
+                      <param name="value">NewConfirmed</param>
+                    </list>
+                    <list>
+                      <param name="label">case fatality rate (then-current)</param>
+                      <param name="value">CaseFatalityRate</param>
+                    </list>
+                    <list>
+                      <param name="label">patients who have recovered</param>
+                      <param name="value">Recovered</param>
+                    </list>
+                    <list>
+                      <param name="label">pending tests (US only)</param>
+                      <param name="value">PendingTests</param>
+                    </list>
+                    <list>
+                      <param name="label">positive tests (US only)</param>
+                      <param name="value">PositiveTests</param>
+                    </list>
+                    <list>
+                      <param name="label">negative tests (US only)</param>
+                      <param name="value">NegativeTests</param>
+                    </list>
+                  </param>
+
+                  <module name="Pulldown">
+                    <param name="name">number_of_days</param>
+                    <param name="label">by number of days since the </param>
+                    <param name="float">left</param>
+                    <param name="staticOptions">
+                      <list>
+                        <param name="label">5000th</param>
+                        <param name="value">5000</param>
+                      </list>
+                      <list>
+                        <param name="label">2000th</param>
+                        <param name="value">2000</param>
+                      </list>
+                      <list>
+                        <param name="label">1000th</param>
+                        <param name="value">1000</param>
+                      </list>
+                      <list>
+                        <param name="label">500th</param>
+                        <param name="value">500</param>
+                      </list>
+                      <list>
+                        <param name="label">200th</param>
+                        <param name="value">200</param>
+                      </list>
+                      <list>
+                        <param name="label">100th</param>
+                        <param name="value">100</param>
+                        <param name="selected">true</param>
+                      </list>
+                      <list>
+                        <param name="label">50th</param>
+                        <param name="value">50</param>
+                      </list>
+                      <list>
+                        <param name="label">30th</param>
+                        <param name="value">30</param>
+                      </list>
+                      <list>
+                        <param name="label">10th</param>
+                        <param name="value">10</param>
+                      </list>
+                      <list>
+                        <param name="label">5th</param>
+                        <param name="value">5</param>
+                      </list>
+                      <list>
+                        <param name="label">2nd</param>
+                        <param name="value">2</param>
+                      </list>
+                    </param>
+
+                    <module name="Pulldown">
+                      <param name="name">xStatistic</param>
+                      <param name="label"></param>
+                      <param name="staticOptions">
+                        <list>
+                          <param name="label">confirmed case</param>
+                          <param name="value">Confirmed</param>
+                        </list>
+                        <list>
+                          <param name="label">death</param>
+                          <param name="value">Deaths</param>
+                        </list>
+                      </param>
+
+
+
+                      <module name="ValueSetter">
+                        <param name="arg.charting.chart">line</param>
+                        <param name="arg.charting.chart.nullValueMode">connect</param>
+                        <param name="arg.sideview.yField">$statistic.label$</param>
+
+                        <module name="Search">
+                          <param name="search"><![CDATA[
+| `covid_19_all_data`
+| `standard_cleanup_and_normalization`
+| search $Country_Or_State$
+| `get_country_slash_state_and_spl($breakApartStates$)`
+| stats sum(Sick) as Sick sum(Confirmed) as Confirmed sum(Recovered) as Recovered sum(Deaths) as Deaths sum(positive) as PositiveTests sum(negative) as NegativeTests sum(pending) as PendingTests last(median_age) as Median_Age last(population) as Population last(urban_percentage) as Urban_Percentage last(inIcuCurrently) as In_ICU last(hospitalizedCurrently) as Hospitalized_Currently values(Lockdown_Started) as Lockdown_Started by Country_Or_State _time
+|  bin Median_Age span=5
+|  bin Population bins=50
+|  bin Urban_Percentage  bins=50
+| eval CaseFatalityRate= 100*(Deaths/Confirmed)
+| sort 0 +_time +Country_Or_State
+| streamstats max(Confirmed) as Confirmed max(Deaths) as Deaths max(Recovered) as Recovered by Country_Or_State
+| streamstats current=f last(Deaths) as yesterdayDeaths last(Confirmed) as yesterdayConfirmed last(Recovered) as yesterdayRecovered by Country_Or_State
+| eval NewDeaths = Deaths - yesterdayDeaths
+| eval NewConfirmed = Confirmed - yesterdayConfirmed
+| eventstats last(CaseFatalityRate) as mostRecentCaseFatalityRate by Country_Or_State
+| eval NewExpectedDeaths = (NewConfirmed * (mostRecentCaseFatalityRate/100))
+| eval ExpectedRiseInDeaths= round(((NewExpectedDeaths/NewDeaths) - 1 )  * NewDeaths, 2)
+| fields - yesterdayDeaths yesterdayConfirmed yesterdayRecovered
+| `get_count_of_days_since_nth_case($number_of_days$,Country_Or_State,$xStatistic$)`
+| `get_count_of_days_since_lockdown_start`
+| search days_since_threshold_passed>-1
+
+                          ]]></param>
+
+                          <!-- a lame old trick. having this here forces the framework to dispatch
+                          the search at this point, so users can change to/from log axis without the
+                          search dispatching.  -->
+                          <module name="CustomBehavior">
+                            <param name="requiresDispatch">True</param>
+                          </module>
+
+                          <!-- new functionality in Canary 1.2.4
+                          These directives enable/disable the log axis option, and show/hide the whole control. -->
+                          <module name="ValueSetter">
+                            <param name="name">charting.axisY.scale.directive</param>
+                            <param name="if.$statistic$=CaseFatalityRate[priority=1]">disable=log;hide</param>
+                            <param name="if.$statistic$=ExpectedRiseInDeaths[priority=2]">disable=log;hide</param>
+                            <param name="if.$statistic$=NewDeaths[priority=3]">disable=log;hide</param>
+                            <param name="if.$statistic$=NewConfirmed[priority=4]">disable=log;hide</param>
+                            <param name="if.$statistic$=PendingTests[priority=5]">disable=log;hide</param>
+                            <param name="if.$statistic$=PositiveTests[priority=6]">disable=log;hide</param>
+                            <param name="if.$statistic$=NegativeTests[priority=7]">disable=log;hide</param>
+
+                            <param name="default">enable=log;show</param>
+
+                            <module name="Pulldown">
+                              <param name="name">charting.axisY.scale</param>
+                              <param name="label">y-axis</param>
+                              <param name="staticOptions">
+                                <list>
+                                  <param name="label">logarithmic</param>
+                                  <param name="value">log</param>
+                                </list>
+                                <list>
+                                  <param name="label">normal</param>
+                                  <param name="value">linear</param>
+                                </list>
+                              </param>
+
+                              <module name="ValueSetter">
+                                <param name="name">noteForCertainYAxisOptions</param>
+                                <param name="if.$statistic$=PendingTests[priority=1]"><![CDATA[
+                                  <br><br>Note that pending tests are only reported sporadically by some states, so note the x-axis "day" may not actually be the latest day.
+                                ]]></param>
+
+                                <param name="if.$statistic$=CaseFatalityRate[priority=2]"><![CDATA[
+                                  <br><br><strong>Case Fatality Rate</strong> is not to be confused with the overall fatality rate, but is a <a href="https://www.britannica.com/science/case-fatality-rate" target="_blank">specific term that you can google and is calculated only from known cases</a>. Here it is the total number of Deaths known on the given day in the given country, divided by the total number of Confirmed cases known on the given day in the given country. For example if a given patient was sick on day X and died on the next day, their death would only affect this statistic on day X+1,  not on day X.  <strong>you should also switch your y-axis from 'logarithmic' to 'normal' if you haven't already.</strong>
+                                ]]></param>
+
+                                <param name="if.$statistic$=ExpectedRiseInDeaths[priority=3]"><![CDATA[
+                                  <br><br><strong>NOTE</strong> This is a statistic that the app creates that tries to estimate, of the new cases found for a given day, whether the number of future  deaths resulting from those new cases, will be greater than that region's deaths today. It takes the new confirmed cases and multiplies it by the region's most recent case fatality rate (not the then-current CFR), and then it just subtracts the region's actual new deaths that day. If the result is positive, then the cases added today are predicted to contribute more future deaths than the days actual deaths, by that number.  positive numbers are bad and mean the load on the healthcare system will likely increase later, negative numbers are good and mean the load on the healthcare system will likely go down later.
+
+
+                                ]]></param>
+
+                                <param name="if.$statistic$=Recovered[priority=4]"><![CDATA[
+                                  <br><br><strong>Note that there is a problem with Recovered in the US</strong> -- the counts are not broken down by US state, but instead provided in the dataset as a "Province_State" called "Recovered".  These numbers are screened out by the app and so they aren't reflected anywhere on this chart, which is why US states are zero, or very low numbers on the chart below.
+                                  ]]></param>
+
+                                <module name="HTML">
+                                  <param name="html"><![CDATA[
+                                    <h3>$statistic.label$ over time split by country.</h3>
+                                    Note that "time" on the x-axis has been normalized to be the number of days since the $number_of_days.label$ $xStatistic.label$ was reported in the given country or province/state.
+                                    $noteForCertainYAxisOptions$
+                                  ]]></param>
+                                </module>
+                              </module>
+
+
+                              <module name="ValueSetter">
+                                <param name="arg.sideview.xField">days elapsed since the country's $number_of_days.label$ $xStatistic.label$</param>
+
+                                <module name="PostProcess">
+                                  <param name="search"><![CDATA[
+| chart sum($statistic$) over days_since_threshold_passed by Country_Or_State limit=200
+| sort 0 + days_since_threshold_passed
+                                  ]]></param>
+
+                                  <module name="Chart">
+                                    <param name="enableResize">False</param>
+                                    <param name="height">500px</param>
+                                  </module>
+
+                                  <pattern name="SeeRawSearchSyntax"/>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+
+
+                          <!--
+                            this mess should really be in a pattern, but this conditionally hides
+                            the whole forecast prototype if the statistic selected is wildly invalid and/or stupid -->
+
+                          <module name="ValueSetter" layoutPanel="panel_row2_col1">
+                            <param name="name">isForecastRemotelyApplicable</param>
+                            <param name="if.$statistic$=Deaths[priority=1]">forecastIsApplicable</param>
+                            <param name="if.$statistic$=Confirmed[priority=2]">forecastIsApplicable</param>
+                            <param name="if.$statistic$=Sick[priority=3]">forecastIsApplicable</param>
+                            <param name="default">forecastIsNOT_APPLICABLE</param>
+
+                            <module name="Switcher">
+                              <param name="selectedGroup">$isForecastRemotelyApplicable$</param>
+
+
+
+
+                              <module name="HTML" group="forecastIsNOT_APPLICABLE">
+                                <param name="html"><![CDATA[
+                                  (the forecast panel has been disabled because it's not at all applicable for the $statistic$ statistic)
+                                  ]]></param>
+                              </module>
+
+                              <module name="HTML" group="forecastIsApplicable">
+                                <param name="html"><![CDATA[
+                                  <h3>Forecasting the number of $statistic$ (Highly Experimental)</h3>
+
+                                  <p>This is some experimental work that is trying to get a rough near-term forecast, making the somewhat arbitrary assumption that each curve is continuing an exponential trend. Note this is a bad assumption for any country whose points are not tracing out straight lines above when you switch to a <a href="logarithmic_axis_primer">logarithmic Y-axis</a>.  Also note the assumption is utterly false and absurd for 'Recovered'.   Proceed with caution. I built this because for the tracks that ARE on quite straight lines I got tired of doing the math manually.
+                                  <br />
+                                  <br />
+                                  For each country/province/state selected, it takes the natural log of each of the last n values of $statistic$.  It then takes the difference of this number from the previous days's ln($statistic$). It takes the average of these differences and uses that as the expected rise per day for tomorrow on the log axis chart. The rest is just adding this onto the ln($statistic$) and then taking exp() of that to put us back in normal values. <br>
+                                  <br>
+                                  uncertainty - this is a bit crude, but it serves as a crosscheck/qualifier. It is the standard deviation of the last N ln($statistic$) values.  Roughly this is thus a measure of how linear the N points are when you plot them on a log axis scale.  If it's zero, that means each of the last N ln($statistic$) values differed by a constant, which means the points are tracking an exponential curve perfectly.  On the other hand if that is high, then these N points really aren't on an exponential track at all and the forecasted numbers for that row are worse than useless. Also it's not on an absolute scale and this makes it hard to use consistently as a metric. (One  improvement would be to divide it by the last ln($statistic$) but I haven't done this yet.)<br>
+                                  <br>
+                                  yesterdaysPrediction - this is the number that is forecasted for today, including the N prior days data but not factoring in todays point at all.  Basically the prediction it had yesterday, for todays number.
+                                  <br><br>
+                                  finally it sorts by the "uncertainty" (see above) so the least confident predictions are at the bottom.
+                                  <br>
+                                  <br>
+                                  BASICALLY THOUGH - if you plot a given line and you use a logarithmic y-axis above, and the last 5 or so points don't chart out a really straight line, then this whole method of extrapolation is unjustified, AND for such a row the 'uncertainty' should be one of the higher ones meaning you should completely ignore its predictions.
+
+                                ]]></param>
+                              </module>
+
+                              <module name="Pulldown" layoutPanel="panel_row2_col1" group="forecastIsApplicable">
+                                <param name="name">daysBackToUse</param>
+                                <param name="label">days back to use for extrapolation</param>
+                                <param name="staticOptions">
+                                  <list><param name="value">1</param></list>
+                                  <list><param name="value">2</param></list>
+                                  <list><param name="value">3</param></list>
+                                  <list><param name="value">4</param></list>
+                                  <list><param name="value">5</param><param name="selected">true</param></list>
+                                  <list><param name="value">6</param></list>
+                                </param>
+
+                                <module name="PostProcess">
+                                  <param name="search"><![CDATA[
+| fields _time days_since_threshold_passed Country_Or_State $statistic$
+| eval ln$statistic$=ln($statistic$)
+| streamstats current=f last(ln$statistic$) as lastLn$statistic$ by Country_Or_State
+| eval deltaLn$statistic$=ln$statistic$-lastLn$statistic$
+| streamstats window=$daysBackToUse$  sum(deltaLn$statistic$) as sumDeltaLn$statistic$ stdev(deltaLn$statistic$) as stdevDeltaLn$statistic$ by Country_Or_State
+| eval extrapolatedSlope=sumDeltaLn$statistic$/$daysBackToUse$
+| streamstats last(ln$statistic$) as currentLn$statistic$ by Country_Or_State
+| eval tomorrow = round(exp(currentLn$statistic$ + extrapolatedSlope),0)
+| eval twoDaysOut = round(exp(currentLn$statistic$ + 2*extrapolatedSlope),0)
+| eval threeDaysOut = round(exp(currentLn$statistic$ + 3*extrapolatedSlope),0)
+| eval fourDaysOut = round(exp(currentLn$statistic$ + 4*extrapolatedSlope),0)
+| eval oneWeekOut = round(exp(currentLn$statistic$ + 7*extrapolatedSlope),0)
+| streamstats current=f last(tomorrow) as predictionForToday by Country_Or_State
+
+| fields _time days_since_threshold_passed Country_Or_State $statistic$  predictionForToday tomorrow twoDaysOut threeDaysOut fourDaysOut oneWeekOut stdevDeltaLn$statistic$ lastLn$statistic$ currentLn$statistic$ extrapolatedSlope ln$statistic$  starting_time deltaLn$statistic$ sumDeltaLn$statistic$
+
+| stats last($statistic$) as $statistic$ last(predictionForToday) as yesterdaysPrediction last(stdevDeltaLn$statistic$) as uncertainty last(tomorrow) as tomorrow last(twoDaysOut) as twoDaysOut last(threeDaysOut) as threeDaysOut last(fourDaysOut) as fourDaysOut last(oneWeekOut) as oneWeekOut by Country_Or_State
+| sort +uncertainty
+| eval uncertainty=round(uncertainty,5)
+| where isnotnull(uncertainty) AND uncertainty>0
+
+                                  ]]></param>
+
+
+
+                                  <module name="Pager">
+                                    <param name="count">100</param>
+                                    <module name="Table" />
+                                    <module name="Pager" />
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+
+                <module name="Search" group="recovery_by_country">
+                  <param name="search"><![CDATA[
+| `covid_19_all_data`
+| `standard_cleanup_and_normalization`
+| search $Country_Or_State$
+| `get_country_slash_state_and_spl($breakApartStates$)`
+| stats sum(Sick) as Sick sum(Confirmed) as Confirmed sum(Recovered) as Recovered sum(Deaths) as Deaths sum(positive) as PositiveTests sum(negative) as NegativeTests sum(pending) as PendingTests last(median_age) as Median_Age last(population) as Population last(urban_percentage) as Urban_Percentage last(inIcuCurrently) as In_ICU last(hospitalizedCurrently) as Hospitalized_Currently values(Lockdown_Started) as Lockdown_Started by Country_Or_State _time
+|  bin Median_Age span=5
+|  bin Population bins=50
+|  bin Urban_Percentage  bins=50
+| eval CaseFatalityRate= 100*(Deaths/Confirmed)
+| sort 0 +_time +Country_Or_State
+| streamstats max(Confirmed) as Confirmed max(Deaths) as Deaths max(Recovered) as Recovered by Country_Or_State
+| streamstats current=f last(Deaths) as yesterdayDeaths last(Confirmed) as yesterdayConfirmed last(Recovered) as yesterdayRecovered by Country_Or_State
+| eval NewDeaths = Deaths - yesterdayDeaths
+| eval NewConfirmed = Confirmed - yesterdayConfirmed
+| eventstats last(CaseFatalityRate) as mostRecentCaseFatalityRate by Country_Or_State
+| eval NewExpectedDeaths = (NewConfirmed * (mostRecentCaseFatalityRate/100))
+| eval ExpectedRiseInDeaths= round(((NewExpectedDeaths/NewDeaths) - 1 )  * NewDeaths, 2)
+| fields - yesterdayDeaths yesterdayConfirmed yesterdayRecovered
+                  ]]></param>
+
+
+
+                  <module name="ValueSetter">
+                    <param name="arg.charting.chart">column</param>
+                    <param name="arg.charting.legend.placement">none</param>
+                    <param name="arg.charting.chart.nullValueMode">connect</param>
+                    <param name="arg.charting.chart.stackMode">stacked</param>
+                    <param name="arg.charting.seriesColors">#ee3300,#34bc6e,#648fff</param>
+                    <param name="arg.charting.axisLabelsX.axisVisibility">hide</param>
+                    <param name="arg.charting.axisY.minimumNumber">-10</param>
+                    <param name="arg.charting.axisY.maximumNumber">10</param>
+
+
+                    <!-- we use the datacube itself to get the count of selected countries/states
+                    this is just for our little header.  -->
+                    <module name="PostProcess">
+                      <param name="search"><![CDATA[
+| stats dc(Country_Or_State) as count
+                      ]]></param>
+
+                      <module name="HTML">
+                        <param name="html"><![CDATA[
+                        This charts the app's "Expected Rise In Deaths" which is a statistic the app constructs on the fly. This is trying to estimate, of the new cases found for a given day, whether the number of future  deaths resulting from those new cases, will be greater than that region's actual deaths on the same day. It takes the new confirmed cases and multiplies it by the region's most recent case fatality rate (not the then-current CFR), and then it just subtracts the region's actual new deaths that day. If the result is positive, then the cases added today are predicted to contribute more future deaths than the days actual deaths, by that number.  positive numbers are bad and mean the load on the healthcare system will likely increase later, negative numbers are good and mean the load on the healthcare system will likely go down later.
+
+                        <h3>Charting "Expected rise in deaths" over time for each of the $results[0].count$ selected countries</h3>
+                        ]]></param>
+                      </module>
+                    </module>
+                     <!-- we use the datacube itself again to get the field we multiplex by -->
+                    <module name="PostProcess">
+                      <param name="search"><![CDATA[
+| stats count by Country_Or_State
+                      ]]></param>
+
+                      <module name="Pager">
+
+                        <module name="Multiplexer">
+                          <param name="fields">Country_Or_State</param>
+
+                          <!-- And now we use the datacube one time per multiplexed field, to get the
+                           projection out of it, for the given multiplexed field value. -->
+                          <module name="PostProcess">
+                            <param name="search"><![CDATA[
+| search Country_Or_State="$Country_Or_State$"
+| eval type=case(ExpectedRiseInDeaths>0,"positive",true(),"negative")
+| timechart sum(ExpectedRiseInDeaths) by type
+| fields _time positive negative
+| sort 0 + days_since_threshold_passed
+
+                            ]]></param>
+                            <!--
+                            <pattern name="SeeRawSearchSyntax"/>
+                          -->
+                            <module name="HTML">
+                              <param name="html"><![CDATA[
+                              <h3 style="border-top:1px solid #ccc;">$Country_Or_State$</h3>
+                              ]]></param>
+                            </module>
+                            <module name="Chart">
+                              <param name="enableResize">False</param>
+                              <param name="height">150px</param>
+                            </module>
+
+                          </module>
+                        </module>
+                        <module name="Pager" />
+                      </module>
+                    </module>
+                  </module>
+                </module>
+
+
+
+                <module name="Search" group="countries">
+                  <param name="search"><![CDATA[
+| `covid_19_all_data`
+| `standard_cleanup_and_normalization`
+| search $Country_Or_State$
+| `get_country_slash_state_and_spl($breakApartStates$)`
+| stats sum(Sick) as Sick sum(Confirmed) as Confirmed sum(Recovered) as Recovered sum(Deaths) as Deaths sum(positive) as PositiveTests sum(negative) as NegativeTests sum(pending) as PendingTests last(median_age) as Median_Age last(population) as Population last(urban_percentage) as Urban_Percentage last(inIcuCurrently) as In_ICU last(hospitalizedCurrently) as Hospitalized_Currently values(Lockdown_Started) as Lockdown_Started by Country_Or_State _time
+| eval CaseFatalityRate= 100*(Deaths/Confirmed)
+| sort 0 +_time +Country_Or_State
+| streamstats max(Confirmed) as Confirmed max(Deaths) as Deaths max(Recovered) as Recovered by Country_Or_State
+| streamstats current=f last(Deaths) as yesterdayDeaths last(Confirmed) as yesterdayConfirmed last(Recovered) as yesterdayRecovered by Country_Or_State
+| eval NewDeaths = Deaths - yesterdayDeaths
+| eval NewConfirmed = Confirmed - yesterdayConfirmed
+| eventstats last(CaseFatalityRate) as mostRecentCaseFatalityRate by Country_Or_State
+| eval NewExpectedDeaths = (NewConfirmed * (mostRecentCaseFatalityRate/100))
+| eval ExpectedRiseInDeaths= round(((NewExpectedDeaths/NewDeaths) - 1 )  * NewDeaths, 2)
+| fields - yesterdayDeaths yesterdayConfirmed yesterdayRecovered
+| `get_count_of_days_since_nth_case(100,Country_Or_State,Confirmed)`
+| `get_count_of_days_since_lockdown_start`
+| eval starting_time_since_nth_case = strftime(starting_time_since_nth_case,"%b %d, %Y")
+| rename starting_time_since_nth_case as "100 cases reached on"
+| fields - days_since_threshold_passed mostRecent* starting_point
+| stats last(*) as * by Country_Or_State
+                  ]]></param>
+                  <module name="Pager">
+                    <param name="count">100</param>
+                    <module name="Table" />
+                  </module>
+                  <pattern name="SeeRawSearchSyntaxTabular"/>
+                </module>
+
+
+
+                <module name="Pulldown" group="us_county_level_prototype">
+                  <param name="name">statistic</param>
+                  <param name="label">Show</param>
+                  <param name="float">left</param>
+                  <param name="staticOptions">
+                    <list>
+                      <param name="label">remaining patients sick or testing positive</param>
+                      <param name="value">Sick</param>
+                    </list>
+                    <list>
+                      <param name="label">patients who have recovered</param>
+                      <param name="value">Recovered</param>
+                    </list>
+                    <list>
+                      <param name="label">patients who have died</param>
+                      <param name="value">Deaths</param>
+                    </list>
+                    <list>
+                      <param name="label">all confirmed cases</param>
+                      <param name="value">Confirmed</param>
+                    </list>
+                  </param>
+
+                  <module name="Pulldown">
+                    <param name="name">number_of_days</param>
+                    <param name="label">by number of days since the </param>
+                    <param name="float">left</param>
+                    <param name="staticOptions">
+                      <list>
+                        <param name="label">5000th</param>
+                        <param name="value">5000</param>
+                      </list>
+                      <list>
+                        <param name="label">2000th</param>
+                        <param name="value">2000</param>
+                      </list>
+                      <list>
+                        <param name="label">1000th</param>
+                        <param name="value">1000</param>
+                      </list>
+                      <list>
+                        <param name="label">500th</param>
+                        <param name="value">500</param>
+                      </list>
+                      <list>
+                        <param name="label">200th</param>
+                        <param name="value">200</param>
+                      </list>
+                      <list>
+                        <param name="label">100th</param>
+                        <param name="value">100</param>
+                        <param name="selected">true</param>
+                      </list>
+                      <list>
+                        <param name="label">50th</param>
+                        <param name="value">50</param>
+                      </list>
+                      <list>
+                        <param name="label">30th</param>
+                        <param name="value">30</param>
+                      </list>
+                      <list>
+                        <param name="label">10th</param>
+                        <param name="value">10</param>
+                      </list>
+                      <list>
+                        <param name="label">5th</param>
+                        <param name="value">5</param>
+                      </list>
+                      <list>
+                        <param name="label">1st</param>
+                        <param name="value">1</param>
+                      </list>
+                    </param>
+
+                    <module name="Pulldown">
+                      <param name="name">xStatistic</param>
+                      <param name="label"></param>
+                      <param name="staticOptions">
+                        <list>
+                          <param name="label">confirmed case</param>
+                          <param name="value">Confirmed</param>
+                        </list>
+                        <list>
+                          <param name="label">death</param>
+                          <param name="value">Deaths</param>
+                        </list>
+                      </param>
+
+                      <module name="Search">
+                        <param name="search"><![CDATA[
+| `covid_19_all_data`
+| `standard_cleanup_and_normalization`
+| search Country_Region="US"
+| stats sum(Sick) as Sick sum(Confirmed) as Confirmed sum(Recovered) as Recovered sum(Deaths) as Deaths by Province_State County _time
+| sort 0 +_time +Province_State +County
+| streamstats max(Confirmed) as Confirmed max(Deaths) as Deaths max(Recovered) as Recovered by Province_State County
+| eval State_And_County = Province_State + " - " + County
+| `get_count_of_days_since_nth_case($number_of_days$,State_And_County,$xStatistic$)`
+| search days_since_threshold_passed>-1
+
+                        ]]></param>
+                        <module name="PostProcess">
+                          <param name="search">
+stats count by Province_State
+                          </param>
+
+                          <module name="Pulldown">
+                            <param name="name">Province_State</param>
+                            <param name="label">within the state of</param>
+                            <param name="valueField">$name$</param>
+                            <param name="template">$name$="$value$"</param>
+                            <param name="staticOptions"></param>
+                            <param name="float">left</param>
+
+                            <module name="PostProcess">
+                              <param name="search">
+search $Province_State$ | stats count by County
+                              </param>
+
+                              <module name="CheckboxPulldown">
+                                <param name="name">County</param>
+                                <param name="label">and these counties in that state</param>
+                                <param name="valueField">$name$</param>
+                                <param name="template">$name$="$value$"</param>
+                                <param name="selectAllOptimization">*</param>
+
+                                <module name="ValueSetter">
+                                  <param name="arg.charting.chart">line</param>
+                                  <param name="arg.charting.chart.nullValueMode">connect</param>
+                                  <param name="arg.sideview.yField">$statistic.label$</param>
+
+                                  <module name="Search">
+                                    <param name="search"><![CDATA[
+| `covid_19_all_data`
+| `standard_cleanup_and_normalization`
+| search Country_Region="US" $Province_State$ $County$
+| stats sum(Sick) as Sick sum(Confirmed) as Confirmed sum(Recovered) as Recovered sum(Deaths) as Deaths by County _time
+| sort 0 +_time +Country_Or_State
+| streamstats max(Confirmed) as Confirmed max(Deaths) as Deaths max(Recovered) as Recovered by County
+| `get_count_of_days_since_nth_case($number_of_days$,County,$xStatistic$)`
+| search days_since_threshold_passed>-1
+
+                                    ]]></param>
+
+                                    <!-- a lame old trick. having this here forces the framework to dispatch
+                                    the search at this point, so users can change to/from log axis without the
+                                    search dispatching.  -->
+                                    <module name="CustomBehavior">
+                                      <param name="requiresDispatch">True</param>
+                                    </module>
+
+                                    <module name="Pulldown">
+                                      <param name="name">charting.axisY.scale</param>
+                                      <param name="label">y-axis</param>
+                                      <param name="staticOptions">
+                                        <list>
+                                          <param name="label">logarithmic</param>
+                                          <param name="value">log</param>
+                                        </list>
+                                        <list>
+                                          <param name="label">normal</param>
+                                          <param name="value">linear</param>
+                                          <param name="selected">true</param>
+                                        </list>
+                                      </param>
+
+                                      <module name="ValueSetter">
+                                        <param name="name">noteForCertainYAxisOptions</param>
+
+                                        <param name="if.$statistic$=Recovered"><![CDATA[<br><br><strong>Note that there is a problem with Recovered in the US</strong> -- the counts are not broken down by US state, but instead provided in the dataset as a "Province_State" called "Recovered".  These numbers are screened out by the app and so they aren't reflected anywhere on this chart, which is why US states are zero, or very low numbers on the chart below.
+                                        ]]></param>
+
+                                        <module name="HTML">
+                                          <param name="html"><![CDATA[
+                                            <h3>$statistic.label$ over time split by country.</h3>
+                                            Note that "time" on the x-axis has been normalized to be the number of days since the $number_of_days.label$ $xStatistic.label$ was reported in the given county.<br>
+                                            Note that not all counties are selectable because not all have reached the threshold of having a $number_of_days.label$ $xStatistic.label$.
+                                            $noteForCertainYAxisOptions$
+                                          ]]></param>
+                                        </module>
+                                      </module>
+
+
+
+                                      <module name="ValueSetter">
+                                        <param name="arg.sideview.xField">days elapsed since each county's $number_of_days.label$ $xStatistic.label$</param>
+
+                                        <module name="PostProcess">
+                                          <param name="search"><![CDATA[
+| chart sum($statistic$) over days_since_threshold_passed by County limit=200
+| sort 0 + days_since_threshold_passed
+                                          ]]></param>
+
+                                          <module name="Chart">
+                                            <param name="enableResize">False</param>
+                                            <param name="height">500px</param>
+                                          </module>
+                                          <pattern name="SeeRawSearchSyntax"/>
+                                        </module>
+
+                                      </module>
+
+
+
+
+
+                                    </module>
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

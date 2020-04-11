@@ -1,0 +1,396 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Pulldown prepopulation</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Pulldown prepopulation</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    
+    <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+       $search.name$<br>
+       <br>
+       Set up a testcase: <br>
+       <a href="testcases_for_pulldown_prepopulation?group1=per_index_thruput&group2=per_host_thruput&group3=per_sourcetype_thruput&group3=per_source_thruput&group4=per_index_thruput&group5=per_host_thruput&group6=per_sourcetype_thruput&group6=per_source_thruput&group7=per_index_thruput&group8=per_host_thruput&group9=per_sourcetype_thruput&group9=per_source_thruput">with hard keys</a><br>
+       
+       <a href="testcases_for_pulldown_prepopulation#group1=per_index_thruput&group2=per_host_thruput&group3=per_sourcetype_thruput&group3=per_source_thruput&group4=per_index_thruput&group5=per_host_thruput&group6=per_sourcetype_thruput&group6=per_source_thruput&group7=per_index_thruput&group8=per_host_thruput&group9=per_sourcetype_thruput&group9=per_source_thruput">with soft keys</a><br>
+
+
+       <a href="testcases_for_pulldown_prepopulation?group1=per_index_thruput&group2=per_host_thruput#group3=per_sourcetype_thruput&group3=per_source_thruput&group4=per_index_thruput&group5=per_host_thruput&group6=per_sourcetype_thruput&group6=per_source_thruput&group7=per_index_thruput&group8=per_host_thruput&group9=per_sourcetype_thruput&group9=per_source_thruput">with a mixture of soft and hard keys.</a><br>
+
+       <a href="testcases_for_pulldown_prepopulation?group1=per_source_thruput&group2=per_source_thruput&group3=per_source_thruput&group3=per_host_thruput&group4=per_host_thruput&group5=per_source_thruput&group6=per_source_thruput&group6=per_index_thruput&group7=per_source_thruput&group8=per_sourcetype_thruput&group9=per_index_thruput&group9=per_host_thruput#group1=per_index_thruput&group2=per_host_thruput&group3=per_sourcetype_thruput&group3=per_source_thruput&group4=per_index_thruput&group5=per_host_thruput&group6=per_sourcetype_thruput&group6=per_source_thruput&group7=per_index_thruput&group8=per_host_thruput&group9=per_sourcetype_thruput&group9=per_source_thruput">Where there are soft values to override the hard values</a><br>
+
+
+       <a href="testcases_for_pulldown_prepopulation?search.name=test_saved_search_with_serialized_context_positive">with a saved search</a><br>
+
+       <a href="testcases_for_pulldown_prepopulation?search.name=test_saved_search_with_serialized_context_negative&group1=per_index_thruput&group2=per_host_thruput&group3=per_sourcetype_thruput&group3=per_source_thruput&group4=per_index_thruput&group5=per_host_thruput&group6=per_sourcetype_thruput&group6=per_source_thruput&group7=per_index_thruput&group8=per_host_thruput&group9=per_sourcetype_thruput&group9=per_source_thruput">where all of the keys from a saved search are overridden</a><br>
+
+       
+
+       
+       
+      ]]></param>
+    </module>
+
+    <module name="Button" layoutPanel="viewHeader">
+      <param name="label">once more, with feeling</param>
+
+      <module name="Pulldown" group="purely static preselection (S/B index)" layoutPanel="panel_row1_col1">
+        <param name="name">group1</param>
+        <param name="label">type</param>
+
+        <param name="size">3</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <param name="staticOptions">
+          <list>
+            <param name="label">index</param>
+            <param name="value">per_index_thruput</param>
+          </list>
+          <list>
+            <param name="label">source</param>
+            <param name="value">per_source_thruput</param>
+          </list>
+          <list>
+            <param name="label">sourcetype</param>
+            <param name="value">per_sourcetype_thruput</param>
+          </list>
+          <list>
+            <param name="label">host</param>
+            <param name="value">per_host_thruput</param>
+          </list>
+        </param>
+
+      </module>
+      
+      
+      <module name="Search" layoutPanel="panel_row2_col1" group="dynamic preselection, single value (S/B host)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+        ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group2</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+          <param name="width">400px</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+
+      <module name="Search" layoutPanel="panel_row3_col1" group="dynamic preselection, multiple values (S/B sourcetype+source)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+        ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group3</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+      <module name="HTML" layoutPanel="panel_row4_col1">
+        <param name="html"><![CDATA[
+         
+         <p>
+          Now we make sure that more than one pulldown can fight for the same values.
+         </p>
+         
+        ]]></param>
+      </module>
+
+
+
+
+
+
+
+
+
+
+      <module name="Pulldown" layoutPanel="panel_row5_col1" group="purely static preselection (S/B index)">
+        <param name="name">group4</param>
+        <param name="label">type</param>
+
+        <param name="size">3</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <param name="staticOptions">
+          <list>
+            <param name="label">index</param>
+            <param name="value">per_index_thruput</param>
+          </list>
+          <list>
+            <param name="label">source</param>
+            <param name="value">per_source_thruput</param>
+          </list>
+          <list>
+            <param name="label">sourcetype</param>
+            <param name="value">per_sourcetype_thruput</param>
+          </list>
+          <list>
+            <param name="label">host</param>
+            <param name="value">per_host_thruput</param>
+          </list>
+        </param>
+      </module>
+
+      <module name="Pulldown" layoutPanel="panel_row5_col2" group="two of them (S/B index)">
+        <param name="name">group4</param>
+        <param name="label">type</param>
+
+        <param name="size">3</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <param name="staticOptions">
+          <list>
+            <param name="label">index</param>
+            <param name="value">per_index_thruput</param>
+          </list>
+          <list>
+            <param name="label">source</param>
+            <param name="value">per_source_thruput</param>
+          </list>
+          <list>
+            <param name="label">sourcetype</param>
+            <param name="value">per_sourcetype_thruput</param>
+          </list>
+          <list>
+            <param name="label">host</param>
+            <param name="value">per_host_thruput</param>
+          </list>
+        </param>
+
+      </module>
+      
+      
+      <module name="Search" layoutPanel="panel_row6_col1" group="dynamic preselection, single value (S/B host)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+          ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group5</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row6_col2" group="two of them (S/B host)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+          ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group5</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+
+      <module name="Search" layoutPanel="panel_row7_col1" group="dynamic preselection, multiple values (S/B sourcetype+source)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+           ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group6</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row7_col2" group="two of them (S/B sourcetype+source)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+           ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group6</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+    
+
+      <module name="HTML" layoutPanel="panel_row8_col1">
+        <param name="html"><![CDATA[
+         
+         <p>
+          Now we let two fight, but the ones on the right will actually use the 'label' field.
+         </p>
+         NOTE: actually half the time only one of the following two "group8" pulldowns will prepopulate.  Some race condition around onSelectionSuccess.   
+         
+        ]]></param>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row9_col1" group="dynamic preselection, single value (S/B host)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+          ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group8</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row9_col2" group="two of them (S/B host)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+          ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group8</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+          <param name="labelField">label</param>
+          <module name="HTML">
+            <param name="html">
+              selection is $group8$
+            </param>
+          </module>
+        </module>
+      </module>
+
+
+
+      <module name="Search" layoutPanel="panel_row10_col1" group="dynamic preselection, multiple values (S/B sourcetype+source)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+           ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">group9</param>
+          <param name="label">type</param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+
+
+      <module name="Search" layoutPanel="panel_row10_col2" group="two of them (S/B sourcetype+source)">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+           ]]></param>
+
+        <module name="Button">
+          <param name="label">run it again</param>
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="Pulldown">
+            <param name="name">group9</param>
+            <param name="label">type</param>
+
+            <param name="size">12</param>
+            <param name="separator">+OR+</param>
+            <param name="outerTemplate">( $value$ )</param>
+
+            <param name="valueField">group</param>
+          </module>
+        </module>
+      </module>
+    </module>
+    
+
+    <module name="Search" layoutPanel="panel_row11_col1" group="if there's a null (aka All/'') entry, then prepopulate it when null input comes from above. " autoRun="True">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+         ]]></param>
+
+      <module name="Button">
+        <param name="label">run it again</param>
+        <param name="allowSoftSubmit">True</param>
+
+        <module name="Pulldown">
+          <param name="name">group9</param>
+          <param name="label">type</param>
+          <param name="staticOptions">
+            <list>
+              <param name="value"></param>
+              <param name="label">All</param>
+            </list>
+          </param>
+
+          <param name="size">12</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <param name="valueField">group</param>
+        </module>
+      </module>
+    </module>
+        
+  </module>
+
+</view>

@@ -1,0 +1,162 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for ArrayValueSetter</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for ArrayValueSetter</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      ArrayValueSetter has two guiding use cases right now.<br>
+      <br>
+      #1)   multiselect Pulldown needs to be formatted into searchterms in two different ways. 
+
+      <br>
+      <br>
+      #2) some kind of input, possibly from ResultsValueSetter, or TextField,   needs to be split up on some delim, then turned into individual searchterms.   ie "foo,bar,baz" needs to become  <b>NOT type="foo" NOT type="bar" NOT type="baz"</b> etc etc... 
+
+     ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="size">4</param>
+      <param name="template">series="$value$"</param>
+      <param name="separator">+OR+</param>
+      <param name="outerTemplate">( $value$ )</param>
+      <param name="valueField">series</param>
+      <param name="staticOptions">
+        <list>
+          <param name="value"></param>
+          <param name="label">no series extracted</param>
+          <param name="selected">True</param>
+        </list>
+      </param>
+      
+      
+      <module name="ArrayValueSetter">
+        <param name="name">version1</param>
+        <param name="array">$selectedSourcetypes.rawValue$</param>
+        <param name="template">series="$value$"</param>
+        <param name="nullTemplate">NOT series=*</param>
+
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <module name="ArrayValueSetter">
+          <param name="name">version2</param>
+          <param name="array">$selectedSourcetypes.rawValue$</param>
+          <param name="template">$value$</param>
+          <param name="nullTemplate">FALLBACK_FIELD_WHEN_NO_SERIES_SELECTED</param>
+          <param name="separator">+</param>
+          <param name="outerTemplate">fields $value$ </param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              version1 = $version1$<br>
+              version2 = $version2$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+  
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="size">4</param>
+      <param name="template">series="$value$"</param>
+      <param name="separator">+OR+</param>
+      <param name="outerTemplate">( $value$ )</param>
+      <param name="staticOptions"></param>
+      <param name="valueField">series</param>
+      
+      <module name="ArrayValueSetter">
+        <param name="name">version1</param>
+        <param name="array">$selectedSourcetypes.rawValue$</param>
+        <param name="template">sourcetype="$value$"</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <module name="ArrayValueSetter">
+          <param name="name">version2</param>
+          <param name="array">$selectedSourcetypes.rawValue$</param>
+          <param name="template">$value$</param>
+          <param name="separator">+</param>
+          <param name="outerTemplate">fields $value$ </param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              version1 = $version1$<br>
+              version2 = $version2$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="TextField" layoutPanel="panel_row3_col2" autoRun="True">
+    <param name="name">commaSepString</param>
+    <param name="label">enter users one on each line</param>
+    <param name="default">fred
+alice
+mildred</param>
+    <param name="rows">3</param>
+    <module name="Button">
+    
+      <module name="ValueSetter">
+        <param name="name">arrayValue</param>
+        <param name="delim">\n</param>
+        <param name="value">$commaSepString$</param>
+
+        <module name="ArrayValueSetter">
+          <param name="name">searchExpression</param>
+          <param name="array">$arrayValue$</param>
+          <param name="template">user="$value$"</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <pre>
+commaSepString = <b>$commaSepString$</b>
+
+arrayValue = <b>$arrayValue$</b>
+
+searchExpression = <b>$searchExpression$</b>
+  </pre>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+
+
+</view>

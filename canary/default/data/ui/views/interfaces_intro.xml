@@ -1,0 +1,104 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>Overview</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Using Customizable Sideview Interfaces - Intro</h1>
+    ]]></param>
+  </module>
+  
+
+  
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <h3>Go Crazy</h3>
+      <p>
+          Sideview Utils also provides some off-the-shelf interfaces for search and reporting.  Subject to the appropriate licensing restrictions of course,  you can take these interfaces and customize them for your own purposes.
+      </p>
+      
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      
+      <h3>Interfaces</h3>
+      <ol>
+        <li>
+          <b><a href="sv_search" target="_blank">Search</a></b>
+          <p> 
+            The Sideview Search interface looks a lot like the default Search Interface, except
+          </p>
+          <ol type="a">
+            <li>It is a lot more compact so that the first event is much higher on the screen</li>
+            <li>It uses the Sideview "Events" module that implements Endless Scrolling. This means you never have to click a link to change the 'page'. Simply scroll up and down.</li>
+            <li>The sidebar is closed by default. </li>
+          </ol>
+        </li>
+        
+        <li>
+          <b><a href="sv_report" target="_blank">Report</a></b>
+          <p> 
+            The Sideview Report interface offers a generic base implementation of a general report builder.  Once you're comfortable with Sideview modules like Pulldown and TextField, you can add your own custom filtering UI to this reporting interface.
+          </p>
+        </li>
+        
+        <li>
+          <b><a href="chart#autoRun=True&searchBar=index%3D_internal sourcetype%3Dsplunkd_access | timechart count by status&charting.chart.stackMode=stacked" target="_blank">Chart</a></b>
+          <p> 
+            The Sideview Chart interface is for people who are very familiar with the Splunk search language. Use Chart if would prefer to type out your reports rather than use the form elements offered by the Report interface.  If that doesn't sound right for you, then use the Report view.
+          </p>
+        </li>
+
+        <li>
+          <b><a href="search_exploder" target="_blank">Search Exploder</a></b>
+          <p>This view is a useful debugging tool for very complex search expressions with multiple pipes.  You enter your search string and hit return, and then it gives you a table of N rows where each row shows your search up until the Nth pipe search command.   When you click on one of the rows it will run the search up until that pipe and show you: </p>
+          <ol type="1">
+            <li>The fields that are defined at that pipe (clicking a field in the field table will then give you top values for that field</li>
+            <li>The result rows</li>
+          </ol>
+        </li>
+
+        <li>
+          <b><a href="search_wpostprocess" target="_blank">Search with PostProcess</a></b>
+          <p>This a good view to use when you need to debug postprocess searches. It is much like the standard search view except that there is an extra search bar into which you can type postprocess searches.</p>
+        </li>
+
+        <li>
+          <b><a href="advanced_search?autoRun=True&searchBar=index%3D_internal group%3Dper_sourcetype_thruput&earliest=-60m%40m&latest=now" target="_blank">Advanced Search</a></b>
+          <p>
+            The Sideview Advanced Search interface can be used like the core Splunk Search view, except that it has some key improvements: 
+          </p>
+          <ol style="margin-bottom:0px;padding-bottom:0px;">
+            <li>Instead of the "events over time" histogram, there is a compact but powerful reporting interface. No matter what report you run there, you can click on it and both the sidebar and the events will update accordingly. </li>
+            <li>The Sidebar is simplified to be off by default, but to show you just one field worth of breakdown at a time.</li>
+            <li>The Events panel uses the Sideview Events module, and has endless scrolling enabled.   </li>
+            <li>Throughout the view things are squeezed and simplified so that you have more real estate for the actual events. </li>
+          </ol>
+
+          <p>
+            Here's <b><a href="advanced_search?zField=series&stat=sum&autoRun=True&searchBar=index%3D_internal group%3Dper_sourcetype_thruput&earliest=-60m%40m&latest=now&yField=kb&xField=_time" target="_blank">another example of Advanced Search, showing a more interesting chart to click on.</a></b>  
+          </p>
+
+        </li>
+        
+
+
+        
+        
+        
+        
+       </ol>
+
+    ]]></param>
+  </module>
+
+</view>

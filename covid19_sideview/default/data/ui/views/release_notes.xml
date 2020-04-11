@@ -1,0 +1,344 @@
+
+<view>
+  <label>release notes</label>
+  <module name="TopNav" layoutPanel="appHeader" />
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <!-- this legacy Sideview Utils module is only here as a workaround since Splunk has not yet released
+any mechanism whereby Sideview XML views can specify what URI should handle Users who to to the legacy
+Advanced XML views. This is also why the "Sideview Utils" app is still required, incidentally. -->
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML" layoutPanel="panel_row1_col1">
+      <param name="html"><![CDATA[
+      <h2>Release Notes</h2>
+
+      <strong>0.9 (April 10th, 2020)</strong>
+      <ul>
+        <li>Reimplemented the basic way the app gets and uses the JHU CSSE data. Instead of the old way where the app shipped a strange lookup holding a freeze dried version of rows that one might get back from a splunk search,    the app now ships a single lookup that is a merged file containing data from all of the daily report files. The app also ships a script that can be used to refresh the master.zip from github and then rebuild this lookup from that zip's daily report files. NOTE - this script is not enabled yet.  That will likely happen in a day or two though.</li>
+        <li>Completely rebuilt the "recovery by country" tab to instead display a chart of the "Expected Rise In Deaths" statistic for every selected country, so you can page through one chart for every country you've selected. </li>
+        <li>Add a small normalization to fix a single data point that listed HK alongside the Chinese Provinces, so that HK only appears consistently as Hong Kong/Hong Kong.</li>
+        <li>Fixed a bug where the "reset selection to..." control only appeared if you were in the first tab.</li>
+        <li>Minimum required version of Canary is now 1.2.6 (This was to pull in new Chart module functionality that is required in the new 'recovery by country' tab).</li>
+        <li>New data for 4/10 loaded from JHU CSSE (Note the mechanism for this is completely different in this release. See above)</li>
+      </ul>
+
+
+      <strong>0.8.3 (April 9th, 2020)</strong>
+      <ul>
+        <li>Fixed appinspect failures that were just silly packaging mistakes.</li>
+        <li>New data for 4/9 loaded from JHU CSSE</li>
+      </ul>
+
+
+      <strong>0.8.2 (April 8th, 2020)</strong>
+      <ul>
+        <li>Removed the temporary fix that was in place for the covidtracking.com testing data, and instead now there's simpler code that just makes the file a local lookup directly.</li>
+        <li>Adding a new lookup that has lockdown dates by country and state. Although this is not used in the UI, this *is* used in the underlying SPL now. To make a long story short there is a field now in the main base search called "days_since_lockdown_started" for the given Country or State.  As such, an intrepid if not necessarily fearless user of this app could click 'see search syntax' and then make the modifications to change the final chart command to use this as the x-axis. </li>
+        <li>Updated the search feeding the "Current numbers" tab, to actually display all the things that have been added in the past couple weeks.  This means the number of columns is about 3x what it was and it's a big horizontal scroll now to see it all. These are the breaks. </li>
+        <li>New data for 4/8 loaded from JHU CSSE</li>
+      </ul>
+
+      <strong>0.8.1 (April 7th, 2020)</strong>
+      <ul>
+        <li>New data for 4/7 loaded from JHU CSSE</li>
+      </ul>
+
+      <strong>0.8 (April 6th, 2020)</strong>
+      <ul>
+        <li>Replaced the newly added NetInflux statistic with a similar but more useful one, that is also explained inline if you select it.</li>
+        <li>Fixed a bug where if you picked one of the test counts as your y-axis, the logarithmic y-axis option wasn't getting disabled</li>
+      </ul>
+
+
+      <strong>0.7.15 (April 6th, 2020)</strong>
+      <ul>
+        <li>Added a new statistic, for the moment called NetInflux.  If you select it in the UI, the app itself gives some explanatory text about what it is trying to do, and how it is calculated.</li>
+        <li>New data for 4/6 loaded from JHU CSSE</li>
+      </ul>
+
+
+      <strong>0.7.14 (April 5th, 2020)</strong>
+      <ul>
+        <li>New data for 4/5 loaded from JHU CSSE</li>
+      </ul>
+
+      <strong>0.7.13 (April 4th, 2020)</strong>
+      <ul>
+        <li>New data for 4/4 loaded from JHU CSSE</li>
+      </ul>
+
+      <strong>0.7.12 (April 3rd, 2020)</strong>
+      <ul>
+        <li>Fixed a bug where if you had 'treat provinces/states as countries' set to "no", that the reset links to show all states/provinces within US/Australia/Canada/etc   did not work properly</li>
+        <li>Bumping up the required version of the Canary app, so as to pull in some important additions from that side.</li>
+        <li>Some wording improvements to the form element options</li>
+        <li>New data for 4/3 loaded from JHU CSSE</li>
+      </ul>
+
+
+      <strong>0.7.11 (April 2nd, 2020)</strong>
+      <ul>
+        <li>New data for 4/2 loaded from JHU CSSE</li>
+        <li>The experimental "forecast" panel now only appears if one of the statistics that actually does have an 'exponential' phase, is selected -- ie total deaths, total cases, and total 'sick'.  Conversely if something like Case Fatality Rate is selected, it hides itself.</li>
+      </ul>
+
+
+      <strong>0.7.10 (April 1st, 2020)</strong>
+      <ul>
+        <li>New data for 4/1 loaded from JHU CSSE - includes the US data that was missing at 4:50pm pacific</li>
+      </ul>
+
+      <strong>0.7.9 (April 1st, 2020)</strong>
+      <ul>
+        <li>Added a median_age field to the us_states.csv</li>
+        <li>Added a new y-axis option of 'case fatality rate (then-current)'.  This option switches you to a linear y-axis and disables th      e logarithmic y-axis.  (h/t to Ari for the conversation that indicated this was a bit of a hot button statistic.)</li>
+        <li>Added new y-axis options to allow charting of new deaths per day, as opposed to cumulative deaths.  likewise new confirmed cases per day as opposed to cumulative cases per day.</li>
+        <li>Fixed a bug - the shortcut links to reset selected countries/and states now preserve your x-axis normalization options</li>
+        <li>in the underlying SPL there are new fields in the underlying datacube, of median_age by country (or for US States, for that state), also Population and "Urban_Percentage"</li>
+        <li>minor improvements to organize the todos and notes and link to them from the nav</li>
+        <li>New data for 4/1 loaded from JHU CSSE, but this is a very thin daily report and for instance it includes no new points for any US states</li>
+
+      </ul>
+
+      <strong>0.7.8 (March 31st, 2020)</strong>
+      <ul>
+        <li>A small change to condense the form elements slightly to help users with smaller monitors.</li>
+        <li>Manually preventing France and the United Kingdom from being split apart into province/state values because they only have a couple small province/state values being broken out and since they are far smaller in population than the respective "most of the country" value, the net effect on the UI is a little confusing.  and I'm going to revisit this later to find a better solution.</li>
+        <li>added a new static lookup for countries, that has population, land area, median age, and 'urban percentage'.  This isn't wired up as anything in the UI yet at all, but it will be soon.</li>
+        <li>(New data for 3/31 loaded from JHU CSSE)</li>
+
+      </ul>
+
+      <strong>0.7.7 (March 30th, 2020)</strong>
+      <ul>
+        <li>Edited the 'default' reset link to add Belgium and the Netherlands.</li>
+        <li>Fixed a bug in the new US-counties prototype, where the state pulldown was initially selected to "all"</li>
+        <li>Fixed a bug where extracting the county names from jan/feb rows, inadvertently trimmed off some city-level rows. Now the group that captures the county names is optional in the regex.</li>
+        <li>Added back the testing options to the y-axis pulldown (these pull from the covidtracking.com data, and while the machinery has been in the app for some time, I inadvertently removed the options from the y-axis several releases ago)</li>
+        <li>Added a contextual disclaimer about the "PendingTests" statistic, that these numbers are not widely reported so the chart can be misleading.</li>
+        <li>(New data for 3/30 loaded from JHU CSSE)</li>
+      </ul>
+
+      <strong>0.7.6 (March 29th, 2020)</strong>
+      <ul>
+        <li>Added some higher numbers to the "by number of days since the" selector. Unfortunately it is sometimes useful to normalize the x-axis to these much higher numbers now.</li>
+        <li>Moved the layer of reset links into its own Pattern file.</li>
+        <li>Added a new prototype that allows the same sort of interactivity but specifically for the counties within one particular US State. For all non-US users out there, unfortunately the JHU dataset recently started providing this County-level detail only for US States. For what it's worth when similar granularity is available for other countries I will certainly try and expose that as additional functionality, as I've done here for the US.)</li>
+        <li>(New data for 3/29 loaded from JHU CSSE)</li>
+      </ul>
+
+      <strong>0.7.5 (March 28th, 2020)</strong>
+      <ul>
+        <li>Added a disclaimer to both "cases over time by country or state" and "recovery by country" to call out that the "Recovered" numbers in the dataset are not broken out by US State.  Without this disclaimer it seemed potentially quite alarming.  Hopefully the JHU CSSE folks are able to soon break this down by state and I can change this disclaimer or remove it later.</li>
+        <li>(New data for 3/28 loaded from JHU CSSE)</li>
+      </ul>
+
+      <strong>0.7.4 (March 27th, 2020)</strong>
+      <ul>
+        <li>(New data for 3/27 loaded from JHU CSSE)</li>
+      </ul>
+
+
+      <strong>0.7.3 (March 27th, 2020)</strong>
+      <ul>
+        <li>Fixed a misconfiguration of the main view, where the main Country/Province/State pulldown would reset to the default every time you reloaded the page (rather than using the selection preserved in the url)</li>
+        <li>minor fix so the chart doesn't redispatch when you just change the y-axis type.</li>
+        <li>Expanded the 'reset to default' link to also allow you to reset to selecting all the provinces within the few countries that have that level of granularity. This is only a convenience but it saves a lot of time selecting/deselecting provinces and states.</li>
+        <li>Also I have added another static lookup to handle normalization of various Province_State names that have typos or inconsistencies.</li>
+        <li>(New data for 3/26 loaded from JHU CSSE)</li>
+      </ul>
+
+      <strong>0.7.2 (March 26th, 2020)</strong>
+
+      <ul>
+        <li>Fixed a minor bug where the explanatory note above the main chart always said the xaxis showed days since the Nth "confirmed case", even when that option was set to 'deaths' instead.</li>
+
+      </ul>
+
+      <strong>0.7.1 (March 25th, 2020)</strong>
+
+      <ul>
+        <li>quick fix for the 'recovery by country' tab</li>
+      </ul>
+
+      <strong>0.7 (March 25th, 2020)</strong>
+      <ul>
+        <li>The app now ships a pair of lookups. These are a snapshot of <br>
+          index=covid19 sourcetype="csse_covid_19_daily_report" <br>
+          and <br>
+          index=covid19 sourcetype="states_daily_testing"<br>
+          respectively. All searches in the app draw from these static lookups and not from searching  indexed data.  The app does still ship a snapshot of the daily reports data in the "covid_data" subfolder.  However it does not ship enabled data inputs to index those files.
+          <br>
+          <br>
+          This is a new solution to the problem we've had, where when JHU fixes typos or cleans something up in an old daily report, that the monitor inputs would then reindex part of the data when the user updates to a new version. These nature of this data, and the nature of these updates are such that 'simply deduping' the events is not as easy as it normally is in Splunk.</li>
+
+        <li>I've put back the legacy SideviewUtils module into all views.  I removed this by mistake thinking it was redundant now.  However this is still a load-bearing piece of how we're ensuring redirects away from legacy advanced-xml URLs to proper canary URLs.</li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+
+      <strong>0.6 (March 24th, 2020)</strong>
+      <ul>
+        <li>Improved the `get_count_of_days_since_nth_case` further, so now it can take three optional args. See comments in macros.conf</li>
+        <li>Added the ability to explode out the countries/provinces and treat them as separate countries. This allows a much more flexible analysis - notably you can compare individual US states or Australian or Canadian provinces to entire countries.   The previous tab doing per-state analysis has been deleted.</li>
+        <li>Added controls to allow the user to change from the x-axis being "days since the 100th confirmed case"  from 100 to any N,  and from "confirmed case" to "death". </li>
+        <li>Fixed a bug where clicking 'see raw search syntax' on a tabular output would dump you out into a column chart</li>
+        <li>Pulled out the primer on logarithmic y-axes into its own page under 'notes'</li>
+        <li>Upped the required version of Canary to 1.2.3, and added a little message that appears in the top of the analysis view, if the version is too low</li>
+        <li>Users that update to the latest Canary version will see different and better colors on the charts within the 'current status by country' tab.</li>
+
+
+      </ul>
+
+
+      <strong>0.5.2 (March 23rd, 2020)</strong>
+      <ul>
+        <li>Fixed a problem in the "COVID-19 dataset" tab where the covidtracking.com data rows were appearing there, but with most columns blank. As this was confusing and served no purpose I filtered them out</li>
+        <li>Fixed a regression in the "COVID-19 dataset" tab where the selection of the province/state element had no effect on the results.</li>
+        <li>Added some text underneath the main tab giving users a primer on exponential curves and how to interpret charts with logarithmic y-axes</li>
+        <li>
+          Since the JHU CSSE data suddenly has a whole other field for US County, but the field name strangely is "Admin2", I've renamed the field to "County" and made it visible in the "COVID-19 dataset" tab.
+        </li>
+
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+
+      <strong>0.5.1 (March 23rd, 2020)</strong>
+      <ul>
+        <li>Fixed an unfortunately bug that only happened on 7.3, but that prevented users from being redirected into the app correctly. Instead they were stranded on a page telling them that "TopNav" and "AppNav" modules didnt exist.</li>
+      </ul>
+
+      <strong>0.5 (March 22nd, 2020)</strong>
+      <ul>
+        <li>Reviewed and made improvements to how we handle days with missing data at the country and province level. Previously the SPL screened out the duplicate records where the "Last Update" referred to a day before the day-based filename the record was in.  Now we let those records get indexed and returned at search time but at search time we override the _time value from the filename. Normally this is a bad practice in Splunk and it's better to set it from the filename at index time with INGEST_EVAL. However here it's quick, its effective and we pull the entire set off disk anyway with each search so there's not much of a downside.  Also INGEST_EVAL would force reindexing for all upgrades to this release.
+        </li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.4.3 (March 21st, 2020)</strong>
+      <ul>
+        <li>Removing the warning message added in 0.4.2 and the app now simply dedups the data explicitly on search.</li>
+        <li>There is a new health checks page,  whereby the app ships stanzas in checklist.conf that get run explicitly on this page.  Note the checklist.conf stanzas will also run in the Splunk Monitoring Console if any splunk admins are looking there</li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.4.2 (March 21st, 2020)</strong>
+      <ul>
+        <li>JHU recently went back and changed something in the daily data from 2 days ago, which is great. However this comes before I had completed the health check to automatically detect this and bubble up a warning to the user. <br>
+          So this release just has a hardcoded warning at the top to always reindex the data after updating to a new version.
+        </li>
+      </ul>
+
+
+      <strong>0.4.1 (March 20th, 2020)</strong>
+      <ul>
+        <li>Redoing the default country selection.  The short version is "I added Switzerland".  <br>
+          The Long version - Previously it was the top 10 total confirmed cases, plus an extra 2 - Hong Kong and Singapore which are low but have extremely interesting curves.  New it is the top 10, plus an extra 3 - Japan, Hong Kong and Singapore. </li>
+      </ul>
+
+      <strong>0.4 (March 20th, 2020)</strong>
+      <ul>
+        <li>the app now ships a snapshot of the per-day testing data for US States from https://covidtracking.com/api/</li>
+
+        <li>some key numbers from the us testing data can now be chosen as y-axis values on the per-province/state chart, although of course they only work for US states at the moment.  </li>
+
+        <li>In the "by province/state" tab I have marked the "Recovered" yaxis option as "(doesn't work with recent US data)",  The reason is that since the "Recovered" numbers in the US are no longer associated with individual states,  this means we can't really graph that number in the US split by state.  While you might think we can create a fake state called 'unknown',  we'd ahve to also determine "on what day the unknown state passed 30th confirmed cases" and that's nonsensical.
+
+        <li>
+      </ul>
+
+      <strong>0.3.4 (March 20th, 2020)</strong>
+      <ul>
+        <li>Altered the app so that even if the user fails to install the Sideview Utils app or the Canary app (or both) this app itself will explain that problem to them on the landing page and give them instructions for how to install the missing apps.  (Before this version the app would just load a blank page and leave the user stranded.)</li>
+        <li>Tested on Splunk 7.3 and since everything seems fine, I am marking it compatible with 7.3 (prior to this it was marked in SB as Splunk 8.X only)
+        <li>gave the navigation bar a link to the release notes file.</li>
+      </ul>
+
+      <strong>0.3.3 (March 19th, 2020)</strong>
+      <ul>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.3.2 (March 19th, 2020)</strong>
+      <ul>
+        <li>Fixed the problem that was preventing other countries that had more than 1 Province/State past the 30-confirmed-cases mark,  from appearing in the 'cases over time by province/state' graph.  Short Version - you can now see Australia, Canada and Denmark in that visualization</li>
+        <li>Changing the "cases over time by province/state" tab's y-axis to default to normal ie 'linear' because it's actually more informative that way, at least at this stage.</li>
+        <li>Changing the 'recovery over time by country' page to use line charts instead of area charts. I think with area charts it's slightly easier to misinterpret the numbers as "net-new cases for that day" when they are in fact cumulative numbers.</li>
+        <li>Adding a state/province CheckboxPulldown to the "COVID-19 dataset" tab. Also adding a second Pager control at the bottom of the table for convenience.</li>
+        <li>Fixing an issue that only just appeared in the 3/18/2020 data for the US.  There's a row with Province_State="US" and Recovered=106 but confirmed is only listed as 1.  I am interpreting this to mean the confirmed is reported at a more granular level already, but through some datasource they know there are 106  recovered cases across the country.  The change specifically here to this app, is that the "Sick" number would for this one datapoint, go negative and thus throw off numbers for that day.</li>
+        <li>Patching a minor problem in the data where sometimes the United Kingdom's "United Kingdom" Province is listed as "UK". </li>
+        <li>moving the log/linear axis control in the province/state tab to be below the other controls whose changes redispatch the search. </li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.3.1 (March 18th, 2020)</strong>
+      <ul>
+        <li>small change to the "recovery by country" tab, to make their time axis all start on the same day.  This resolves at least the constant need to refer to the x-axis as you look between charts. </li>
+      </ul>
+
+      <strong>0.3 (March 18th, 2020)</strong>
+      <ul>
+        <li>New tab added "cases over time by province/state".  This is much like the main visualization showing change over time since the day the country had its 100th total confirmed case,  except that you pick an individual country and then it does that analysis for the country's provinces or states.
+        </li>
+        <li>SPL has been developed to make the US data from the early days more usable. The states are extracted from the county names and so ultimately that county-level data can get automatically counted when analysis is done split or grouped by state. </li>
+        <li>as a part of the previous item, added a small csv lookup that maps 2-letter abbreviations for US states to the full state name.
+        <li>Data Onboarding Notes page has been updated.  Also several macros have been renamed and several new macros have been created.  Note that macros.conf also contains quite a lot of comments for anyone interested in dissecting how this all works.
+        <li>release notes file created, and backfilled from checkin comments for prior 2 releases.</li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.2.4 (March 18th, 2020)</strong>
+      <ul>
+        <li>New (hidden) prototype of the visualization to split things by Province/State for particular countries.</li>
+        <li>parametrizing the "get_count_of_days*" macro and abandoning the old hardcoded one that did the 100 day threshold.</li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.2.3 (March 17th, 2020)</strong>
+      <ul>
+        <li>changing the main tab name from "confirmed cases over time" to "cases over time by country".  The old name I think made it easier to think the 'sick cases' number on the y-axis and the 'time since the 100th confirmed case'  on the x-axis,  were the same number.   Might revisit this again but this seemed an easy improvement. </li>
+        <li>Fixed a typo that broke one of the links to the data_onboarding_notes page</li>
+        <li>added the working list of todo's into the app at the bottom of the data_onboarding_notes page.
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.2.2 (March 17th, 2020)</strong>
+      <ul>
+        <li>css tweaks.
+        <li>making the "remaining sick patients" yaxis option  to "remaining patients sick or testing positive". In some informal user testing someone assumed incorrectly from the old label that the patients were visibly sick and showing symptoms, whereas the count also includes patients testing positive but asymptomatic.</li>
+
+        <li>adding the nullValueMode=connect to the "recovery by country" tab.</li>
+        <li>moving the Sick field to a calculated field. </li>
+        <li>manually filtering out the 3/1 data point where only 'channel islands' reported data in the UK. with the new nullValueMode=connect,  it's better to just yank the point, let the charting framework connect it, rather than what I was doing prior creating a fake data point (ick).  Now the chart looks the same but if you look closely you'll see there's no little data point circle there and thats better. </li>
+        <li>commented the macros. </li>
+
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+      <strong>0.2.1 (March 16th, 2020)</strong>
+      <ul>
+        <li>Fixing a bug - yaxis was always showing "confirmed cases".  Now it reflects the actual selected yaxis statistic. </li>
+        <li>Fixing the linux/windows problem with that filename extraction.</li>
+        <li>Adding a second data input with windows backslashes, so that the app's data input can work out of the box on Windows as it does on *nix</li>
+        <li>(New data loaded from JHU CSSE dataset)</li>
+      </ul>
+
+
+
+
+
+
+
+
+
+      ]]></param>
+    </module>
+
+  </module>
+</view>

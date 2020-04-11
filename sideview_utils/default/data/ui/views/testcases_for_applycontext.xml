@@ -1,0 +1,151 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for applyContext in TextField, Pulldown, Checkbox</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for applyContext in TextField, Pulldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    
+    
+    
+
+    <module name="TextField">
+      <param name="name">field1</param>
+      <param name="template">$name$="$value$"</param>
+
+      <module name="TextField">
+        <param name="name">field2</param>
+        <param name="template">$name$="$value$"</param>
+      
+        <module name="Search">
+          <param name="search">$field1$ $field2$</param>
+
+
+          <module name="HTML">
+            <param name="html">
+            <![CDATA[
+              <a href="#field1=fred">set field 1 to fred</a><br>
+              <a href="#field2=mildred">set field 2 to mildred</a><br>
+              <br>
+              <br>
+              $search$
+            ]]></param>
+            <param name="customBehavior">sendContextKeysUpstream</param>
+          </module>
+        </module>
+      </module>
+
+    </module>
+
+
+    <module name="Pulldown" layoutPanel="panel_row1_col2">
+      <param name="name">group</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="label">Type</param>
+
+      <param name="staticOptions">
+        <list>
+          <param name="label">index</param>
+          <param name="value">per_index_thruput</param>
+        </list>
+        <list>
+          <param name="label">source</param>
+          <param name="value">per_source_thruput</param>
+        </list>
+        <list>
+          <param name="label">sourcetype</param>
+          <param name="value">per_sourcetype_thruput</param>
+        </list>
+        <list>
+          <param name="label">host</param>
+          <param name="value">per_host_thruput</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search"><![CDATA[
+          index=_internal source=*metrics.log $group$ | head 1000 | stats count by series
+          ]]></param>
+
+        <module name="Pulldown">
+          <param name="name">series</param>
+          <param name="label">$group.label$</param>
+          <param name="valueField">series</param>
+          
+          <module name="Search">
+            <param name="search"><![CDATA[
+              index=_internal source=*metrics.log $group$ $series$ $name$
+              ]]></param>
+
+            <module name="HTML">
+              <param name="html">
+              <![CDATA[
+                <a href="#group=per_index_thruput">set group to index</a><br>
+                <a href="#group=per_sourcetype_thruput">set group to sourcetype</a><br>
+                <a href="#group=nonexistent_key">set group to nonexistent_key</a><br>
+                <a href="#name=fred">set name to fred</a> (it'll go into the URL)<br>
+                <a href="#name=mildred">set name to mildred</a> (it'll go into the URL)<br>
+                <br>
+
+                <a href="#series=splunkd">set series to splunkd</a><br>
+                <a href="#series=splunk_web_service">set series to splunk_web_service</a><br>
+                <a href="#series=nonexistent_key">set group to nonexistent_key</a><br>
+
+                <br>
+                <br>
+                $search$
+              ]]></param>
+              <param name="customBehavior">sendContextKeysUpstream</param>
+            </module>
+          </module>
+        </module>
+      </module>
+
+    </module>
+
+    <module name="Checkbox" layoutPanel="panel_row1_col3">
+      <param name="name">test_checkbox</param>
+      <param name="label">foo</param>
+      <param name="onValue">value_when_checked</param>
+      <param name="offValue">value_when_unchecked</param>
+      <param name="checked">False</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         $test_checkbox3$
+
+         <br>
+         <br>
+
+          Set up a testcase: <br>
+
+          
+          <a href="#test_checkbox=true">true</a><br>
+          <a href="#test_checkbox=false">false</a><br>
+          
+      
+        ]]></param>
+        <param name="customBehavior">sendContextKeysUpstream</param>
+      </module>
+    </module>
+
+
+
+  </module>
+
+    
+    
+
+</view>

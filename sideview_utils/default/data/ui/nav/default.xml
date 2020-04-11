@@ -1,0 +1,225 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<!--  color="#3C444D" -->
+<nav>
+  <view name="home" default="true" />
+  <view name="flashtimeline" />
+
+  <collection label="Key Techniques">
+    <view name="framework_intro"/>
+    <view name="search1_intro"/>
+
+    <collection label="embedding dynamic values into your own HTML">
+      <view name="html1_static" />
+      <view name="html2_dynamic_ui_tokens" />
+      <view name="html3_dynamic_results" />
+      <view name="html4_external" />
+      <view name="html5_replacing_singlevalue" />
+    </collection>
+
+    <collection label="improved 'form search' modules">
+      <collection label="the Pulldown module">
+        <view name="pulldown1_static"/>
+        <view name="pulldown2_dynamic"/>
+        <view name="pulldown3_dynamic_templated"/>
+        <view name="pulldown4_dynamic_postprocess"/>
+        <view name="pulldown5_dynamic_noall_notoken"/>
+        <view name="pulldown6_dynamic_multipleselect"/>
+        <view name="pulldown7_multivalued"/>
+      </collection>
+
+      
+
+      <collection label="the TextField module">
+        <view name="text_field1"/>
+      </collection>
+
+      <view name="checkbox1"/>
+      <view name="checkboxes1_intro" />
+      <view name="checkbox_pulldown1"/>
+      <view name="radio1_intro" />
+
+      <collection label="the Datetime module">
+        <view name="datetime1_intro"/>
+        <view name="datetime2_using_two"/>
+      </collection>
+    </collection>
+    
+    
+    <collection label="linking from view to view">
+      <view name="linking" />
+      <view name="linking1_pulldowns" />
+      <view name="linking2_tables" />
+    </collection>
+    
+    <collection label="inline drilldown">
+      <view name="drilldown1_tables" />
+      <view name="table2_drilldown"/>
+    </collection>
+
+    <collection label="enabling the back button">
+      <view name="back_button1" />
+    </collection>
+
+    <collection label="using PostProcess">
+      <view name="post_process_intro" />
+      <view name="post_process1_static" />
+      <view name="post_process2_dynamic" />
+      <view name="pager2_postprocess" />
+      <view name="pulldown4_dynamic_postprocess"/>
+    </collection>
+
+    <collection label="other">
+      <view name="custom_keys" />
+      <view name="events1_intro" />
+      <view name="comparison1_overview" />
+      <view name="detecting_sideview_utils" />
+
+
+    </collection>
+  </collection>
+  
+
+  <collection label="Module Documentation">
+
+    <view name="search1_intro"/>
+
+    <collection label="form search modules">
+      <collection label="the Pulldown module">
+        <view name="pulldown1_static"/>
+        <view name="pulldown2_dynamic"/>
+        <view name="pulldown3_dynamic_templated"/>
+        <view name="pulldown4_dynamic_postprocess"/>
+        <view name="pulldown5_dynamic_noall_notoken"/>
+        <view name="pulldown6_dynamic_multipleselect"/>
+        <view name="pulldown7_multivalued"/>
+      </collection>
+
+      <collection label="the TextField module">
+        <view name="text_field1"/>
+      </collection>
+
+      <view name="checkbox1"/>
+      <view name="checkboxes1_intro" />
+      
+      <view name="checkbox_pulldown1"/>
+
+      <view name="radio1_intro" />
+      
+      <collection label="the Datetime module">
+        <view name="datetime1_intro"/>
+        <view name="datetime2_using_two"/>
+      </collection>
+
+    </collection>
+    
+
+    <collection label="the HTML module">
+      <view name="html1_static" />
+      <view name="html2_dynamic_ui_tokens" />
+      <view name="html3_dynamic_results" />
+      <view name="html4_external" />
+      <view name="html5_replacing_singlevalue" />
+    </collection>
+    <view name="link1_intro" />
+
+    <collection label="the PostProcess module">
+      <view name="post_process1_static" />
+      <view name="post_process2_dynamic" />
+    </collection>
+
+    <collection label="the Pager module">
+      <view name="pager1"/>
+      <view name="pager2_postprocess"/>
+    </collection>
+
+    <collection label="the Table module">
+      <view name="table1_intro"/>
+      <view name="table2_drilldown"/>
+      <view name="table3_drilldown_defaults"/>
+      <view name="table4_rendering"/>
+      <view name="table5_embedding"/>
+    </collection>
+
+    <collection label="the ValueSetter modules">
+      <view name="value_setter1_intro"/>
+      <view name="results_value_setter1_intro"/>
+      <view name="array_value_setter1_intro"/> 
+    </collection>
+      
+    <collection label="the Tabs module">
+      <view name="tabs1_static"/>
+      <view name="tabs2_dynamic_templated"/>
+    </collection>
+
+    <collection label="the Gate module">
+      <view name="gate1_blocking_search"/>
+      <view name="gate2_complex_drilldowns"/>
+    </collection>
+
+
+    <a href="linking">the URLLoader and Redirector modules</a>
+
+    <collection label="advanced modules">
+
+      <view name="events1_intro" />
+
+      <view name="report1" />
+      <view name="auto_refresh1" />
+
+      <view name="switcher1_with_pulldown"/>
+
+      <view name="search_controls1_intro" />
+
+      <collection label="the Multiplexer module">
+        <view name="multiplexer1_intro"/>
+        <view name="multiplexer2_paging"/>
+        <view name="multiplexer3_dashboard_panels"/>
+      </collection>
+
+      <view name="filters1_intro"/>
+
+    </collection>
+
+  </collection>
+
+  <collection label="Tools">
+    <view name="refresh_entities" />
+    <view name="editor_intro"/>
+    <view name="update_lookup"/>
+    <view name="sv_report" />
+    <view name="tools" />
+  </collection>
+
+  <collection label="Sample Interfaces">
+    <view name="interfaces_intro" />
+    <view name="user_activity" />
+    <view name="sv_search" />
+    <view name="advanced_search" />
+    <view name="metrics" />
+    <view name="sv_report" />
+    <view name="chart" />
+    <view name="search_exploder" />
+    <!--
+    <view name="explore" />
+    -->
+    <view name="search_wpostprocess" />
+    
+  </collection>
+
+  <collection label="Saved">
+    <collection label="Dashboards and Views">
+      <view source="unclassified" />
+    </collection>
+    <collection label="Searches and Reports">
+      <saved source="unclassified" />
+    </collection>
+  </collection>
+
+  <collection label="About">
+    <view name="about"/>
+    <view name="licensing"/>
+  </collection>
+      
+    
+    
+</nav>

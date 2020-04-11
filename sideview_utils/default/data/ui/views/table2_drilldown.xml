@@ -1,0 +1,133 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Table - drilldown</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Table - drilldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      The Table module has all the same enhancements that Sideview Utils adds to the SimpleResultsTable module, so drilldown configuration should be very familiar. <br>
+      <br>
+      However a few other very valuable things have been done. 
+      <br>
+      <br>
+      AND NOTE: that whereas SimpleResultsTable's keys all began with "click." by default, the Table module's keys all begin with "row.".   This is an easy thing to forget as you start using it so remember it well now. 
+
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      Click a row in the following table to see how the drilldown keys work.
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">| stats count | eval names="bmulrony;Robert Mulrony;17;tuesday,agatha;Agatha Christie;187;wednesday,msatterthwaite;Mildred Satterthwaite;2;friday" | eval names=split(names,",") | mvexpand names | eval names=split(names,";") | eval username=mvindex(names,0) | eval fullName=mvindex(names,1) | eval sessions=mvindex(names,2) | eval favoriteDay=mvindex(names,3) | streamstats count | rename count as userid | table userid username fullName sessions favoriteDay</param>
+    <param name="earliest">-12h</param>
+    
+    <module name="Pager">
+      <param name="count">5</param>
+      
+      <module name="Table">
+        <param name="hiddenFields">userid username</param>
+
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>Showing details for username $row.fields.username$</h2>
+
+            $$row.fields.userid$$ = $row.fields.userid$   (note this is a hidden field in the actual table)<br>
+            $$row.fields.username$$ = $row.fields.username$  (note this is a hidden field in the actual table)<br>
+            $$row.fields.fullName$$ = $row.fields.fullName$<br>
+            $$row.fields.sessions$$ = $row.fields.sessions$<br>
+            $$row.fields.favoriteDay$$ = $row.fields.favoriteDay$<br>
+
+            <br>
+            In some rare cases, you need to refer to the values by column number.  You can do that like so:<br>
+            $$row.cell0.name$$ = $row.cell0.name$<br>
+            $$row.cell1.name$$ = $row.cell1.name$<br>
+            etc... <br>
+            <br>
+            If you want to use the normal Splunk sideview where the first <b>visible</b> field is the field to use for drilldowns,  you can use the following keys: <br>
+            $$row.name$$ = $row.name$   (the name of the field)<br>
+            $$row.value$$ = $row.value$   (the value of the field in the row you clicked on)<br>
+            $$row.searchTerms$$ = $row.searchTerms$  (the searchterms that can be used in subsequent drilldown searches)<br>
+
+            
+
+          ]]></param>
+        </module>
+
+        <module name="HTML" layoutPanel="panel_row3_col1">
+          <param name="html"><![CDATA[
+            <h2>Showing the 10 most recent events on $row.fields.fullName$'s favorite day, which was $row.fields.favoriteDay$</h2>
+          ]]></param>
+        </module>
+
+        <module name="Search" layoutPanel="panel_row3_col1">
+          <param name="search">index=* OR index=_* date_wday="$row.fields.favoriteDay$" | head 10</param>
+          <param name="earliest">-7d</param>
+
+          <module name="Events">
+            <param name="resizeMode">fixed</param>
+            <param name="height">250px</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>As with all drilldown configurations, you may want to review the <a href="custom_keys">$$foo$$ token overview page</a>.</li>
+        <li>
+          As you see in this example,  you can use the "hiddenFields" param to designate fields that you don't want to <em>display</em>, but that you still need to use in drilldown configurations.
+        </li>
+          
+        <li>
+          As far as explicitly specifying the fields that you <em>do</em> want the user to see,   often you will just use the "fields" command, or the "table" command to restrict the field list on the search side.  However you can also use the optional "fields" param on the Table module if you want.    Both methods can be used to reorder the fields list.
+        </li>
+
+        <li>
+          If you do not set the "fields" param (and generally you should not),   the Table module will hide fields whose names begin with an underscore character.  Note that they are still available in drilldowns, they're just treated like the "hiddenFields" are treated.  
+        </li>
+        <li>
+          On the contrary if you do choose to use the fields param to list your displayed fields explicitly,  you can specify underscore fields in that list and they will show up just fine. 
+        </li>
+        <li>
+          The old SimpleResultsTable module treats "_time" as a very special field.   The Table module continues this convention a bit,  in that if an integer-valued field called "_time" is present,  another field called "time" will be created and set to the corresponding human-readable time.  Furthermore the "time" field will be rendered first in the table.    However note that you can defeat this default order behavior by specifying the "fields" param.
+        </li>
+        <li>
+          The Table module also keeps an eye out for fields that represent times, so that it can set up the timerange drilldown keys appropriately.  By default it will look for a field called "_time" and if it is found, it will set that field as the earliest time of the drilldown timerange.   Beyond that,  if there is a field called "_span", then it will assume that value is a number of seconds, add that value to the earliest time and use that as the latest time.  <br>
+          <br>
+          NOTE: you can configure which fields should be recognized as the "earliest", "latest" and "duration" fields by configuring the corresponding param in the Table module.   <br>
+          <br>
+          For example if your data has a field called "session_start" that is in epochtime format,  and you have a field called "session_length" that is a number of seconds,  then you can configure your Table with the "earliest" param set to "session_start", and "duration" field set to "session_length".   Then in all drilldown configuration, the timerange downstream from the clicked Table will represent the time bounds of your selected session.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Table" target="_blank">Table and its params</a>.
+        </li>       
+      </ol>
+      ]]></param>
+  </module>
+
+
+  
+
+</view>

@@ -1,0 +1,139 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Events Module (aka the Endless Scroller)</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Events</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Events is a module whose behavior is similar to Splunk's EventsViewer module except that it offers 'endless scrolling' functionality.  When you scroll down and the module needs to get more events for you, it does so automatically.   
+      </p>
+      <p>
+        The Events module has an important param called 'resizeMode'.  When set to fixed you give it a 'height' value like '300px' and you can see an example of this below. 
+      </p>
+      <p>
+        In more advanced scenarios you can give 'resizeMode' a value of 'auto'.  In this mode it takes another param called 'autoResizeLevel' and you can use this mode when you want the Events module to expand to the bottom edge of the browser window.  See <a href="/modules#Splunk.Module.Events" target="_blank">the module docs for a full explanation.</a>  See <a href="endless_scroller_demo_simple#autoRun=True&earliest=-24h&latest=now&searchBar=*%20%7C%20head%201000%20">a working example of this configuration</a>.
+      </p>
+      <p>
+        If you're a really advanced user you can also set 'resizeMode' to 'custom'.  This just means that the module will do nothing at all to resize itself.  Instead you the app developer will have to define a customBehavior in your app's application.js file to define exactly how the module should resize and when.  See <a href="endless_scroller_demo_custom#autoRun=True&earliest=-24h&latest=now&searchBar=*%20%7C%20head%201000%20">a working example of this configuration</a>.
+      </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput"</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <p>Here we use an Events module to display the $results.count$ events found $search.timeRange.label$ for the following search:<br>
+        <b>$search$</b> </p>
+      ]]></param>
+    </module>
+
+    <module name="Checkbox">
+      <param name="name">results.displayRowNumbers</param>
+      <param name="label">display row numbers</param>
+      <param name="onValue">True</param>
+
+      <module name="Checkbox">
+        <param name="name">results.softWrap</param>
+        <param name="label">soft wrap </param>
+        <param name="onValue">True</param>
+
+
+        <module name="Pulldown">
+          <param name="name">results.maxLines</param>
+          <param name="label">Max Lines per event</param>
+          <param name="staticOptions">
+            <list>
+              <param name="selected">True</param>
+              <param name="value">5</param>
+            </list>
+            <list>
+              <param name="value">10</param>
+            </list>
+            <list>
+              <param name="value">20</param>
+            </list>
+            <list>
+              <param name="value">50</param>
+            </list>
+            <list>
+              <param name="value">100</param>
+            </list>
+            <list>
+              <param name="value">200</param>
+            </list>
+            <list>
+              <param name="label">All</param>
+              <param name="value">0</param>
+            </list>
+          </param>
+
+          <module name="Pulldown" >
+            <param name="name">results.segmentation</param>
+            <param name="label">Segmentation</param>
+            <param name="staticOptions">
+              <list>
+                <param name="selected">True</param>
+                <param name="value">inner</param>
+              </list>
+              <list>
+                <param name="value">outer</param>
+              </list>
+              <list>
+                <param name="value">full</param>
+              </list>
+              <list>
+                <param name="value">raw</param>
+              </list>
+            </param>
+
+            <module name="Events">
+              <param name="allowTermClicks">False</param>
+              <param name="fields">series source kb eps</param>
+              <param name="resizeMode">fixed</param>
+              <param name="height">300px</param>
+            </module>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      Again note that the above example is showing the 'resizeMode' param set to 'fixed'.  For a more complex example you can can see a <a href="endless_scroller_demo_simple#autoRun=True&searchBar=*%20%7C%20head%201000%20">a working example of resizeMode=auto here</a>.
+      ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>If you scroll down for a really long time it will start throwing away the unused offscreen events to avoid using a lot of memory.</li>
+        <li>If you resize the page left and right, the module will resize automatically and reflow so that it's layers don't overlap (if you ever see problems here <a href="mailto:support@sideviewapps.com">let us know.</a>)</li>
+        <li>All the behavior you're used to from the EventsViewer like custom event rendering and workflow actions menus should work here just fine. (If you find otherwise <a href="mailto:support@sideviewapps.com">let us know.</a>)</li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Events" target="_blank">Events and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+</view>

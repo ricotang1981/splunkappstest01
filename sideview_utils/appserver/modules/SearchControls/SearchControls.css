@@ -1,0 +1,70 @@
+
+
+.SearchControls .inspector,
+.SearchControls .export,
+.SearchControls .print,
+.SearchControls ul.svMenu,
+.SearchControls .jobControls {
+    float:right;
+}
+
+.SearchControls .jobControls a {
+    margin-left: 0 !important;
+}
+
+.export .splButtonIcon {
+    background-position: 53px -660px;
+}
+
+.splVersion-5 .export .splButtonIcon {
+    background-position: 1px -660px;
+}
+
+.SearchControls a {
+    opacity:0.5;
+    border-left-color: #bbb;
+    margin-bottom:5px;
+}
+.SearchControls ul a {
+    margin-bottom:0px;
+}
+.SearchControls ul a, 
+.SearchControls a.inspector, 
+.SearchControls a.print, 
+.SearchControls a.save, 
+.SearchControls a.create, 
+.SearchControls .doneState a.export, 
+.SearchControls .progressState a.pause,
+.SearchControls .progressState a.finalize,
+.SearchControls .progressState a.cancel,
+.SearchControls .progressState a.background,
+.SearchControls .pausedState a.unpause,
+.SearchControls .pausedState a.finalize,
+.SearchControls .pausedState a.cancel,
+.SearchControls .pausedState a.background {
+    opacity:1.0;
+    border-left-color:#bbb;
+}
+
+.SearchControls .nullState a.inspector, 
+.SearchControls .nullState a.print {
+.SearchControls .nullState a.save, 
+.SearchControls .nullState a.create, 
+    opacity:0.5;
+    border-left-color: #bbb;
+}
+.SearchControls .nullState a {
+    opacity:0.5;
+}
+
+
+
+
+.svMenu a.splButton-primary, 
+.svMenu a.splButton-secondary, 
+.svMenu a.splButton-tertiary {
+    float:none;
+    display: block;
+}
+
+

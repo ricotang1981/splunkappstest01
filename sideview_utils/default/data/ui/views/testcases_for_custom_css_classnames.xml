@@ -1,0 +1,122 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>testcases for cssClass param</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>testcases for cssClass param</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1" group="plain class on an HTML module.">
+    <param name="cssClass">foo</param>
+    <param name="html"><![CDATA[
+      this HTML module will have classname "foo".
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="dynamic single classname from a Pulldown">
+      <param name="search">index=_internal source="*metrics.log" group="per_source_thruput" | dedup series | sort series | fields series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+      
+      <module name="Pulldown">
+        <param name="name">selectedSource</param>
+        <param name="label">Source</param>
+        <param name="valueField">series</param>
+
+        <module name="HTML">
+          <param name="cssClass">$selectedSource$</param>
+          <param name="html"><![CDATA[
+            at runtime this HTML module will have classname=<b>$selectedSource$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row4_col1" group="multiple classnames from a multi-select Pulldown">
+      <param name="search">index=_internal source="*metrics.log" group="per_source_thruput" | dedup series | sort series | fields series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+      
+      <module name="Pulldown">
+        <param name="name">selectedSource</param>
+        <param name="size">5</param>
+        <param name="separator">+</param>
+        <param name="label">Source</param>
+        <param name="valueField">series</param>
+
+        <module name="HTML">
+          <param name="cssClass">$selectedSource$</param>
+          <param name="html"><![CDATA[
+            at runtime this HTML module will have classname=<b>$selectedSource$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+    
+    <module name="Search" layoutPanel="panel_row5_col1" group="changing classname on a Table module">
+      <param name="search">index=_internal source="*metrics.log" group="per_source_thruput" | dedup series | sort series | fields series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+    
+      <module name="Pulldown" layoutPanel="panel_row5_col1">
+        <param name="name">textSize</param>
+        <param name="label">Text size:</param>
+        <param name="staticOptions">
+          <list>
+            <param name="value">small</param>
+            <param name="value">smallTableText</param>
+          </list>
+          <list>
+            <param name="label">normal</param>
+            <param name="value">normalTableText</param>
+            <param name="selected">True</param>
+          </list>
+          <list>
+            <param name="label">really big</param>
+            <param name="value">largeTableText</param>
+          </list>
+        </param>
+
+        <module name="Pager">
+          
+          <module name="Table">
+            <param name="cssClass">$textSize$</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+  </module>
+  <module name="HTML" layoutPanel="panel_row10_col1">
+    <param name="html"><![CDATA[
+
+      plain class on a multiplexed HTML module. <br>
+
+      dynamic single class on a multiplexed HTML module.<br>
+
+<style type="text/css">
+  div.smallTableText td {
+    font-size:9px;
+  }
+  div.normalTableText td {
+  }
+  div.largeTableText td {
+    font-size:18px;
+  }
+</style>
+    ]]></param>
+  </module>
+
+</view>

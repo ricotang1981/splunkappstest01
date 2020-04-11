@@ -1,0 +1,449 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for SavedSearch</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for SavedSearch</h1>
+    ]]></param>
+  </module>
+
+  <module name="SavedSearch" layoutPanel="panel_row1_col1_grp1" group="A" autoRun="True">
+    <param name="name">test_saved_search_with_serialized_context_positive</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with serialized context</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      <br>
+      sid=$results.sid$<br>
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+
+
+    <module name="HTML"  layoutPanel="panel_row1_col1_grp2">
+      <param name="html"><![CDATA[
+
+      <h3>Serialized Context Values</h3>
+
+      <table class="splTable">
+        <tr>
+          <th>key</th>
+          <th>value</th>
+          <th>expected</th>
+        </tr>
+        <tr>
+          <td>group1</td>
+          <td>$group1$</td>
+          <td>per_index_thruput</td>
+        </tr>
+        <tr>
+          <td>group2</td>
+          <td>$group2$</td>
+          <td>per_host_thruput</td>
+        </tr>
+        <tr>
+          <td>group3</td>
+          <td>$group3$</td>
+          <td>per_sourcetype_thruput,per_source_thruput</td>
+        </tr>
+        <tr>
+          <td>group4</td>
+          <td>$group4$</td>
+          <td>per_index_thruput</td>
+        </tr>
+        <tr>
+          <td>group5</td>
+          <td>$group5$</td>
+          <td>per_host_thruput</td>
+        </tr>
+        <tr>
+          <td>group6</td>
+          <td>$group6$</td>
+          <td>per_sourcetype_thruput,per_source_thruput</td>
+        </tr>
+        <tr>
+          <td>group7</td>
+          <td>$group7$</td>
+          <td>per_index_thruput</td>
+        </tr>
+        <tr>
+          <td>group8</td>
+          <td>$group8$</td>
+          <td>per_host_thruput</td>
+        </tr>
+        <tr>
+          <td>group9</td>
+          <td>$group9$</td>
+          <td>per_sourcetype_thruput,per_source_thruput</td>
+        </tr>
+      </table>
+
+
+
+      ]]></param>
+    </module>
+  </module>
+
+  <module name="SavedSearch" layoutPanel="panel_row2_col1" autoRun="True" group="foo group">
+    <param name="name">test_saved_search_with_schedule</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with scheduled search, default useHistory</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+      
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+    
+
+  <module name="SavedSearch" layoutPanel="panel_row3_col1" autoRun="True" group="bar group" >
+    <param name="name">test_saved_search_with_schedule</param>
+    <param name="useHistory">True</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with scheduled search, useHistory=True</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+
+  <module name="SavedSearch" layoutPanel="panel_row4_col1" autoRun="True" group="baz group" >
+    <param name="name">test_saved_search_with_schedule</param>
+    <param name="useHistory">Auto</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with scheduled search, useHistory=Auto</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+  <module name="SavedSearch" layoutPanel="panel_row5_col1" autoRun="True" group="bat group" >
+    <param name="name">test_saved_search_with_schedule</param>
+    <param name="useHistory">False</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with scheduled search, useHistory=False</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+
+
+  <!--  NON-scheduled search -->
+
+  <module name="SavedSearch" layoutPanel="panel_row2_col2" autoRun="True" group="cux group">
+    <param name="name">test_saved_search_with_no_schedule</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with unscheduled search, default useHistory</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+    
+
+  <module name="SavedSearch" layoutPanel="panel_row3_col2" autoRun="True" group="cuux group">
+    <param name="name">test_saved_search_with_no_schedule</param>
+    <param name="useHistory">True</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with unscheduled search, useHistory=True</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+  
+
+
+  <module name="SavedSearch" layoutPanel="panel_row4_col2" autoRun="True" group="cuuux group">
+    <param name="name">test_saved_search_with_no_schedule</param>
+    <param name="useHistory">Auto</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with unscheduled search, useHistory=Auto</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+  <module name="SavedSearch" layoutPanel="panel_row5_col2" autoRun="True" group="cuuux group">
+    <param name="name">test_saved_search_with_no_schedule</param>
+    <param name="useHistory">False</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      <h3>test with unscheduled search, useHistory=False</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+
+
+  <!--  rt-scheduled search -->
+
+  <module name="SavedSearch" layoutPanel="panel_row2_col3" autoRun="True" group="cuuux group">
+    <param name="name">test_saved_rtsearch_with_schedule</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+      NOTE - these rtsearch savedsearches have to ship in savedsearches.conf with their actual realtime timeranges changed to historical timeranges. 
+      To get this testcase to be meaningful you will have to go make those into realtime timeranges in savedsearches.conf 
+      <br>
+      <br>
+      <h3>test with realtime scheduled search, default useHistory</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+
+    </module>
+    <!-- <module name="JSChart"></module> -->
+
+  </module>
+    
+
+  <module name="SavedSearch" layoutPanel="panel_row3_col3" autoRun="True">
+    <param name="name">test_saved_rtsearch_with_schedule</param>
+    <param name="useHistory">True</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+      NOTE - these rtsearch savedsearches have to ship in savedsearches.conf with their actual realtime timeranges changed to historical timeranges. 
+      To get this testcase to be meaningful you will have to go make those into realtime timeranges in savedsearches.conf 
+      <br>
+      <br>
+
+      <h3>test with realtime scheduled search, useHistory=True</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+  
+
+
+  <module name="SavedSearch" layoutPanel="panel_row4_col3" autoRun="True">
+    <param name="name">test_saved_rtsearch_with_schedule</param>
+    <param name="useHistory">Auto</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      NOTE - these rtsearch savedsearches have to ship in savedsearches.conf with their actual realtime timeranges changed to historical timeranges. 
+      To get this testcase to be meaningful you will have to go make those into realtime timeranges in savedsearches.conf 
+      <br>
+      <br>
+
+      <h3>test with realtime scheduled search, useHistory=Auto</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+
+  <module name="SavedSearch" layoutPanel="panel_row5_col3" autoRun="True">
+    <param name="name">test_saved_rtsearch_with_schedule</param>
+    <param name="useHistory">False</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+
+      NOTE - these rtsearch savedsearches have to ship in savedsearches.conf with their actual realtime timeranges changed to historical timeranges. 
+      To get this testcase to be meaningful you will have to go make those into realtime timeranges in savedsearches.conf 
+      <br>
+      <br>
+
+      <h3>test with realtime scheduled search, useHistory=False</h3>
+      $search$<br>
+      earliest=$search.timeRange.earliest$<br>
+      latest=$search.timeRange.latest$<br>
+      results.count=$results.count$<br>
+      results.eventCount=$results.eventCount$<br>
+      results.resultCount=$results.resultCount$<br>
+      results.scanCount=$results.scanCount$<br>
+      results.eventAvailableCount=$results.eventAvailableCount$<br>
+      results.eventFieldCount=$results.eventFieldCount$<br>
+      results.runDuration=$results.runDuration$<br>
+      <br>
+      sid=$results.sid$<br>
+
+      ]]></param>
+    </module>
+    <!-- <module name="JSChart"></module> -->
+  </module>
+  
+
+  
+  
+</view>

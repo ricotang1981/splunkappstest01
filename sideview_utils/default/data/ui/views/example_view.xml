@@ -1,0 +1,44 @@
+<view isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Example View</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>This is an HTML module containing only this header.</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      This is another HTML module.  Put whatever HTML here you like. 
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="TimeRangePicker" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="default">Last 60 minutes</param>
+
+    <module name="Search">
+      <param name="search">index=_internal source=*metrics.log group="per_sourcetype_thruput" | stats sum(kb) by series</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        <h3>$results.count$ sourcetypes found $search.timeRange.label$</h3>
+        ]]></param>
+      </module>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        
+        <module name="Table"></module>
+
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+</view>

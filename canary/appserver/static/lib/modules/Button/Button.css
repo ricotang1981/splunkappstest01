@@ -1,0 +1,12 @@
+
+.Button input.searchButton {
+    min-height: 22px;
+    margin:0px 0px 5px 0px;
+}
+
+div.Button input.searchButton {
+    background-position: -31px -15px;
+    /*
+    background-position: 2px 81px;
+    */
+}

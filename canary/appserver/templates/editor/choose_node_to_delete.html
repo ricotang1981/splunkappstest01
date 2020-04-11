@@ -1,0 +1,104 @@
+<%
+#Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved.
+%>
+<%inherit file="//base.html" />
+<link type="text/css" href="${canary_static_url_prefix}lib/editor/editor.css" rel="stylesheet" />
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/jquery/jquery-3.1.0.js"></script>
+<script language="javascript" type="text/javascript" src="${canary_static_url_prefix}lib/editor/forms.js"></script>
+
+<script language="javascript" type="text/javascript">
+
+
+$(document).ready(function() {
+    $("#chooseModuleForm").submit(function() {
+        $("div.fail").remove();
+        var moduleId = $("input[name='moduleId']").val();
+        var moduleClass = $("input[name='moduleClass']").val();
+        var app  = $("input[name='app']").val();
+        var view = $("input[name='view']").val();
+        if (moduleClass=="view") {
+            alert("The Sideview Editor does not currently support deleting entire views.  For now you will have to delete the view in Manager.");
+            return false;
+        }
+        var payload = getFormValues();
+        var sessionKey = $("input[name='splunk_form_key']").val();
+        payload.push("splunk_form_key=" + sessionKey);
+
+        var editor = window.parent.getEditor();
+        var controlWindow = editor.getControlWindow();
+
+        var url = controlWindow.Sideview.utils.make_url("/splunkd/__raw/sv_view/${app}/${view}/delete_module");
+        console.error(url)
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+            if (options['type'] && options['type'].toUpperCase() == 'GET') return;
+            jqXHR.setRequestHeader("X-Splunk-Form-Key", sessionKey);
+        });
+        $.post(url, payload.join("&"), function(jsonStr) {
+            var response = JSON.parse(jsonStr);
+            if (response.success) {
+                editor.getViewWindow().document.location.reload();
+
+                editor.getSchematicWindow().document.location.reload();
+
+                editor.success(app,view, "module deleted successfully");
+            }
+            else if (response.message) {
+                editor.fail(response.message);
+            }
+        });
+        controlWindow = null;
+        return false;
+    });
+});
+</script>
+
+% if (successMessage) :
+    <div class="success">${successMessage}</div>
+% else :
+
+% endif
+
+<div class="outerWrapper">
+
+<h2>Delete Module</h2>
+
+<form id="chooseModuleForm">
+<table class="editorTable" cellspacing="0">
+    <tr>
+        <!-- mystery of the day - putting labelCell on this td confuses IE -->
+        <td>Choose
+% if (successMessage) :
+    another
+% else :
+    a
+% endif
+            module to delete:</td>
+        <td>
+            <input type="text" name="moduleId" id="moduleId" class="moduleSelector param" autocomplete="off" /><br>
+            <input type="hidden" name="moduleClass" class="classField" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="noParamsShowingMessage">
+                <b>Be careful what you delete.</b><br>
+                <br>If you delete a module that has downstream modules, ALL those downstream modules will be deleted as well.   If instead you want to delete a module and at the same time make all of it's children the child of it's current parent module, you have to do this in two steps.  First use the 'reattach' mode to reattach all children.  Then after the unwanted module has no more children,  you can safely delete it from the tree.<br>
+                <br>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="buttonCell">
+
+            <input type="hidden" name="splunk_form_key" value="${csrfToken}" />
+            <input type="hidden" name="app" id="app" class="param" value="${app}" />
+            <input type="hidden" name="view" id="view" class="param" value="${view}" />
+
+            <input type="submit" value="delete module" disabled="disabled" class="submit" />
+        </td>
+    </tr>
+</table>
+</form>
+
+</div>

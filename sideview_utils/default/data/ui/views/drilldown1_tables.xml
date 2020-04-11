@@ -1,0 +1,135 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>drilldowns with tables and charts</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Inline drilldowns with tables and charts</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <h3>Click a table, get a dynamic drilldown chart, or some text, or a table, or anything</h3>
+      <p>
+          As always, when we want some user interaction in module A to affect something in module B,  we must always nest module B inside module A. In this case, we have a number of modules nested inside our SimpleResultsTable module.   Again the module nesting is not primarily a driver of layout, but rather interaction.    If you're used to nesting modules inside Pulldown modules, just think of the drilldown-enabled SimpleResultsTable as a big mutant Pulldown.  
+      </p>
+
+      <p>
+        Here we show a simple example of how you can create a drilldown on a Table module.  Click a sourcetype in the table to see a drilldown chart. 
+      </p>
+
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) by series | sort - avg(eps)</param>
+    <param name="earliest">-12h</param>
+    
+    <module name="Pager">
+      <param name="count">5</param>
+      
+      <module name="Table">
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>Showing eps over time for sourcetype $row.fields.series$</h2>
+          ]]></param>
+        </module>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $row.searchTerms$ | timechart max(eps) avg(eps) min(eps)</param>
+          <param name="earliest">-12h</param>
+
+          <module name="ValueSetter">
+            <param name="arg.charting.chart">line</param>
+            <param name="arg.charting.chart.nullValueMode">zero</param>
+            
+            <module name="JSChart"></module>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True" group="inline drilldown with JSChart">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | timechart sum(kb) by series</param>
+    <param name="earliest">-4h</param>
+    
+    <module name="ValueSetter">
+      <param name="arg.charting.chart">column</param>
+      <param name="arg.charting.chart.stackMode">stacked</param>
+      
+      <module name="JSChart">
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>Showing max, avg and min eps over time for sourcetype $click.name2$</h2>
+          ]]></param>
+        </module>
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $click.searchTerms$ | timechart max(eps) avg(eps) min(eps)</param>
+          <param name="earliest">-12h</param>
+
+          <module name="ValueSetter">
+            <param name="arg.charting.chart">line</param>
+            <param name="arg.charting.chart.nullValueMode">zero</param>
+            
+            <module name="JSChart"></module>
+
+          </module>
+        </module>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            NOTE: the click argument being used here is $$click.searchTerms$$ which has a value of 
+            <br>
+            <br>
+            $click.searchTerms$<br>
+            <br>
+            and which will even handle NULL and OTHER cases correctly.   You can however also use $$click.value$$ and $$click.name2$$.  Remember though that whenever time is on the x-axis you don't have to worry about any searchterms - the chart or table module will automatically take care of setting the timerange to the drilldown timerange.  You need only worry about any splitby term in $$click.name2$$<br>
+            <br>
+            $$click.name2$$ = $click.name2$
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          It's easy to reference the value of a particular cell in the selected row.   Whether you're referencing it from an HTML module, or inside another search, you refer to the "series" field as $$row.fields.series$$.  Note that if you're still using the Splunk SimpleResultsTable module, the key would be $$click.fields.series$$.   
+        </li>
+        <li>
+          If the field you want is the first column, and <pre>series="$$row.fields.series$$"</pre> seems too clunky in your Search modules, you can just use $$row.searchTerms$$ and we'll figure it out for you. 
+        </li>
+        <li>
+          For a detailed look at all the keys we provide in the Table module, and also at the keys we provide by patching the SimpleResultsTable module, go back to the <a href="linking2_tables">view about linking from view to view using clickable tables</a>.
+        </li>
+        <li>
+          <b>To implement an inline drilldown from a Sideview Table module, or from a Splunk FlashChart or JSChart module, follow this example exactly, except that instead of putting a SimpleResultsTable module there, put a Table, FlashChart or JSChart module there.  The only thing to remember is that while the Splunk modules all have $$click.*$$ keys by default, the Sideview Table module will have $$row.*$$ keys. </b>
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+  
+
+
+  
+
+</view>

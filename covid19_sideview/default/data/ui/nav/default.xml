@@ -1,0 +1,22 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<nav>
+
+  <view name="analysis" />
+
+  <view name="logarithmic_axis_primer" />
+
+
+  <view name="health_checks" />
+
+  <collection label="notes">
+    <view name="release_notes" />
+
+    <view name="data_onboarding_notes" />
+
+    <view name="todos" />
+
+    <divider />
+    <view name="redirect_home" default="true"/>
+  </collection>
+
+</nav>

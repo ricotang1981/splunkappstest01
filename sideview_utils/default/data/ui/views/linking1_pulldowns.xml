@@ -1,0 +1,186 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>linking to other views from pulldowns</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Linking - Pulldowns</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="two pulldowns">
+    <param name="html"><![CDATA[
+      Here we start right away with two pulldowns.   To see more examples of how the Pulldown module works, refer to the extensive examples elsewhere in this app.
+      ]]></param>
+  </module>
+
+
+  <module name="TimeRangePicker" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="selected">last 4 hours</param>
+      
+    <module name="Pulldown">
+      <param name="name">group</param>
+      <param name="label">Type</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">Sourcetype</param>
+          <param name="value">per_sourcetype_thruput</param>
+        </list>
+        <list>
+          <param name="label">Source</param>
+          <param name="value">per_source_thruput</param>
+        </list>
+        <list>
+          <param name="label">Host</param>
+          <param name="value">per_host_thruput</param>
+        </list>
+        <list>
+          <param name="label">Index</param>
+          <param name="value">per_index_thruput</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" metrics | head 5000 | stats count by group, series | sort series</param>
+        
+        <module name="Pulldown">
+          <param name="name">series</param>
+          <param name="label">$group.label$</param>
+          <param name="postProcess">search group="$group$"</param>
+          <param name="valueField">series</param>
+
+          <module name="Button">
+            <param name="label">click me - no prepopulated elements</param>
+            <param name="allowSoftSubmit">False</param>
+
+            <module name="Redirector">
+              <param name="url">target_view1</param>
+              <param name="arg.group">$group.rawValue$</param>
+              <param name="arg.series">$series.rawValue$</param>
+              <param name="arg.title">Showing report for $group.label$="$series.label$"</param>
+              <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+            </module>
+          </module>
+
+          <module name="Button">
+            <param name="label">click me - showing 1 prepopulated element</param>
+            <param name="allowSoftSubmit">False</param>
+
+            <module name="Redirector">
+              <param name="url">target_view2</param>
+              <param name="arg.group">$group.rawValue$</param>
+              <param name="arg.series">$series.rawValue$</param>
+              <param name="arg.title">Showing report for $group.label$="$series.label$"</param>
+              <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+            </module>
+          </module>
+
+          <module name="Button">
+            <param name="label">click me - showing 2 prepopulated elements</param>
+            <param name="allowSoftSubmit">False</param>
+
+            <module name="Redirector">
+              <param name="url">target_view3</param>
+              <param name="arg.group">$group.rawValue$</param>
+              <param name="arg.series">$series.rawValue$</param>
+              <param name="arg.title">Showing report for $group.label$="$series.label$"</param>
+              <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+            </module>
+          </module>
+
+
+          
+          <module name="Button">
+            <param name="label">click me - passing timerange as well</param>
+            <param name="allowSoftSubmit">False</param>
+
+            <module name="Redirector">
+              <param name="url">target_view4</param>
+              <param name="target">existing_window</param>
+              <param name="arg.group">$group.rawValue$</param>
+              <param name="arg.series">$series.rawValue$</param>
+              <param name="arg.title">Showing report for $group.label$="$series.label$"</param>
+              <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+              <param name="arg.earliest">$search.timeRange.earliest$</param>
+              <param name="arg.latest">$search.timeRange.latest$</param>
+            </module>
+          </module>
+
+
+          <module name="Link">
+            <param name="label">Prefer blue links to Buttons? Use the Link module</param>
+            <param name="allowSoftSubmit">False</param>
+
+            <module name="Redirector">
+              <param name="url">target_view4</param>
+              <param name="target">existing_window</param>
+              <param name="arg.group">$group.rawValue$</param>
+              <param name="arg.series">$series.rawValue$</param>
+              <param name="arg.title">Showing report for $group.label$="$series.label$"</param>
+              <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+              <param name="arg.earliest">$search.timeRange.earliest$</param>
+              <param name="arg.latest">$search.timeRange.latest$</param>
+            </module>
+          </module>
+
+
+          
+          <module name="ValueSetter">
+            <param name="name">url_encoded_keys</param>
+            <param name="urlEncodeKeys">group,series</param>
+            <param name="value">group=$group.rawValue$&amp;series=$series.rawValue$&amp;title=Showing report for $group.label$=$series$</param>
+            
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                Want to just make a raw link in an HTML module? <a href="target_view3?$url_encoded_keys$&report=timechart min(eps) avg(eps) max(eps)">Here you go</a>.<br>
+                <br>
+                and if you want the URL to be visible to the user, sure no problem:<br>
+                <a href="target_view3?$url_encoded_keys$&report=timechart min(eps) avg(eps) max(eps)">target_view3?$url_encoded_keys$&report=timechart min(eps) avg(eps) max(eps)</a>. )<br>
+                <br>
+
+              ]]></param>
+            </module>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      Notes:
+      <ol class="notesList">
+        <li>
+          Redirector module can be configured to pass any argument from any selected element in the view.  Even the argument names can be put together using dynamic values.
+        </li>
+        <li>
+          Likewise, you can have both the name and the value be dynamic.  You can create argument values that are each composed of multiple static and dynamic strings. 
+        </li>
+        <li>
+          Note how you can also just reference any dynamic values within the HTML module. Here we just make a straight-up anchor tag instead of mucking with Button and Redirector at all.  (Note that in this particular case we do need to use ValueSetter to URLEncode our dynamic values for the URL).  Another thought experiment--- If you need to build an HTML form for the user to POST some combination of values somewhere else, you can put hidden form fields and set value="$$someSplunkToken$$" and it's a piece of cake.
+        </li>
+        <li>
+          You might want to read the specification for <a href="/modules#Splunk.Module.ValueSetter" target="_blank">ValueSetter and its params</a>, which we used here to urlEncode the values in the URL when we made the link element that you see.  
+        </li>
+        <li>
+          About backslashes and backslash-escaping:  The regular $$foo$$ tokens like $$group$$ and $$series$$ - values coming out of Pulldowns and TextField modules - those tokens will always have internal backslashes escaped.  If you are using the tokens in searches,  or you're linking to a passive view where the values will be used in searches, this is what you want.  If on the other hand you are linking to a view where these values will prepopulate Pulldown and TextField modules, you do NOT want the backslash-escaped version, and you should then use $$foo.rawValue$$ instead of $$foo$$.    Rule of Thumb - for displaying in headers and sending via redirects,  use $$foo.rawValue$$.  For searches, use $$foo$$.  
+       </li>
+        <li>
+          Note how when we pass the 'title' argument to the target view we don't just use $$group$$, but rather $$group.label$$.  This will use the text of the option rather than its value. ie "Sourcetype" instead of "per_sourcetype_thruput".  
+        </li>
+        
+        
+        
+      </ol>
+      ]]></param>
+  </module>
+
+
+  
+</view>

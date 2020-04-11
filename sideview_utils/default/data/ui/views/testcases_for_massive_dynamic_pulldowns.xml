@@ -1,0 +1,56 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Pulldown</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Pulldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="dynamic config, crazy long">
+      <param name="search"><![CDATA[
+        index=_internal OR index=* | head 1000 | rename _cd as eventcode | eval eventcode=eventcode+"_"+date_hour+ "<b>"+date_second+"</b>_quote-\"_"+index+"_"+sourcetype+"_"+source+"_"+host
+      ]]></param>
+
+      <module name="Pulldown">
+        <param name="name">test2</param>
+        <param name="label">test2</param>
+        <param name="valueField">eventcode</param>
+        <param name="size">5</param>
+        <param name="size">4</param>
+        <param name="template">_cd="$value$"</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+        
+        <param name="customBehavior">measurePulldownRenderTime</param>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           
+           Running the search itself took <b>$results.runDuration$</b> seconds.<br>
+           <br>
+           building the option list (from $results.count$ rows), took <b>$renderTime$</b> seconds.
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+  </module>
+  
+        
+
+</view>

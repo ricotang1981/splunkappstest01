@@ -1,0 +1,53 @@
+  <!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="false" template="dashboard.html">
+  <label>Testcases for menu implementations</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testing Menus</h1>
+    ]]></param>
+  </module>
+  
+
+    
+  <module name="TimePicker" layoutPanel="mainSearchControls" autoRun="true">
+
+    <module name="Search">
+      <param name="search">index=_* OR index=* | stats count by sourcetype</param>
+
+      <module name="Button">
+        <param name="allowSoftSubmit">True</param>
+
+        
+        <module name="SearchControls"  layoutPanel="panel_row1_col1">
+          
+          <param name="sections">jobControls export</param>
+          <param name="jobControls">finalize cancel pause background</param>
+        </module>
+
+       <module name="ProgressIndicator"  layoutPanel="panel_row1_col1"></module>
+
+        <module name="Pager"  layoutPanel="panel_row1_col1">
+          <param name="entityName">results</param>
+          <module name="Table" />
+        </module>
+      </module>
+    </module>
+        
+    
+  </module>
+
+ 
+
+
+
+
+
+
+
+</view>

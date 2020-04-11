@@ -1,0 +1,54 @@
+<view>
+  <label>about logarithmic y-axes</label>
+  <module name="TopNav" layoutPanel="appHeader" />
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <!-- this legacy Sideview Utils module is only here as a workaround since Splunk has not yet released
+any mechanism whereby Sideview XML views can specify what URI should handle Users who to to the legacy
+Advanced XML views. This is also why the "Sideview Utils" app is still required, incidentally. -->
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML" layoutPanel="panel_row2_col1">
+      <param name="html"><![CDATA[
+
+<h2>A primer on exponential curves and why we use logarithmic Y-axes</h2>
+
+<ol>
+<li>Any exponential curve where time is the x-axis means in a nutshell that there is a "doubling time" for the values being charted.</li>
+
+<li>It is very difficult for the human eye to interpret multiple exponential curves on a normal linear y-axis. It's easy to see the lines with the highest values, but nearly impossible to see whether the ones with smaller values are also rising exponentially. Moreover the charts tend to look strangely identical from day to day but with startling changes to the numbers on the y-axis.</li>
+
+<li>However if you take these same points and you then chart them on a logarithmic Y-axis instead (in other words if you make the evenly spaced tick marks be 10, 100, 1000, 10000 instead of 0,500,1000,1500) then if the lines suddenly become straight, that means the values really were rising exponentially. (And it's vastly easier for our eyes to confirm that straight lines are straight).<br>
+<br>
+In fact the slope or steepness of each straight line then corresponds visually to that "doubling time", you can predict what the numbers will be some days ahead, and you can get a value for that doubling time all with just a bit more math.</li>
+</ol>
+
+
+OK but what if I put points on a logarithmic Y-axis and....
+<dl>
+<dt>...and they're not that straight? - in fact the more recent points on my line show the formerly straight line curving down</dt>
+<dd>That's great.   The doubling time is getting longer! </dd>
+<dd>Actually - flip back to the normal linear axis and check -- do the recent points plot out a little straight line on the *linear* axis - maybe it's just growing linearly now. Or is it bending down yet even on the linear axis - all good things.</dd>
+
+<dt>... and they're not that straight but it's because it's curving up a little?</dt>
+<dd>That's really bad - the doubling time is getting shorter.</dd>
+
+<dt>... the line is flat ie horizontal?</dt>
+<dd>Then the values aren't changing day to day. They're holding steady. </dd>
+
+<dt>... and it's a straight line trending down?</dt>
+<dd>Break out the champagne. It is "exponential decay" meaning the numbers are going down really fast.  And instead of a "doubling time", you have what is called a "half life".</dd>
+</dl>
+
+
+
+
+      ]]></param>
+    </module>
+
+  </module>
+</view>

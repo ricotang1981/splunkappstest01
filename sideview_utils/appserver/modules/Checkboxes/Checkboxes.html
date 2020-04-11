@@ -1,0 +1,45 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<%
+    def isPopulated(pName, module) :
+        if (pName in module and module[pName]) :
+            return True
+        else:
+            return False
+%>
+
+<%def name="buildCheckbox(id,label, value='', selected='False')">\
+    <% 
+    selectedAttr = ('checked="checked"') if selected.lower() == "true" else '' 
+    if (value==None): value=""
+    if (label==None): label=value
+    %>
+    <div class="checkboxWrapper static">
+        <input type="checkbox" value="${value|h}" id="${id}" ${selectedAttr}><label for="${id}">${label|h}</label></div>
+</%def>\
+
+
+% if (isPopulated("staticCheckboxes",module)):
+    <%
+    index = 0;
+    %>
+    % for field in module['staticCheckboxes']:
+        % if field and field.get('value', False)!=False :
+        <%
+        id = module["id"] + "_static_" + str(index);
+        index = index+1;
+        %>
+    <%self:buildCheckbox label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" id="${id}"/>
+        % else :
+    <option> Checkboxes.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</option>
+        % endif
+    % endfor
+% endif
+
+%if (isPopulated("valueField",module)):
+    <div class="checkboxWrapper dynamic">${_("Loading...")|h}</div>
+% endif
+
+

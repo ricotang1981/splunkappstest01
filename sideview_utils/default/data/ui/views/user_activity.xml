@@ -1,0 +1,351 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="True" onunloadCancelJobs="true" template="dashboard.html" stylesheet="custom.css">
+  <label>User Activity</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customJavascript">sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/dashboard_tabs.css</param>
+  </module>
+
+<module name="HTML" layoutPanel="appHeader"> 
+  <param name="html"><![CDATA[
+<style type="text/css">
+.Link.floatRight {
+    float:right;
+}
+.mainSearchControls .TimeRangePicker,
+.mainSearchControls .CheckboxPulldown,
+.mainSearchControls .TextField {
+  float:left;
+}
+.SearchControls {
+    margin-right:8px  !important;
+    margin-top:-27px !important;
+}
+</style>
+<script type="text/javascript">
+if (typeof(Sideview)!="undefined") {
+    Sideview.utils.declareCustomBehavior("bouncer",
+        function(module) {
+            module.onContextChange = function() {
+                var context = this.getContext();
+                var field=context.get("field");
+                if (field=="search_id") return context;
+
+                var selectedValue = context.get("row.fields." + field);
+                
+                var upwardContext = new Splunk.Context();
+                // reset the tab to Searches
+                upwardContext.set("field","search_id");
+
+                if (["user","app","dashboard"].indexOf(field)!=-1) {
+                    upwardContext.set(field,selectedValue);
+                } else {
+                    var searchterms = context.get("searchterms.rawValue") || "";
+                    searchterms = field + "=\"" + selectedValue + "\" " + searchterms;
+                    upwardContext.set("searchterms",searchterms);
+                }
+                this.passContextToParent(upwardContext);
+            }
+        }
+    );
+}
+</script>
+
+
+  ]]></param>
+</module>
+
+  
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">True</param>
+  </module>
+
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">splunk.search.job</param>
+    <param name="maxSize">2</param>
+    <param name="clearOnJobDispatch">True</param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    <module name="TimeRangePicker" layoutPanel="mainSearchControls">
+      <param name="default">Last 24 hours</param>
+      <param name="searchWhenChanged">True</param>
+
+      <module name="Search">
+        <param name="search"><![CDATA[
+(index="_internal" user!="-" method=GET sourcetype=splunkd_ui_access uri!="/en-US/static*" uri="*/app/*" ) OR (index=_audit user!="splunk-system-user" ( info=granted search!="'typeahead*" ) OR info=completed ) 
+| eval app=null()
+| eval dashboard=null()
+| rex field=uri "^/(?<locale>[\w-]+)/app/(?<app>[^/()]+)/(?<dashboard>[^?/\s]+)" 
+| sort 0 + _time 
+| fields _time user locale app dashboard index info  event_count scan_count total_run_time search_id search
+| streamstats latest(app) as app latest(dashboard) as dashboard latest(locale) as locale by user
+| sort 0 - _time
+| streamstats latest(event_count) as event_count latest(scan_count) as scan_count latest(total_run_time) as total_run_time by search_id
+| search search=* search!="\"" event_count=*
+| fields - info 
+| stats values(search_id) as search_id by user app dashboard
+        ]]></param>
+
+        <module name="CheckboxPulldown">
+          <param name="name">user</param>
+          <param name="label">$name$</param>
+          <param name="valueField">$name$</param>
+          <param name="labelField">label</param>
+          <param name="template">$name$="$value$"</param>
+          <param name="selectAllOptimization">omit</param>
+          <param name="postProcess">stats dc(search_id) as searchCount by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+          <module name="CheckboxPulldown">
+            <param name="name">app</param>
+            <param name="label">$name$</param>
+            <param name="valueField">$name$</param>
+            <param name="labelField">label</param>
+            <param name="template">$name$="$value$"</param>
+            <param name="selectAllOptimization">omit</param>
+            <param name="postProcess">search $user$ | stats dc(search_id) as searchCount by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+            <module name="CheckboxPulldown">
+              <param name="name">dashboard</param>
+              <param name="label">$name$</param>
+              <param name="valueField">$name$</param>
+              <param name="labelField">label</param>
+              <param name="template">$name$="$value$"</param>
+              <param name="selectAllOptimization">omit</param>
+              <param name="postProcess">search $user$ $app$ | stats dc(search_id) as searchCount by $name$ | sort $name$ | eval label=$name$+" (" + searchCount + ")"</param>
+
+              <module name="TextField">
+                <param name="name">searchterms</param>
+                <param name="template"> | search $value$</param>
+                <param name="label">Misc. terms</param>
+
+                <module name="Button">
+                  <param name="allowSoftSubmit">True</param>
+
+                  <module name="ValueSetter">
+                    <param name="arg.tabs">user app dashboard</param>
+
+                    <module name="ValueSetter">
+                      <param name="name">tabsArray</param>
+                      <param name="delim">+</param>
+                      <param name="value">$tabs$</param>
+
+                      <module name="ArrayValueSetter">
+                        <param name="name">dcAndValuesClausesForStats</param>
+                        <param name="array">$tabsArray$</param>
+                        <param name="template">dc($value$) as dc_$value$ values($value$) as values_$value$</param>
+                        <param name="separator">+</param>
+                        <param name="outerTemplate">$value$</param>
+
+                        <module name="ArrayValueSetter">
+                          <param name="name">valuesClausesForStats</param>
+                          <param name="array">$tabsArray$</param>
+                          <param name="template">values($value$) as $value$</param>
+                          <param name="separator">+</param>
+                          <param name="outerTemplate">$value$</param>
+
+
+                          <module name="ArrayValueSetter">
+                            <param name="name">fullStatsClauseList</param>
+                            <param name="array">$tabsArray$</param>
+                            <param name="template">values_$value$ dc_$value$</param>
+                            <param name="separator">+</param>
+                            <param name="outerTemplate">$value$</param>
+
+                            <module name="Search">
+                              <param name="search"><![CDATA[
+(index="_internal" user!="-" method=GET sourcetype=splunkd_ui_access uri!="/en-US/static*" uri="*/app/*" ) OR (index=_audit user!="splunk-system-user" ( info=granted search!="'typeahead*" ) OR info=completed ) 
+$user$ 
+| eval app=null()
+| eval dashboard=null()
+| rex field=uri "^/(?<locale>[\w-]+)/app/(?<app>[^/]+)/(?<dashboard>[^?/\s]+)" 
+| sort 0 + _time 
+| fields _time user locale app dashboard index info  event_count scan_count total_run_time search_id search
+| streamstats latest(app) as app latest(dashboard) as dashboard latest(locale) as locale by user
+| sort 0 - _time
+| streamstats latest(event_count) as event_count latest(scan_count) as scan_count latest(total_run_time) as total_run_time by search_id
+| search search=* search!="\"" event_count=* $app$ $dashboard$
+| fields - info 
+| stats values(*) as * by search_id
+$searchterms$
+| stats dc(*) as *
+| fields search_id $tabs$  
+| transpose
+| rename "row 1" as count column as field
+| eval label=case(field="search_id","Searches",field=="locale","Locales",field=="user","Users",field=="app","Apps",field=="dashboard","Dashboards") + " (" + count + ")"
+
+                              ]]></param>
+
+                              <module name="Tabs" layoutPanel="panel_row1_col1">
+                                <param name="name">field</param>
+                                <param name="valueField">$name$</param>
+                                <param name="labelField">label</param>
+
+                                <module name="HTML" layoutPanel="viewHeader">
+                                  <param name="html"><![CDATA[
+                                  <h1>User Activity - $field.label$</h1>
+                                  ]]></param>
+                                </module>
+
+                                <module name="ValueSetter" layoutPanel="panel_row1_col1_grp1">
+                                  <param name="name">customReport</param>
+                                  <param name="if.$field$=search_id[priority=1]">
+                                    fields _time user app dashboard event_count scan_count total_run_time time_range_duration search
+                                  </param>
+                                  <param name="default">
+                                    stats sparkline as activity sum(scan_count) as scan_count sum(event_count) as event_count sum(total_run_time) as total_run_time $dcAndValuesClausesForStats$ dc(search_id) as searches by $field$
+                                  | fillnull $tabs$ value=" "
+                                  </param>
+
+                                  <module name="Search">
+                                    <param name="search"><![CDATA[
+
+(index="_internal" user!="-" method=GET sourcetype=splunkd_ui_access uri!="/en-US/static*" uri="*/app/*" ) OR (index=_audit user!="splunk-system-user" ( info=granted search!="'typeahead*" ) OR info=completed ) 
+$user$ 
+| eval app=null()
+| eval dashboard=null()
+| rex field=uri "^/(?<locale>[\w-]+)/app/(?<app>[^/()]+)/(?<dashboard>[^?/\s]+)" 
+| eval start_time=strptime(apiStartTime, "'%a %b %d %H:%M:%S %Y'")
+| eval end_time=strptime(apiEndTime, "'%a %b %d %H:%M:%S %Y'")
+| eval time_range_duration=tostring(round(end_time-start_time),"duration")
+| sort 0 + _time 
+| fields _time user locale app dashboard index info  event_count scan_count total_run_time time_range_duration search_id search
+| streamstats latest(app) as app latest(dashboard) as dashboard latest(locale) as locale by user
+| sort 0 - _time
+| streamstats latest(event_count) as event_count latest(scan_count) as scan_count latest(total_run_time) as total_run_time latest(time_range_duration) as time_range_duration by search_id
+| eval auditExtractionFail=search
+| search auditExtractionFail=* auditExtractionFail!="\"" event_count=* $app$ $dashboard$
+| fields - info auditExtractionFail
+$searchterms$
+| $customReport$
+
+                                    ]]></param>
+                                    <module name="SearchControls" layoutPanel="panel_row1_col1">
+                                      <param name="sections">info export saveMenu createMenu</param>
+                                      <param name="saveMenu">saveSearch</param>
+                                    </module>
+
+                                    <module name="Link">
+                                      <param name="label">&#187; see raw search syntax</param>
+                                      <param name="cssClass">floatRight</param>
+
+                                      <module name="Redirector">
+                                        <param name="url">search</param>
+                                        <param name="arg.q">search $search$</param>
+                                        <param name="arg.earliest">$search.timeRange.earliest$</param>
+                                        <param name="arg.latest">$search.timeRange.latest$</param>
+                                        <param name="target">_blank</param>
+                                      </module>
+                                    </module>
+
+                                    <!-- Because the the first field in the session display is time, 
+                                    the Table thinks it's a time drilldown, so it swaps the _time value 
+                                    in for $search.timeRange.earliest$ when it processes the drilldown. 
+                                    -->
+                                    <module name="ValueSetter">
+                                      <param name="arg.bc_earliest">$search.timeRange.earliest$</param>
+                                      <param name="arg.bc_latest">$search.timeRange.latest$</param>
+
+                                      <module name="Pager">
+
+                                        <module name="ValueSetter">
+                                          <param name="name">tableType</param>
+                                          <param name="if.$field$=search_id">search</param>
+                                          <param name="default">everythingElse</param>
+
+
+
+                                          <module name="Switcher">
+                                            <param name="selectedGroup">$tableType$</param>
+
+
+                                            <module name="Table" group="search">
+                                              <param name="hiddenFields">search_id</param>
+                                            </module>
+
+                                            <module name="Table" group="everythingElse">
+                                              <param name="hiddenFields">search_id $fullStatsClauseList$</param>
+
+                                              <module name="ValueSetter" group="row.fields.user">
+                                                <param name="name">display</param>
+                                                <param name="if.$field$=user[priority=5]">$row.fields.user$</param>
+                                                <param name="if.$row.fields.dc_user$=0[priority=4]"></param>
+                                                <param name="if.$row.fields.dc_user$=1[priority=3]">$row.fields.values_user$</param>
+                                                
+                                                <param name="default"><![CDATA[
+                                                <span class="distinctValueCount">($row.fields.dc_user$ distinct values)</span>
+                                                ]]></param>
+                                                <module name="HTML"> 
+                                                  <param name="html"><![CDATA[
+                                                    $display$
+                                                  ]]></param>
+                                                </module>
+                                              </module>
+
+                                              <module name="ValueSetter" group="row.fields.app">
+                                                <param name="name">display</param>
+                                                <param name="if.$field$=app[priority=5]">$row.fields.app$</param>
+                                                <param name="if.$row.fields.dc_app$=0[priority=4]"></param>
+                                                <param name="if.$row.fields.dc_app$=1[priority=3]">$row.fields.values_app$</param>
+                                                
+                                                <param name="default"><![CDATA[
+                                                <span class="distinctValueCount">($row.fields.dc_app$ distinct values)</span>
+                                                ]]></param>
+                                                <module name="HTML"> 
+                                                  <param name="html"><![CDATA[
+                                                    $display$
+                                                  ]]></param>
+                                                </module>
+                                              </module>
+
+                                              <module name="ValueSetter" group="row.fields.dashboard">
+                                                <param name="name">display</param>
+                                                <param name="if.$field$=dashboard[priority=5]">$row.fields.dashboard$</param>
+                                                <param name="if.$row.fields.dc_dashboard$=0[priority=4]"></param>
+                                                <param name="if.$row.fields.dc_dashboard$=1[priority=3]">$row.fields.values_dashboard$</param>
+                                                
+                                                <param name="default"><![CDATA[
+                                                <span class="distinctValueCount">($row.fields.dc_dashboard$ distinct values)</span>
+                                                ]]></param>
+                                                <module name="HTML"> 
+                                                  <param name="html"><![CDATA[
+                                                    $display$
+                                                  ]]></param>
+                                                </module>
+                                              </module>
+
+                                              <module name="CustomBehavior">
+                                                <param name="customBehavior">bouncer</param>
+                                              </module>
+
+                                            </module>
+
+
+                                          </module>
+                                        </module>
+                                      </module>
+                                    </module>
+                                  </module>
+                                </module>
+                              </module>
+                            </module>
+                          </module>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+</view>

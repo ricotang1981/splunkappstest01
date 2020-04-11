@@ -1,0 +1,73 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Table - Intro</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Table - Intro</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      the Table module is like Clark Kent.   Most of the time you just need it to be a simple, reliable Table.   It renders what you give it and does what you expect.   Most of the time you don't even have to give it any params because the defaults are perfectly sensible. <br>
+      <br>
+      But then one day you need to make the rows different colors, or you need to make some cells be images, or you want to put a little custom HTML in somewhere.    or you want sparklines, or pie charts, or checkboxes...  (wait what?)<br>
+      <br>
+      Well in those cases the Table module can cover a bewildering range of use cases.  But let's not get ahead of ourselves. Let's start simple. 
+
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN --> 
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal | head 1000 | top sourcetype</param>
+
+    <module name="Pager">
+      <module name="Table" />
+    </module>
+  </module> 
+  <!-- END EXAMPLE -->
+
+
+  
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          The first example at left is so simple that we can put the entire XML right here: 
+<pre>
+&lt;module name="Search" layoutPanel="panel_row2_col1" autoRun="True"&gt;
+  &lt;param name="search">index=_internal | head 1000 | top sourcetype&lt;/param&gt;
+
+  &lt;module name="Pager"&gt;
+
+    &lt;module name="Table" /&gt;
+
+  &lt;/module&gt;
+
+&lt;/module&gt;
+</pre>
+        </li>
+
+        <li>
+          The Table module has a lot of params but in the great majority of cases you wont need to set any of them.  
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Table" target="_blank">Table and its params</a>.
+        </li>       
+      </ol>
+      ]]></param>
+  </module>
+
+
+  
+
+</view>

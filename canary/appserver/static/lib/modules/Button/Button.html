@@ -1,0 +1,11 @@
+<% 
+# Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<fieldset>
+% if 'label' in module:
+  <button class="buttonPrimary svButton"><span>${_(module['label'])|h}</span></button>
+% else :
+  <input type="submit" title="Search" value="" class="searchButton svButton svIcon" />
+% endif
+</fieldset>

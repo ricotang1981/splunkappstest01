@@ -1,0 +1,38 @@
+## we have to stick with the legacy "script_blocks" name within attributes
+## because when we run in the advanced XML, our modules will add script
+## with our tag,  but the legacy lib.html call will still output them 
+## into the page. =/
+
+<%def name="output_inline_script()">
+    % if attributes.get("script_blocks"):
+    // HI
+    <script type="text/javascript">//<![CDATA[
+    % for s in attributes.get("script_blocks", []):
+
+        ${s}
+
+    % endfor
+    //]]></script>
+    % endif
+</%def>
+
+<%def name="inline_script()"><%
+    if not attributes.get("script_blocks", False):
+        attributes["script_blocks"] = []
+    attributes["script_blocks"].append(capture(caller.body))
+%>
+</%def>
+
+## TODO - DRI.  Everyone wave to require.  Hi require. 
+<%def name="external_script(files)">
+    % for f in files:
+        <script type="text/javascript" src="${make_url(f)}"></script>\
+    % endfor
+</%def>
+
+
+<%def name="external_css(files)">
+    % for f in files:
+        <link rel="stylesheet" href="${make_url(f)}" />\
+     % endfor
+</%def>

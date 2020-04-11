@@ -1,0 +1,86 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Autodetermining span</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Autodetermining span</h1><br>
+
+    
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    <module name="TimeRangePicker">
+      <param name="default">Last 24 hours</param>
+
+      <module name="Search">
+        <param name="search"><![CDATA[
+          foo NOT foo | stats count | addinfo | table info_min_time info_max_time | eval duration=info_max_time - info_min_time | eval span=case(duration>604800,"span=1d",duration>86400,"span=4h",duration>1440,"span=1h",duration>3600,"span=30min",duration>1800,"span=1min")
+        ]]></param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">span,duration</param>
+
+          <module name="Search">
+            <param name="search"><![CDATA[
+              index=_internal | head 1000 | timechart count $span$
+            ]]></param>
+
+            <module name="HTML" layoutPanel="viewHeader">
+              <param name="html"><![CDATA[
+              did it work?   $$span$$ = $span$<br>
+              $$duration$$ = $duration$
+              ]]></param>
+            </module>
+            <module name="JSChart" />
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+
+    <module name="TimeRangePicker" layoutPanel="panel_row2_col1">
+      <param name="default">Last 24 hours</param>
+
+      <module name="Search">
+        <param name="search"><![CDATA[
+          foo NOT foo | stats count | addinfo | table info_min_time info_max_time | eval duration=info_max_time - info_min_time | eval span=case(duration>604800,"span=1d",duration>86400,"span=4h",duration>1440,"span=1h",duration>3600,"span=30min",duration>1800,"span=1min")
+        ]]></param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">span,duration</param>
+
+          <module name="Search">
+            <param name="search"><![CDATA[
+              index=_internal | head 1000 | timechart count $span$
+            ]]></param>
+
+            <module name="HTML" layoutPanel="viewHeader">
+              <param name="html"><![CDATA[
+              did it work?   $$span$$ = $span$<br>
+              $$duration$$ = $duration$
+              ]]></param>
+            </module>
+            <module name="JSChart" />
+          </module>
+        </module>
+      </module>
+    </module>
+
+  </module>
+  
+        
+
+</view>

@@ -1,0 +1,50 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for inferring split-by terms</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for inferring split-by terms</h1>
+    ]]></param>
+  </module>
+
+  <module name="CustomBehavior" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="customBehavior">inferredSplitByTestCases</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>test results</h2>
+        <table class="splTable">
+          <tr>
+            <td>$successes$</td>
+            <td>$failures$</td>
+          </tr>
+        </table>
+      ]]></param>
+    </module>
+
+  </module>
+
+  <module name="SearchBar" layoutPanel="panel_row1_col2" autoRun="True">
+    <param name="default">* | head 1000 | timechart count by sourcetype</param>
+    
+    <module name="SimpleResultsTable">
+      <param name="drilldown">all</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+        click.searchTerms = $click.searchTerms$<br>
+        click.value = $click.value$
+        ]]></param>
+      </module>
+
+    </module>
+
+  </module>
+
+
+</view>

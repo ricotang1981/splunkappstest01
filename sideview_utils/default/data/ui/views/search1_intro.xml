@@ -1,0 +1,74 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Search module - (aka life without intentions)</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>The Search module - (aka life without intentions)</h1>
+    ]]></param>
+  </module>
+  
+
+  
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <h3>No more intentions, no more ConvertToIntention modules.</h3>
+      <p>
+          If you know what intentions are, you will know that this is a good thing.
+      </p>
+      <p>
+          The big change is that you use Sideview's "Search" module instead of Splunk's "HiddenSearch" module.  The Search module will do 
+          <!-- NOTE that most Sideview modules do $$foo$$ replacement automatically, and if you want to actually depict a dollar sign you have to type two consecutive ones. -->
+          $$foo$$ token replacement right into the search automatically.   The big win here is that you no longer need to struggle with ConvertToIntention modules and their intention syntax.  That whole step is skipped and instead the tokens from your pulldowns and textfields go straight into the search.
+      </p>
+      <p>
+        For more hands-on examples of life without intentions, you can skip to the examples about the <a href="pulldown1_static">Pulldown</a> module and the <a href="text_field1">TextField</a> module.
+      </p>
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      
+      <h3>Changes in how you use Sideview's Search module relative to Splunk's HiddenSearch module</h3>
+      <ol class="notesList">
+        <li>
+          Splunk's HiddenSearch module can live upstream or downstream from the form elements.  Sideview's Search module on the other hand can <strong>only</strong> live downstream from the form elements that are contributing to the search.  <br>
+          <br>
+          <b>(NOTE: If you don't know what upstream and downstream mean in this context, you should immediately return to the <a href="framework_intro">Framework intro page</a> and read it carefully.</b>
+        </li>
+        <li>
+          autoRun: Splunk's lister modules can exist somewhat independently of the autoRun="True" attributes that set things in motion.  On the other hand with the dynamic configurations of Sideview's Pulldown module there MUST be an autoRun="True" attribute one or more levels further upstream.  Without that (autoRun="True") the pulldown will not load its options when the page loads.  You will get used to this change quickly because this is actually consistent with the convention followed by all the other modules.
+        </li>
+        <li>
+          If you need an actual "$$" character in your search,   use "$$$$" instead.  Otherwise the single "$$" character will be misinterpreted as one side of a $$foo$$ token.  (This applies to anything in Sideview Utils that does $$foo$$ substitution.)
+        <li>
+          It is true that the Search module's automatic replacement does not allow you to do some of the fancier things that addterm intentions or even plot intentions allowed you to do. However those weird little features are also easily replaced with other better and simpler techniques, some of which you'll see in this app.  
+        </li>
+
+        <li>
+          If you want to turn on "preview" for the job you're dispatching, you can set this directly with the Search module's "preview" param.  Previously you had to use a core Splunk module called EnablePreview which was hidden and difficult to use correctly.
+        </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Search" target="_blank">Search and its params</a>
+        </li>
+        
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.TextField" target="_blank">TextField and its params</a>
+        </li>
+       </ol>
+
+    ]]></param>
+  </module>
+
+</view>

@@ -1,0 +1,233 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true">
+  <label>Sideview Chart</label>
+  <module name="AccountBar" layoutPanel="appHeader"/>
+  <module name="AppBar" layoutPanel="navigationHeader"/>
+  <module name="SideviewUtils" layoutPanel="appHeader">
+    <param name="customJavascript">sideview_utils/report.js sideview_utils/save_create_patches.js</param>
+    <param name="customStylesheet">sideview_utils/report.css</param>
+  </module>
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">*</param>
+    <param name="clearOnJobDispatch">False</param>
+    <param name="maxSize">1</param>
+  </module>
+  <module name="Message" layoutPanel="messaging">
+    <param name="filter">splunk.search.*</param>
+    <param name="maxSize">1</param>
+    <param name="clearOnJobDispatch">True</param>
+  </module>
+  
+  <module name="URLLoader" layoutPanel="messaging">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="SearchBar" layoutPanel="splSearchControls-inline">
+      <param name="useAssistant">true</param>
+      <param name="useTypeahead">false</param>
+      <param name="useOwnSubmitButton">False</param>
+      
+      <module name="TimeRangePicker">
+        <param name="searchWhenChanged">True</param>
+        <param name="selected">Last 4 hours</param>
+        
+        <module name="Button">
+          <param name="allowSoftSubmit">True</param>
+          <module name="Message" layoutPanel="mainSearchControls">
+            <param name="filter">splunk.search.job</param>
+            <param name="clearOnJobDispatch">True</param>
+            <param name="maxSize">2</param>
+          </module>
+          
+          <module name="CustomBehavior">
+            <param name="customBehavior">hideDownstreamUntilSearchSubmitted</param>
+          </module>
+
+          <module name="SearchControls" layoutPanel="mainSearchControls"></module>
+          
+          <module name="HTML" layoutPanel="mainSearchControls">
+            <param name="html"><![CDATA[
+              <h3 style="margin:0px;">$results.count$ result rows $search.timeRange.label$.&nbsp;&nbsp; <a href="chart?searchBar= $encodedAndExpandedSearch$&earliest=$search.timeRange.earliest$&latest=$search.timeRange.latest$&autoRun=True">$expandMacrosText$</a></h3>
+            ]]></param>
+            <param name="customBehavior">rawSearchLink</param>
+          </module>
+
+          <module name="Tabs" layoutPanel="resultsAreaLeft">
+            <param name="name">selectedTab</param>
+            <param name="staticTabs">
+              <list>
+                <param name="value">Chart</param>
+              </list>
+              <list>
+                <param name="value">Table</param>
+              </list>
+              <list>
+                <param name="label">Both</param>
+                <param name="value">Chart,Table</param>
+              </list>
+            </param>
+
+            <module name="ProgressIndicator" />
+
+            <module name="Switcher" group=" ">
+              <param name="selectedGroup">$selectedTab$</param>
+
+              <module name="Pulldown" group="Chart">
+                <param name="name">charting.chart</param>
+                <param name="label">Chart type</param>
+                <param name="clear">left</param>
+                <param name="staticOptions">
+                  <list>
+                    <param name="value">column</param>
+                    <param name="label">Column</param>
+                  </list>
+                  <list>
+                    <param name="value">line</param>
+                    <param name="label">Line</param>
+                  </list>
+                  <list>
+                    <param name="value">area</param>
+                    <param name="label">Area</param>
+                  </list>
+                  <list>
+                    <param name="value">bar</param>
+                    <param name="label">Bar</param>
+                  </list>
+                  <list>
+                    <param name="value">scatter</param>
+                    <param name="label">scatter</param>
+                  </list>
+
+                </param>
+
+                <module name="Pulldown">
+                  <param name="name">charting.chart.stackMode</param>
+                  <param name="label">Stack mode</param>
+                  <param name="staticOptions">
+                    <list>
+                      <param name="value">default</param>
+                      <param name="label">None</param>
+                    </list>
+                    <list>
+                      <param name="value">stacked</param>
+                      <param name="label">Stacked</param>
+                    </list>
+                    <list>
+                      <param name="value">stacked100</param>
+                      <param name="label">100% Stacked</param>
+                    </list>
+                  </param>
+                  <param name="customBehavior">stackModePulldownForChartView</param>
+                  
+                  <module name="Pulldown">
+                    <param name="name">charting.chart.nullValueMode</param>
+                    <param name="label">Null Values</param>
+                    <param name="staticOptions">
+                      <list>
+                        <param name="value">zero</param>
+                        <param name="label">Treat as zero</param>
+                      </list>
+                      <list>
+                        <param name="value">gaps</param>
+                        <param name="label">Omit</param>
+                      </list>
+                      <list>
+                        <param name="value">connect</param>
+                        <param name="label">Connect</param>
+                      </list>
+                    </param>
+                    <param name="customBehavior">nullValueModePulldown</param>
+
+                    <module name="Pulldown">
+                      <param name="name">charting.chart.showMarkers</param>
+                      <param name="label">Display markers</param>
+                      <param name="staticOptions">
+                        <list>
+                          <param name="value">true</param>
+                          <param name="label">Yes</param>
+                        </list>
+                        <list>
+                          <param name="value">false</param>
+                          <param name="label">No</param>
+                        </list>
+                      </param>
+                      <param name="customBehavior">showMarkersPulldown</param>
+
+                    
+                      <module name="JSChart">
+                        <param name="height">300px</param>
+                        <param name="width">100%</param>
+
+                        <module name="Redirector">
+                          <param name="url">search</param>
+                          <param name="generalSearchTermField">searchBar</param>
+                          <param name="autoDrilldown">True</param>
+                          
+                          <param name="arg.searchBar">$searchBar.rawValue$</param>
+                          
+                          <param name="arg.earliest">$search.timeRange.earliest$</param>
+                          <param name="arg.latest">$search.timeRange.latest$</param>
+
+                          <param name="arg.autoRun">True</param>
+                        </module>
+                      </module>
+                    </module>
+                  </module>
+                </module>
+              </module>
+
+              <module name="NullModule" group="Table">
+                
+                <module name="Count">
+                  <param name="options">
+                    <list>
+                      <param name="text">10</param>
+                      <param name="value">10</param>
+                    </list>
+                    <list>
+                      <param name="text">20</param>
+                      <param name="value">20</param>
+                    </list>
+                    <list>
+                      <param name="text">50</param>
+                      <param name="selected">True</param>
+                      <param name="value">50</param>
+                    </list>
+                  </param>
+
+                  <module name="Pager">
+                    <module name="Table">
+                      
+                      <module name="Redirector">
+                        <param name="url">search</param>
+                        <param name="generalSearchTermField">searchBar</param>
+                        <param name="autoDrilldown">True</param>
+
+                        <param name="arg.searchBar">$searchBar.rawValue$</param>
+                        
+                        <param name="arg.earliest">$search.timeRange.earliest$</param>
+                        <param name="arg.latest">$search.timeRange.latest$</param>
+
+                        <param name="arg.autoRun">True</param>
+                      </module>
+                      
+                    </module>
+                      
+                    
+                  </module>
+                </module>
+              </module>
+
+            </module>
+
+
+          </module>
+        </module>
+
+      </module>
+    </module>
+  </module>
+
+
+</view>
+
+

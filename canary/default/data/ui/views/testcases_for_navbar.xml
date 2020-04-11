@@ -1,0 +1,18 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="search.html">
+  <label>testcases for AppNav</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  
+  
+  <module name="AppNav" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>testcases for AppNav</h1>
+    ]]></param>
+  </module>
+  
+  
+
+</view>

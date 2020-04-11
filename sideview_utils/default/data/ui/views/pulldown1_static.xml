@@ -1,0 +1,107 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - static config</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - static config</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: static pulldown ">
+    <param name="html"><![CDATA[
+      Here we start with a single static pulldown element.  We configure the Pulldown to output the currently-selected option as $$selectedReport$$ for downstream modules.  Then in a Search module downstream, we use that $$selectedReport$$ token in the 'search' param of a Search module.  Sounds complicated.  It's actually pretty simple.  As always while you are reading and playing with the examples here, you should click the link on the right that says "view the XML source for this view",  or load the files manually in a text-editor.  The text will often refer to things that you can only see if you're looking at the XML simultaneously.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">selectedReport</param>
+    <param name="label">Show </param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">Average eps</param>
+        <param name="value">avg(eps)</param>
+      </list>
+      <list>
+        <param name="label">min, max and average</param>
+        <param name="value">min(eps) avg(eps) max(eps)</param>
+      </list>
+    </param>
+
+    <module name="Search">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats $selectedReport$ by series
+      ]]></param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+      
+      <module name="Pager">
+        
+        <module name="Table"></module>
+      
+      </module>
+
+      <!-- this HTML module here is just to show you the token values and the search -->
+      <!-- feel free to delete it -->
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          the report is: <b>$selectedReport$</b><br>
+          the report label is: <b>$selectedReport.label$</b><br>
+          the entire search is: <b>$search$</b>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Use the "name" param to tell the module what name to give it's selected value, when it outputs it for downstream modules.   For example, if you want to refer to the selected value as $$foo$$ deeper in the XML,  set the "name" param to "foo".   
+        </li>
+        <li>
+          To add one or more static values to a Pulldown, use the param "staticOptions".  Open the XML file for this view to see the exact XML syntax involved. (The legacy param "staticFieldsToDisplay" will still work too, if you like using the old name)
+        </li>
+        <li>
+          If you wish to mark one of the staticOptions as the default,  you can add &lt;param name="selected"&gt;True&lt;/param&gt; alongside the given "value" and "name" params for that option.
+        </li>
+        <li>
+          By default, if no action is taken to select any other option, the first static option will be selected by default.   To make one of other options selected by default,  put a &lt;param name="selected"&gt;True&lt;/param&gt;  into that option alongside the "value" and optional "label" param.
+        <li>
+          If you don't really want to start opening XML files alongside your web browser.... well you won't get the full value out of these docs... However just this once, here's what the 'staticOptions' looks like from this view: 
+<pre>
+  &lt;param name="staticOptions">
+    &lt;list&gt;
+      &lt;param name="label"&gt;Average eps&lt;/param&gt;
+      &lt;param name="value"&gt;avg(eps)&lt;/param&gt;
+    &lt;/list&gt;
+    &lt;list&gt;
+      &lt;param name="label"&gt;min, max and average&lt;/param&gt;
+      &lt;param name="value"&gt;min(eps) avg(eps) max(eps)&lt;/param&gt;
+    &lt;/list&gt;
+  &lt;/param&gt;
+</pre>
+        <li> 
+          The Pulldown module actually sends more than just the one $$foo$$ key downstream.  For a full list, <a href="custom_keys">consult this page that lists all $$foo$$ tokens across all modules</a>.  Scroll down tothe TextField/Pulldown section.    In short the main key $$foo$$ is to be used in the search language. For human-readable HTML content and for <b>all url's and Redirector arguments</b> you should always use $$foo.rawValue$$ instead.
+        </li>
+        <li>
+          Note the use of a HTML module to render HTML including the dynamic values of our $foo$ tokens. <a href="html2_dynamic_ui_tokens">Skip to the HTML module docs</a>.
+        </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Pulldown" target="_blank">Pulldown and its params</a>
+        </li>
+
+      </ol>
+    ]]></param>
+  </module>
+
+</view>

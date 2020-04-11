@@ -1,0 +1,142 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="True" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>The ArrayValueSetter module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>The ArrayValueSetter module</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        ArrayValueSetter is definitely not a commonly used module. However it can be useful and here we will show how you can use it in two quite specific use cases. 
+      </p>
+      <p>
+        First,  when you're using a Pulldown in multiselect mode,   once in a while you need the selections of that Pulldown to be formatted into two different kinds of Splunk search language.  Using just the params of the Pulldown module,  you can really only format those selected values into one search expression.   However using ArrayValueSetter along with the $myPulldownName.rawValue$ key,  you can now format them any number of ways
+      </p>
+      <p>
+        The second example, also on this page,  is where you have input from somewhere that you want to split on some  character using a ValueSetter module, and then you want to reconstitute that array value into a set of searchterms separated by something like OR or perhaps NOT,  or ",".   
+      </p>
+      <p>
+        Without further ado,  here are those two examples.
+      </p>
+
+     ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h3>1) Formatting the multiple selections from a multiselect Pulldown in more than one manner</h3>
+    ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <!-- this ValueSetter is just to preselect entries in our Pulldown -->
+    <module name="ValueSetter">
+      <param name="name">selectedSourcetypes</param>
+      <param name="value">audittrail,splunk_web_access,splunk_btool,splunkd</param>
+      <param name="delim">,</param>
+      
+      <module name="Pulldown">
+        <param name="name">selectedSourcetypes</param>
+        <param name="label">Sourcetype</param>
+        <param name="size">4</param>
+        <param name="template">series="$value$"</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+        <param name="staticOptions"></param>
+        <param name="valueField">series</param>
+        
+        <module name="ArrayValueSetter">
+          <param name="name">version1</param>
+          <param name="array">$selectedSourcetypes.rawValue$</param>
+          <param name="template">sourcetype="$value$"</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+
+          <module name="ArrayValueSetter">
+            <param name="name">version2</param>
+            <param name="array">$selectedSourcetypes.rawValue$</param>
+            <param name="template">$value$</param>
+            <param name="separator">+</param>
+            <param name="outerTemplate">fields $value$ </param>
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                version1 = $version1$<br>
+                <br>
+                version2 = $version2$<br>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h3>2) Taking multiline input from a TextField, splitting on commas, then using the resulting array to format a new and useful set of searchterms.  (To change this example to split on newlines, change the delim to "\n")</h3>
+    ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="TextField" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="name">src_ip</param>
+    <param name="label">enter multiple IP or CIDR expressions separated by commas</param>
+    <param name="default">10.0.0.0/8,    192.168.0.1</param>
+    <module name="Button">
+    
+      <module name="ValueSetter">
+        <param name="name">src_ip_array</param>
+        <param name="delim">,</param>
+        <param name="value">$src_ip$</param>
+
+        <module name="ArrayValueSetter">
+          <param name="name">src_ip_search_expression</param>
+          <param name="array">$src_ip_array$</param>
+          <param name="template">src_ip="$value$"</param>
+          <param name="separator">+OR+</param>
+          <param name="outerTemplate">( $value$ )</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <pre>
+src_ip (The TextField output) = <b>$src_ip$</b><br>
+src_ip_array (The ValueSetter's output, which will actually be a JS array) = <b>$src_ip_array$</b><br>
+src_ip_search_expression (The ArrayValueSetter's output) = <b>$src_ip_search_expression$</b>
+</pre>
+
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.ArrayValueSetter" target="_blank">ArrayValueSetter and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+</view>

@@ -1,0 +1,108 @@
+.Pulldown {
+    float:left;
+}
+.mainSearchControls .TextField,
+.mainSearchControls .TimeRangePicker {
+    float:left;
+}
+
+.mainSearchControls .Button {
+    float:left;
+    margin-bottom:10px;
+}
+.mainSearchControls .Button .searchButton {
+    height:22px;
+}
+
+div.mainSearchControls,
+div.Tabs,
+div.resultsHeaderPanel {
+    background-color:#EDEDE7;
+    border-bottom:0px;
+}
+.resultsHeaderPanel .HTML {
+    padding:5px 10px 0px 10px;
+    min-height:29px;
+}
+.resultsHeaderPanel .HTML h3 {  
+    margin:0px ;
+    padding:0px;
+}
+.resultsArea .Tabs {
+    padding-top:0px;
+}
+
+
+.resultsArea .Tabs ul li {
+    margin-top:0px;
+}
+.ZoomLinks {
+    clear:left;
+}
+
+.mainSearchControls,
+.resultsArea {
+    display:none;
+}
+.noSearchEnteredMessage {
+    font-size:1.2em;
+    margin-top:20px;
+}
+
+.splView-sv_search .splSearchControls-inline,
+.splView-chart .splSearchControls-inline {
+    padding-top:8px;
+}
+.splView-sv_search .splSearchControls-inline table.mainSearchControlsTable,
+.splView-search_wpostprocess table.mainSearchControlsTable,
+.splView-chart .splSearchControls-inline table.mainSearchControlsTable {
+    margin-bottom:8px;
+}
+.splView-search .appLogoContainer,
+.splView-chart .appLogoContainer {
+    height:35px;
+}
+.mainSearchControls .SearchControls,
+.graphArea .SearchControls {
+    float:right;
+    padding-top:0px;
+    padding-bottom:0px;
+    margin-bottom:5px;
+}
+
+
+.splView-sv_search .ZoomLinks a.slideRight {
+    float:none;
+}
+.splView-sv_search .ZoomLinks {
+    float:left;
+    margin-top:7px;
+}
+
+
+
+.splView-sv_search .mainSearchControls,
+.splView-chart .mainSearchControls {
+    padding-bottom:0px;
+}
+
+
+
+.postProcessTextField {
+    height:auto !important;
+    float:none !important;
+}
+.splView-search_wpostprocess .graphArea .HTML {
+    padding-top:2px;
+    padding-bottom:0px;
+}
+.splView-search_wpostprocess .graphArea .HTML h3 {
+    padding-bottom:0px;
+    margin-bottom:0px;
+    margin-top:0px;
+    padding-top:2px;
+}
+.splView-search_wpostprocess .graphArea .ZoomLinks {
+    clear:both;
+}
+

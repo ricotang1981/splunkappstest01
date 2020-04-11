@@ -1,0 +1,98 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" stylesheet="custom.css">
+  <label>The Gate Module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader">
+  </module>
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+      <h1>The Gate Module</h1>
+    ]]></param>
+  </module>
+  
+
+
+
+
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Button" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="label">Reset</param>
+
+    <module name="Search" layoutPanel="panel_row4_col1">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_sourcetype_thruput" | rename series as sourcetype | timechart max(eps) by sourcetype
+      ]]></param>
+      <param name="earliest">-4h</param>
+      <param name="latest">now</param>
+      <module name="ValueSetter">
+        <param name="arg.charting.chart.stackMode">stacked</param>
+        <module name="JSChart">
+          <module name="Gate">
+            <param name="to">eventsGate</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row4_col2">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_source_thruput" | rename series as source | chart max(eps) over date_hour by source
+      ]]></param>
+      <param name="earliest">-4h</param>
+      <param name="latest">now</param>
+      <module name="ValueSetter">
+        <param name="arg.charting.chart.stackMode">stacked</param>
+        <module name="JSChart">
+          <module name="Gate">
+            <param name="to">eventsGate</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row4_col3">
+      <param name="search"><![CDATA[
+        index=_internal source="*metrics.log" group="per_index_thruput" | rename series as index | chart max(eps) over index
+      ]]></param>
+      <param name="earliest">-4h</param>
+      <param name="latest">now</param>
+      <module name="Table">
+        <param name="name">click</param>
+        <module name="Gate">
+          <param name="to">eventsGate</param>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  
+  <module name="Gate" layoutPanel="panel_row5_col1">
+    <param name="id">eventsGate</param>
+      <module name="Search">
+      <param name="search"><![CDATA[
+        index=_* OR index=* $click.searchTerms$
+      ]]></param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          $results.count$ events found $search.timeRange.label$
+        ]]></param>
+      </module>
+      <module name="Pager">
+        <param name="entityName">events</param>
+        <module name="EventsViewer"/>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+        
+</view>

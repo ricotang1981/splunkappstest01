@@ -1,0 +1,243 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Datetime module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Datetime - Testcases</h1>
+    ]]></param>
+  </module>
+  
+
+  <module name="DateTime" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="label">Date</param>
+    <param name="name">earliest</param>
+    <param name="showTimepicker">False</param>
+
+    <module name="Search">
+      <param name="search">| stats count | addinfo | rename info_min_time as customEarliest | eval customEarliest=round(customEarliest) | eval customLatest=customEarliest + 86400</param>
+
+      <module name="ResultsValueSetter">
+        <param name="fields">customEarliest, customLatest</param>
+
+        <module name="Search">
+          <param name="search">index=_internal sourcetype=splunkd component=metrics group=per_sourcetype_thruput | head 10000 | stats sum(kb) as kb</param>
+          <param name="earliest">$customEarliest$</param>
+          <param name="latest">$customLatest$</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            Should be - that exact day picked - $search.timeRange.label$<br>
+            $results[0].kb$ KB
+            <hr/>
+            ]]></param>
+          </module>
+
+          
+        </module>
+       </module>
+    </module>
+  </module>
+
+
+  <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="earliest">1509087600</param>
+
+    <module name="DateTime">
+      <param name="label">(Should prepopulate to 10/27/2017)</param>
+      <param name="name">earliest</param>
+      <param name="showTimepicker">False</param>
+
+      <module name="Search">
+        <param name="search">| stats count | addinfo | rename info_min_time as customEarliest | eval customEarliest=round(customEarliest) | eval customLatest=customEarliest + 86400</param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">customEarliest, customLatest</param>
+
+          <module name="Search">
+            <param name="search">index=_internal sourcetype=splunkd component=metrics group=per_sourcetype_thruput | head 10000 | stats sum(kb) as kb</param>
+            <param name="earliest">$customEarliest$</param>
+            <param name="latest">$customLatest$</param>
+
+            <module name="HTML">
+              <param name="customBehavior">highlightPassesAndFails</param>
+              <param name="html"><![CDATA[
+              Should prepopulate from Search to <span class="shouldBe" s:shouldBe="during Friday, October 27, 2017">$search.timeRange.label$</span><br>
+              $results[0].kb$ KB
+              <hr/>
+              ]]></param>
+            </module>
+
+            
+          </module>
+         </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="ValueSetter" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="arg.search.timeRange.earliest">1509087600</param>
+
+    <module name="DateTime">
+      <param name="label">(Should prepopulate to 10/27/2017)</param>
+      <param name="name">earliest</param>
+      <param name="showTimepicker">False</param>
+
+      <module name="Search">
+        <param name="search">| stats count | addinfo | rename info_min_time as customEarliest | eval customEarliest=round(customEarliest) | eval customLatest=customEarliest + 86400</param>
+
+        <module name="ResultsValueSetter">
+          <param name="fields">customEarliest, customLatest</param>
+
+          <module name="Search">
+            <param name="search">index=_internal sourcetype=splunkd component=metrics group=per_sourcetype_thruput | head 10000 | stats sum(kb) as kb</param>
+            <param name="earliest">$customEarliest$</param>
+            <param name="latest">$customLatest$</param>
+
+            <module name="HTML">
+              <param name="customBehavior">highlightPassesAndFails</param>
+              <param name="html"><![CDATA[
+              Should prepopulate from $$search.timeRange.earliest$$ to <span class="shouldBe" s:shouldBe="during Friday, October 27, 2017">$search.timeRange.label$</span><br>
+              $results[0].kb$ KB
+              ]]></param>
+            </module>
+
+            
+          </module>
+         </module>
+      </module>
+    </module>
+  </module>
+
+
+  <module name="DateTime" layoutPanel="panel_row1_col2" autoRun="True">
+    <param name="label">Date</param>
+    <param name="name">earliest</param>
+    <param name="showTimepicker">False</param>
+
+    <module name="ValueSetter">
+      <param name="name">search.timeRange.earliest</param>
+      <param name="value">-24h</param>
+
+      <module name="Search">
+        <param name="search">index=_internal sourcetype=splunkd component=metrics group=per_sourcetype_thruput | head 10000 | timechart count by series</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          DateTime timerange is - $search.timeRange.label$
+          ]]></param>
+        </module>
+
+        <module name="JSChart"/>
+      </module>
+
+    </module>
+  </module>
+ 
+
+
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">| stats count | fields - count | addinfo | rename info_min_time as earliest info_max_time as latest</param>
+
+    <param name="earliest">-14d@d</param>
+    <param name="latest">-1d@d</param>
+
+    <module name="ResultsValueSetter">
+      <param name="fields">earliest, latest</param>
+
+      
+
+      <module name="DateTime" >
+        <param name="label">From</param>
+        <param name="name">earliest</param>
+        <param name="showTimepicker">False</param>
+
+        <module name="DateTime">
+          <param name="label">Thru</param>
+          <param name="name">latest</param>
+          <param name="showTimepicker">False</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            DateTime timerange is - $search.timeRange.label$
+            ]]></param>
+          </module>
+
+        </module>
+      </module>
+    </module> 
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="DateTime">
+      <param name="name">earliest</param>
+      <param name="label">From</param>
+      <param name="float">left</param>
+      <param name="showTimepicker">True</param>
+
+      <module name="DateTime">
+        <param name="name">latest</param>
+        <param name="label">To</param>
+        <param name="float">right</param>
+        <param name="showTimepicker">True</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          
+            <div class="clearFloats"></div>
+            <h2>$search.timeRange.label$</h2>
+            $search.timeRange.earliest$<br>
+            $search.timeRange.latest$<br>
+            <div class="clearFloats"></div>
+          ]]></param>
+        </module>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series=splunkd | stats min(eps) avg(eps) max(eps) </param>
+
+          <module name="ZoomLinks">
+
+            <module name="Timeline">
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  <div class="clearFloats"></div>
+                  <h2>$search.timeRange.label$</h2>
+                  $search.timeRange.earliest$<br>
+                  $search.timeRange.latest$<br>
+                  <div class="clearFloats"></div>
+                ]]></param>
+              </module>
+
+              <module name="Search">
+                <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series=splunkd</param>
+
+                <module name="Pager">
+                  <module name="EventsViewer"/> 
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="TimeRangePicker" layoutPanel="panel_row4_col1" autoRun="true">
+    <param name="searchWhenChanged">True</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+      TimeRangePicker timerange is - $search.timeRange.label$
+      ]]></param>
+    </module>
+  </module>
+
+</view>

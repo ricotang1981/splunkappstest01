@@ -1,0 +1,70 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>embedding static HTML</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Embedding static HTML</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        HTML can replace StaticContentSample, SingleValue, SimpleResultsHeader and much more...
+      </p>
+      <p>
+        First though, let's start with simple static HTML because we'll get to the other stuff in the next two examples.   For putting various static HTML into your views, Splunk ships with a couple modules called ServerSideInclude and StaticContentSample.  
+      </p>
+      <p>
+        ServerSideInclude requires you to create and maintain an HTML file in your app's appserver/static directory and although this is good for some cases it's usually clunkier than what you need.   And StaticContentSample does an OK job, but the name is just too silly for primetime.
+      </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h3>Very simple static HTML example</h3>
+      <p>
+        If you've been following along in the XML source as you read, then you're already very familiar with this module, because every piece of embedded copy in this app has used an HTML module already.
+      </p>
+      <p>
+        But yes, as long as you wrap the HTML in CDATA you can just jam any old HTML in here.  Be careful to close all your div tags.  Unless of course you want to do strange and subversive things to the page.
+      </p>
+      <table class="splTable">
+        <tr>
+          <th>Goodness</th>
+          <th>Gracious</th>
+        </tr>
+        <tr>
+          <td>plain old HTML ftw</td>
+          <td>42</td>
+        </tr>
+      </table>
+
+    ]]></param>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          The next two pages are a LOT more exciting. If you're reading this then you have already tarried too long.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.HTML" target="_blank">HTML and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+</view>

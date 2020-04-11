@@ -1,0 +1,80 @@
+<%!
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+import splunk.search
+%>
+<%page args="module"/>
+<%namespace name="lib" file="//lib.html" import="*"/>
+
+<%
+import splunk
+import logging
+import cherrypy
+import urllib
+from mako.exceptions import RichTraceback
+logger = logging.getLogger('splunk.appserver.templates.lib')
+
+searchParam = False
+# if we have a saved search in the URL
+if (cherrypy.request.params.get("search.name",None)) :
+    name = cherrypy.request.params.get("search.name")
+    app   = APP['id']
+    owner = cherrypy.session['user'].get('name')
+    search = splunk.search.getSavedSearch(name, namespace=app, sessionKey=None, owner=owner, hostPath=None) 
+    
+    # rebuild the context data if the saved search had any.
+    contextParam= {}
+    if ("request.ui_context" in search.properties) :
+        
+        c = search.properties.get("request.ui_context")
+        if (c) :
+            c = c.split("&")
+            for i in range(len(c)):
+                pair  = c[i].split("=")
+                key   = urllib.unquote(pair[0])
+                value = urllib.unquote(pair[1])
+                
+                # supports multiple values as follows: 
+                #  foo1_has_1: "bar"
+                #  foo2_has_2: ["bar","baz"]
+
+                heesAlreadyGotOneYouSee = (key in contextParam)
+                if (heesAlreadyGotOneYouSee) :
+                    if (isinstance(contextParam[key], list)) :
+                        contextParam[key].append(value)
+                    else : 
+                        old = contextParam[key]
+                        contextParam[key] = [old,value]
+                else :
+                    contextParam[key] = value
+
+
+    # rebuild the search data
+    searchParam= {}
+    for key in search.properties:
+        searchParam[key] = search.get(key)
+    
+    # oddly the 'name' is not a property in search.properties. Add it manually.
+    if ("name" not in searchParam) :
+        searchParam["name"] = search.name
+        contextParam["search.name"] = search.name
+
+    if ("request.ui_edit_view" in search.properties) :
+        contextParam["request.ui_edit_view"] = search.properties.get("request.ui_edit_view");
+
+    if ("request.ui_display_view" in search.properties) :
+        contextParam["request.ui_display_view"] = search.properties.get("request.ui_display_view");
+%>
+
+% if searchParam :
+    <%call expr="add_script_block()">
+        Splunk.Module.loadParams.${module['id']}.savedSearch  = ${jsonify(searchParam)};
+        Sideview.savedContextDict = ${jsonify(contextParam)}
+        Splunk.Module.loadParams.${module['id']}.savedContext = Sideview.savedContextDict;
+    </%call>
+% endif
+       
+
+    
+    
+    
+      

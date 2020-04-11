@@ -1,0 +1,70 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+.Tabs {
+    float:none !important;
+    padding:10px 0 0 0;
+    background-color:#eee;
+}
+
+.splVersion-5 .Tabs,
+.splVersion-6 .Tabs {
+    background-color:#E5E5E5;
+}
+.dashboardCell .Tabs {
+    padding-bottom:0px !important;
+}
+.Tabs ul {
+    margin: 0px 0px 0px 10px;
+    padding: 0;
+    list-style: none outside none;
+}
+.Tabs li {
+    margin-bottom:0px;
+    padding-bottom:0px;
+}
+.Tabs ul li {
+    float: left;
+    padding-left: 20px;
+    height: 27px;
+    line-height: 27px;
+    margin-right: 5px;
+    margin-top: 5px;
+    padding:0px;
+    border-color:#fff;
+    -moz-border-radius:8px 8px 0px 0px;
+    border-radius:8px 8px 0px 0px;
+    background-color:#666666;
+}
+
+.Tabs ul li a {
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    min-width: 75px;
+    background:none;
+    padding-left:10px;
+    padding-right:10px;
+    color:#fff;
+}
+
+.Tabs ul li.selected {
+    background-color: #fff;
+}
+
+.Tabs ul li.selected a {
+    color:#333;
+}
+
+
+
+
+.Tabs ul li.disabled {
+    opacity:0.25;
+}
+
+/* remember our silly friend this.resultsContainer? 
+ * well watch him make himself useful..
+ */
+.Tabs div {
+    clear:both;
+}

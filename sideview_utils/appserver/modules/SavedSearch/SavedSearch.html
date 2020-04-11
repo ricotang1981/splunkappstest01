@@ -1,0 +1,127 @@
+<%!
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+
+<%namespace name="lib" file="//lib.html" import="*"/>
+<%namespace name="helpers" file="//view/_helpers.html" import="*"/>
+
+<%
+import splunk
+import logging
+import cherrypy
+import urllib
+logger = logging.getLogger('splunk.appserver.templates.lib')
+
+searchParam = False
+
+
+def getJob(module, savedSearchName, savedSearchObject) : 
+    app = APP["id"]
+    userName = cherrypy.session["user"].get("name")
+    useHistory = module["params"].get("useHistory")
+    
+    try:
+        job = splunk.search.getJobForSavedSearch(
+            savedSearchName,
+            useHistory="True", 
+            namespace=app,
+            owner=userName,
+            search="name=scheduler* OR name=rt_scheduler*"
+        )
+        return job
+
+    # no job could be found
+    except splunk.BadRequest as e:
+        logger.exception(e)
+        if len(e.extendedMessages) > 0:
+            for msg in e.extendedMessages:
+                logger.error(msg['text'])
+    except splunk.ResourceNotFound as e:
+        logger.exception(e)
+        helpers.message("error", "saved search '%s' not found" % savedSearchName)
+
+    return False
+
+
+name =  module["params"].get("name","")
+app   = APP['id']
+owner = cherrypy.session['user'].get('name')
+search = False
+
+try : 
+    search = splunk.search.getSavedSearch(name, namespace=app, sessionKey=None, owner=owner, hostPath=None) 
+except splunk.ResourceNotFound as e:
+    logger.exception(e)
+    helpers.message('error', "saved search '%s' not found" % name)
+
+if (search) : 
+
+    # rebuild the context data if the saved search had any.
+    contextParam= {}
+    if ("request.ui_context" in search.properties) :
+        
+        c = search.properties.get("request.ui_context")
+        if (c) :
+            c = c.split("&")
+            for i in range(len(c)):
+                pair  = c[i].split("=")
+                key   = urllib.unquote(pair[0])
+                value = urllib.unquote(pair[1])
+                
+                # supports multiple values as follows: 
+                #  foo1_has_1: "bar"
+                #  foo2_has_2: ["bar","baz"]
+
+                heesAlreadyGotOneYouSee = (key in contextParam)
+                if (heesAlreadyGotOneYouSee) :
+                    if (isinstance(contextParam[key], dict)) :
+                        contextParam[key].append(value)
+                    else : 
+                        old = contextParam[key]
+                        contextParam[key] = [old,value]
+                else :
+                    contextParam[key] = value
+
+
+    # rebuild the search data
+    searchParam= {}
+    for key in search.properties:
+        searchParam[key] = search.get(key)
+
+    # oddly the 'name' is not a property in search.properties. Add it manually.
+    if ("name" not in searchParam) :
+        searchParam["name"] = search.name
+        contextParam["search.name"] = search.name
+
+    if ("request.ui_edit_view" in search.properties) :
+        contextParam["request.ui_edit_view"] = search.properties.get("request.ui_edit_view");
+
+    if ("request.ui_display_view" in search.properties) :
+        contextParam["request.ui_display_view"] = search.properties.get("request.ui_display_view");
+
+
+    
+    job = getJob(module, name, search)
+
+    if (job and (module["params"].get("useHistory")!="False")) :
+        searchParam["job"] = job.toJsonable(timeFormat='unix')
+        
+    elif (module["params"].get("useHistory")=="True") : 
+        helpers.message("error", "useHistory set to True, but no job was found for %s" % (search.name))
+
+
+    %>
+
+    % if searchParam :
+        <%call expr="add_script_block()">
+            Splunk.Module.loadParams.${module['id']}.savedSearch  = ${jsonify(searchParam)};
+            Splunk.Module.loadParams.${module['id']}.savedContext = ${jsonify(contextParam)};
+        </%call>
+    % endif
+           
+
+        
+    
+    
+      

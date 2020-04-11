@@ -1,0 +1,322 @@
+<!-- Copyright (C) 2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>Release Notes</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+      <h1>Release Notes</h1>
+    ]]></param>
+  </module>
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <h4>Version 1.2.6 (April 10th, 2020)</h4>
+      <ul>
+        <li>Chart module now supports the old Splunk charting keys "charting.axisY.minimumNumber" and "charting.axisY.minimumNumber".  When set, the given value will be used as a minimum or maximum value of the y-axis range.   Notably though if the actual data being charted exceeds the maximum or is less than the minimum, then as implemented here the setting is ignored.</li>
+        <li>Chart module now supports the old Splunk charting key of "charting.axisLabelsX.axisVisibility", which can be set to "hide" to hide the x-axis labels and tick marks entirely.</li>
+
+      </ul>
+
+
+      <h4>Version 1.2.5 (April 3rd, 2020)</h4>
+      <ul>
+        <li>Fixed a bug where if your custom app didn't have an application.js file in appserver/static, that Canary views in the app would not load</li>
+        <li>Improvements to make various arrow icons consistent across  navigation menus and form element controls.</li>
+        <li>Improvement to the Chart module - When you mouse over items on the legend,  for line charts and area charts the little point markers animate up in size to make it clear which series you've moused over.  Mousing away from them they animate back to their default size.</li>
+        <li>Improvement to the Chart module - the 'breathing room' fix made to the logarithmic y-axis in 1.2.3,  now uses 3x instead of 2x.</li>
+        <li>Added some logging so that if you hit a certain kind of fatal mako error in a custom mako template, it logs out the error and stack trace to canary.log  (Side Note:  Canary ships its own copy of mako, so this is not using the Splunk one in any way).</li>
+        <li>Fixed a bug that has been here quite a long time, where clicking the "manage apps" link in the TopNav module's App menu (generally in the top left of pages), would take you to the landing page of the last app in the menu,  instead of to the manage apps page.</li>
+        <li>Improvement to the Chart module - the 'breathing room' fix made to the logarithmic y-axis in 1.2.3,  now uses 3x instead of 2x.</li>
+        <li>Fixed a bug where if you were building Canary views in an app that didn't have the "version" key in the [launcher] stanza, or the "build" key in the [install] stanza, that the views would just render a somewhat indecipherable python stack trace for the KeyError</li>
+      </ul>
+
+      <h4>Version 1.2.4 (April 1st, 2020)</h4>
+      <ul>
+        <li>Fixed a bug in the URLLoader, where saved searches and reports that had been saved in canary views, would fail to load properly when selected from the Reports menu, if they had spaces or non-alphanumeric characters in their names.</li>
+        <li>Fixed a bug that would happen when the user tried to load saved searches and saved reports that were saved from the generic Splunk search pages, but within canary apps.  Formerly the user would end up on the generic "search" or "report" view in the Splunk UI, but with a ?search.name=<name>   querystring argument that was ignored by that page.</li>
+        <li>saved searches saved with no 'displayview' property set at all are now loaded in the 'report' view. This is a change from previous Canary and Sideview Utils conventions where such savedsearch links would take the user to the "search" view.</li>
+        <li>Fixed a bug in the TextField module, where in certain view configurations it might fail to pass on its value to $foo$ tokens downstream.  This defect was always there, however the effects were mostly or entirely masked and mitigated by the erroneous page-loading behavior that was fixed in 1.2 last week (see below).</li>
+        <li>Added a feature to the Pulldown module whereby it can receive directive keys from upstream that tell it to disable/enable particular options, or to show/hide itself entirely.</li>
+        <li>improvements to the Chart module, to make it render smaller Legend items when thera re more than 50, and to make it hide the legend entirely if ever there are more than 100</li>
+      </ul>
+
+      <h4>Version 1.2.3 (March 29th, 2020)</h4>
+      <ul>
+        <li>Improved the behavior of  the Chart module's logarithmic axis, to automatically give some breathing room, by specifying a max y-axis value that is twice as high as the highest point (remember - logarithmic scale, so 2x is only "a bit more").</li>
+        <li>Fixed a bug in the CheckboxPulldown, Checkboxes and Radio modules where if only the postprocess search from upstream changed, these modules would not realize that they needed to reload their options.</li>
+      </ul>
+
+      <h4>Version 1.2.2 (March 24th, 2020)</h4>
+      <ul>
+        <li>Updated the version of the multiselect library used under the hood for the CheckboxPulldown module. The specific bug this resolved was that the module could not support values that contain double-quote characters.</li>
+        <li>The Chart module now supports a "charting.seriesColors" key that can be passed to it, that is a comma-separated list of hexcolors.  It will use the given colors to denote the colors of the various series being charted.</li>
+        <li>Some defaults changed in the Chart module for when only 2, 3, 4 or 5 series values are present. Previously the module had a tendency to put yellows and oranges next to eachother.</li>
+      </ul>
+
+      <h4>Version 1.2.1 (March 22nd 2020)</h4>
+      <ul>
+        <li>Fixed a bug in the Chart module where if you changed the chart type and then moused over elements in the new chart in the right way, you could get the old chart to reappear, and the two charts to even flicker back and forth.</li>
+        <li>on receiving a 401 response from Splunk, Canary views now redirect to the Splunk login page.</li>
+        <li>Turning the Chart modules bezier curve feature way down so the lines are almost straight by default.  Although the default beziers are pretty they can mislead/confuse users in some charts where the curvature displayed was then impossible in the real data.</li>
+      </ul>
+
+      <h4>Version 1.2 (March 21st 2020)</h4>
+      <ul>
+        <li>Cleanup of some significant inefficiencies in how modules were initialized on the page. Pages will load significantly faster now, even though they were already loading significantly faster than Splunk views.</li>
+      </ul>
+
+      <h4>Version 1.1.4 (March 19th 2020)</h4>
+      <ul>
+        <li>CheckboxPulldown and Checkboxes modules now have a selectedCount $foo$ token that they output that represents the number of items currently selected.  This is useful for contextual messages downstream.</li>
+        <li>Chart module now supports the "legend.position" charting key. Values can be left, right, top,bottom.  The default is "right".</li>
+        <li>Fix for a regression in the Table module from a bugfix in 1.1.2 - that fix did indeed keep the "time" field from vanishing in some cases, but at the price of moving it's order in the columns to the end in some other cases.  Fixed and these cases are now covered by additional unit testing.</li>
+      </ul>
+
+
+      <h4>Version 1.1.3 (March 17th 2020)</h4>
+      <ul>
+        <li>Chart module now supports nullValueMode set to "connect".</li>
+        <li>Chart module now wont draw the second level of time axis labels diagonally.  This means multiple charts presented on the same page will have consistent height and more consistent legend layouts.</li>
+        <li>Fixed some longstanding peculiarities in page layout when Chart modules are Multiplex'ed.</li>
+      </ul>
+
+      <h4>Version 1.1.2 (March 16th 2020)</h4>
+      <ul>
+        <li>Added support for a logarithmic y-axis to the Chart module. </li>
+        <li>Added a feature to the Chart module where if it sees the "sideview.xField" and "sideview.yField" keys coming down from upstream, it will use those strings as axis labels on the rendered chart.  Note this is splunk's "x" and "y" convention and that in bar charts specifically, it's opposite of what you might expect.</li>
+        <li>Changed the line chart type in the Chart module to  ignore "stackMode" so it can never be stacked even by accident</li>
+        <li>Shrank the default marker size on the line charts in the Chart module</li>
+        <li>Fixed a problem where if there was an syntax error or a search execution error that the parser could not see during the dispatch, the framework code was not taking appropriate responsibility to fish those errors out of getResults responses and broadcast the error message to the page</li>
+        <li>Fixed a problem in the Table module where sometimes it would fail to output the "time" field.
+        </li>
+        <li>Increased the default height of the CheckboxPulldown module's layer</li>
+      </ul>
+
+      <h4>Version 1.1.1 (February 28th, 2020)</h4>
+      <ul>
+        <li>Licensing change - Canary is now distributed under the Sideview Free Internal Use License.  Therefore 90 day trial license strings, and license strings of any kind no longer have to be entered anywhere before you can use the app.</li>
+        <li>Added links in the topnav to the Job manager and to the Alerts page</li>
+        <li>Fixed a bug where dispatching a new search at a given point in a given view, would not automatically cancel the previous ad-hoc job dispatched at that point.</li>
+        <li>Fixed a bug where pages with very wide modules - eg tables with lots of columns, could force the content partly offscreen right with a scrollbar, and unfortunately also partly offscreen left where it could never be seen.</li>
+        <li>A small improvement eliminating the "services" segment from the top level canary page URL's visible in the user's browser.</li>
+        <li>A change to actually force Canary's restmap.conf endpoints to run in python3</li>
+        <li>A fix to make Canary more forgiving if older customBehavior code is used, that uses older conventions around the onContextChange method. Now it will nag in the console, but provide the old behavior so there's no exception thrown.</li>
+        <li>Corrected some confusion in the warnings when we automigrate the legacy FieldPicker module to the new Fields module.</li>
+        <li>Fixed a bug that disrupted modules downstream from Switcher modules from rendering results if the Switcher was using a job token as its selectedGroup property.</li>
+        <li>If the current user's full name is not set, the top nav now displays their userid instead of nothing.</li>
+        <li>Fixed a bug whereby if you went to the URI for an app that wasn't even installed, it would give you a misleading 404 error about the view, instead of saying the whole app itself didn't seem to be installed.</li>
+        <li>Fixed a one line mistake in the Editor's POST logic if we were running in Python3.</li>
+      </ul>
+
+
+      <h4>Version 1.1 (February 13th, 2020)</h4>
+      <ul>
+        <li>There is now a full featured authoring interface where users and administrators can edit and create new Canary views without reading or writing the XML or yaml of the raw file format. </li>
+        <li>SavedSearch module now fully implemented and usable.  has a 'useHistory' param that can be set to Auto, True or False (Auto being the default).  Auto/True will load jobs created by the scheduler if any exist. It broadcasts errors as appropriate to these cases and will also return any context keys saved into the savedsearch entity's custom request.ui_context property. </li>
+        <li>Fixed a bug where choices and selections that had become invalid would get passed downstream. This was easiest to notice in views that had two or more Pulldowns chained together.</li>
+        <li>Fixed a rare bug in the AppNav module - if a custom app included an  anchor elements in its default.xml navigation file, where the href began with "../../manager/" - this uri would lead to a 404.  Now it works as it did in the old Splunk UI and takes the user to the given manager page when clicked.
+        </li>
+        <li>Fixed a bug in the AppNav module where if an app included <view /> and <saved /> nodes inside its default.xml file, the rendered order of all the links wouldn't necessarily match the expected order from default.xml.</li>
+        <li>Canary now has a slightly different implementation of the FreshMaker UI relative to the Sideview Utils app, although for now it still relies on the old web.conf controller over in Sideview Utils.</li>
+        <li>Fixed a hard-to-hit bug in the Redirector module that would only apply if you had some args in the URL and also other dynamic args specified in arg.* params.</li>
+        <li>the SearchControls module's 'cancel' button will no longer allow the user to cancel jobs that were created by the Splunk scheduler. Instead a message is displayed directing them to Activity-Jobs.</li>
+      </ul>
+
+
+      <h4>Version 1.0.7 (January 16th, 2020)</h4>
+      <ul>
+        <li>Fixed a problem where clicks to Simple XML dashboards, or HTML dashboards like the "search" view wouldn't redirect properly and the user would end up on the wrong URL with a confusing "response has no payload" error.
+        <li>Improvement in error handling to propagate the actual error string out to the user</li>
+        <li>Fixed a bug that only seems to occur on Chrome whereby clicks on the "export" icon would
+          fail and land you on a page saying "Unknown sid".</li>
+      </ul>
+
+      <h4>Version 1.0.6 (January 10th, 2020)</h4>
+      <ul>
+        <li>Fixed a regression in TimePicker introduced only in 1.0.5 (released yesterday), where
+          pages would hang if a TimePicker received a push from upstream modules while it was still
+          waiting for the global page preferences to load.
+        </li>
+      </ul>
+
+      <h4>Version 1.0.5 (January 9th, 2020)</h4>
+      <ul>
+        <li>Fixed a bug in the TimePicker where when the page loaded the first search dispatched would in some specific scenarios ignore the TimePicker's selection entirely and run an all time search instead</li>
+        <li>Fixed a bug in the TimePicker where the absolute time picker aka the "custom time" mode's little calendar widgets wasn't working properly</li>
+        <li>Improvement to the TimePicker so that when you are in "custom time" and you have a calendar widget open, the widget no longer obscures the layers overall 'apply' and 'cancel' buttons.</li>
+        <li>Fixed bugs where the cancel button and some other buttons in the SearchControl modules did not work properly, and where HTML and ProgressIndicator modules would not reset when their jobs were cancelled. </li>
+        <li>the Apps menu in the TopNav module now has a "Manage Apps" link.</li>
+        <li>Fixed a bug in the Table module where if you sorted by a particular column and then went to a different page it would lose the sort order.</li>
+        <li>Fixed a bug where if a view used the the "customJavascript" param (to add other custom JS besides application.js ), the JS wouldn't load.</li>
+      </ul>
+
+      <h4>Version 1.0.4 (December 11th, 2019)</h4>
+      <ul>
+        <li>Error messages such as SPL parse failures are now propagated back to the end user properly. Formerly it would display an error saying "received 200 on a dispatch POST but no sid".</li>
+        <li>Fixed a bug in the Fields module where if you made some changes and then didn't commit them,  the uncommitted list of selected fields would still be there if you closed and reopened the layer.</li>
+        <li>Fixed the 'inspect job' link in the SearchControls module in 8.0 (the URL to the Job Inspector actually changes in 8.0)</li>
+        <li>Improved the Table module to have an optional 'hiddenFields' param.  If set, the given fields will always be prepended to the user's selected field list.  Also when the legacy FieldPicker module is migrated to the Fields module it inserts a "_time" field using this param, as that makes the Fields module match the old FieldPicker's default behavior.</li>
+        <li>Change to the Table module to trim off ".000" from the end of displayed timestamps wherever present. </li>
+        <li>Change to the Table module to not display times in a 24 hour clock, and then redundantly display AM/PM also</li>
+        <li>Fixed a bug in the TimePicker module where the calendar widgets arrow controls to move forward or backward by a month, were invisible.</li>
+        <li>in Pulldown modules that have custom logic to disable/enable particular options, the text label of those options now correctly displays in a greyed out color</li>
+        <li>Canary UI now generates an error message for any users that try to load views in Internet Explorer, to the effect that the browser is not supported.</li>
+      </ul>
+      <h4>Version 1.0.3 (November 22nd, 2019)</h4>
+      <ul>
+        <li>Canary UI now supports the use of the "root_endpoint" key in web.conf.  This key is commonly used in SSO configurations as well as in advanced configurations where more than one splunk instance or more broadly when more than one web application needs to be accessible on a single host and port.
+        <li>Fixed a bug in the Chart module where it could throw an exception particularly on non-previewable jobs and fail to render.
+        <li>Fixed a python3 syntax error in the "checkxml" command that would make the command fail if it encountered a broad range of view misconfigurations.
+      </ul>
+
+      <h4>Version 1.0.2 (November 12th 2019)</h4>
+      <ul>
+        <li>Resolved a major issue where if users were accessing splunkWeb through a local port that differed from the httpport configured in web.conf (as is common when proxies or ssh tunnels are involved), that many requests would fail CSRF validation and receive a 401 error when attempting to dispatch searches or POST to any endpoint.
+        <li>customBehavior code (in custom apps) that tries to create an intance of the legacy Splunk.Search class will now end up with an instance of Canary's SplunkSearch class instead.  For most simple common tasks, this will give equivalent functionality.
+      </ul>
+
+      <h4>Version 1.0.1 (November 5th 2019)</h4>
+      <ul>
+        <li>Fixed a bug where the page title had "None" where the app's name should be.
+        <li>Fixed a bug in the Fields module where if you reordered a field in the selected field list, it would remove the field entirely.
+        <li>Fixed a class of bugs that would happen in some complex configurations, where modules would end up with stale values downstream.
+        <li>Fixed a bug where the Pulldown module was accidentally pushing downstream twice, causing an extra cancel and redispatch and other confusing behavior and slowness.
+        <li>Fixed a bug where the Report module, when given input to create a timechart and when given an explicit bins argument for the primary axis,  it would ignore the bins argument.
+        <li>Fixed a bug in the Pulldown module where customBehaviors were unable to explicitly select the emptystring option within the control.
+        <li>Added postProcess support to the Fields module
+        <li>Resolved a bug in the Fields module where if you had multiple instances on a page, the filter-as-you-type search field would only work for one of them.
+      </ul>
+
+      <h4>Version 1.0 (October 21st 2019)</h4>
+      <ul>
+        <li>logged in user name is now the users full name instead of the username
+        <li>Significant improvements to page rendering speed
+        <li>SearchControls module now has an 'export' button again
+        <li>Fixed a bug where any attempts to save a job would fail and the job would be paused instead
+        <li>Fixed a bug where the search command to check views for canary compatibility would trip up on any views using the new patterns.
+      </ul>
+
+      <h4>Version 0.9 (October 15th 2019)</h4>
+      <ul>
+        <li>There is now an implementation of "ui patterns". Chunks of view config can be saved in appserver/patterns and then loaded
+          into views by referencing just the pattern name.  This allows view developers to avoid repetition and to keep their views compact and easier to maintain.
+        <li>Fixed a bug in the Chart module where the number of points on the primary axis (x-axis) was being cut off at 100.
+        <li>Found and fixed a directory traversal bug in the HTML module's "src" param.
+      </ul>
+
+      <h4>Version 0.8.1 (October 9th 2019)</h4>
+      <ul>
+        <li>Fixed bugs where some modules might fail to remember selection preferences, due to ui-prefs.conf.spec having been mistakenly omitted from README subdirectory
+        <li>Added some logic to enforce a minimum required version number for specific apps like Cisco CDR, so users dont accidentally do compatibility testing with versions that are simply too old.
+      </ul>
+
+      <h4>Version 0.8 (October 7th 2019)</h4>
+      <ul>
+        <li>Look and Feel:
+          <ol>
+            <li>New colors, styling and better alignment for form element modules.
+            <li>Changed the button styles, tab styles and many CSS improvements.
+            <li>form element modules in viewHeader and mainSearchControls layoutPanels are now floated left by default.
+          </ol>
+
+        <li>Bugfixes
+          <ol>
+            <li>Fixed a bug in the Button module where allowAutoSubmit=False was erroneously allowing execution to proceed to the downstream modules during page load.
+            <li>Fixed a bug in Table module around time-based drilldowns.
+            <li>Fixed a bug in Link module where if it was being multiplexed it would end up with two copies of its actual link element.
+            <li>Fixed a bug in the Timeline module where it would not render at all if the job finished extremely quickly.
+            <li>SplunkSearch.dispatch was calling abandonJob which meant the properties that were just set like statusBuckets and requiredFields were being thrown away.
+            <li>Fixed a bug in TextField where if you had rows set to 2 or higher, it would throw an exception if you had no label set.
+            <li>Greatly improved performance of checking many jobs for progress concurrently.
+            <li>TimePicker - Addressed race conditions in the TimePicker module between the ui-prefs.conf loading and the times.conf loading, and timeRanges arriving from upstream config (eg from the URL).
+            <li>TimePicker - Fixed some bugs in the handling of the "label" param.
+            <li>TimePicker - Fixed some defects in the menu code
+            <li>TimePicker - Fixed a bug in how label elements are handled when migrating TimeRangePicker usage to TimePicker,
+          </ol>
+
+        <li>Improved functionality
+          <ol>
+            <li>Updated the Button module so that if allowAutoSubmit is set to False, it hides its downstream modules when the page loads (its cousin the Link module already did this).
+            <li>Fixed an assertion that wasn't firing when we automatically migrate legacy Sideview XML views.  It now errors out with a detailed error message if it encounters a module that has downstream modules, but is of a class that isn't supposed to ever have them.
+            <li>Updated the implementation of our standard app-licensing endpoint,  so that now any admin that has the "edit_license" capability can update or create the app's license string. Formerly the license string could only be updated in the UI by users who had the "admin_all_objects" capability.
+            <li>Fields module, when it's modal layer is open, now has a textfield users can use to filter the list of available fields.
+            <li>AppNav module now has a pair of params to control whether savedsearches and dashboards from other apps should be rendered into this app's saved search menu. These other apps may have decided to export their content to the "system" space but this doesn't mean we want them in our menus here. Both new params default to False, ie they exclude globally exported content from other apps from appearing in the saved report and saved dashboard menus.
+            <li>the Canary UI now picks up the locale from the page URL and reuses that locale for all requests.
+            <li>There is a now a special $foo$ token $shared.tz$, that if you set it to the name of a specific timezone, then any searches dispatched downstream from that point will be dispatched with that tz, overriding the current user's preference.
+            <li>When the browser window is closed (ie navigated away from), any searches dispatched in the view that are not marked as "saved", will be cancelled explicitly.
+            <li>Switcher module is now able to key off of any of the standard job keys that are published to the context.
+          </ol>
+      </ul>
+
+
+      <h4>Version 0.7.2 (September, 2019)</h4>
+      <ul>
+        <li>Migration work around the optional 'customStylesheet' and 'customJavascript' params in the SideviewUtils module itself.  Since this module doesn't exist in Canary, and file or files specified here are now shifted over to customJS and customCSS fields at the view level
+      </ul>
+
+      <h4>Version 0.7.1 (September 14th, 2019)</h4>
+      <ul>
+        <li>Many cosmetic fixes
+        <li>AppNav module tries to make app developers life easier by at least logging an error if the nav explicitly specifies a view that the current user cannot see.
+        <li>some bugs fixed in the code that converted the view config to the yaml format, that had been erroneously putting some redundant keys back in.
+        <li>Chart module has new improved chart colors for all cases where there are fewer than 7 series
+        <li>Fixed a bug in the Fields module where the available fields list would not render if you opened the layer before they were available.
+        <li>Fields module and TimePicker module now save and load the user's preferences from/to ui-prefs.conf
+        <li>Fields module now has a 'reset to default' link that can reset the user's selected fields.
+        <li>Fixed a bug where multiple modules that used menu-ing systems, like AppNav, TopNav and TimePicker, could have their menus open at the same time.
+        <li>Fixed a small bug in the Table module where trying to select the name of a column header would sort by that column.
+        <li>TimePicker module's "Custom" mode now works with URLLoader when latter is in 'keepURLUpdated' mode.
+        <li>Fixing the Chart module's rendering when each timechart bucket is just one second or a few seconds.
+      </ul>
+
+      <h4>Version 0.7 (September 9th, 2019)</h4>
+      <ul>
+
+        <li>Changing default sort order in the Table module to be descending
+        <li>Improvement to the shared menu code so the last-opened submenu doesn't stick open while you're mousing around.
+        <li>Ported over the hideOnEmpty param for CheckboxPulldown which had been added to Sideview Utils in the past year.
+        <li>Improved tooltip positioning and design in the Chart module when there is a split-by field.
+        <li>Fields module now saves and loads the users current selected fields to/from ui-prefs.conf
+        <li>Improvements to how things work as the user clicks around from Simple XML views to HTML dashboard views, to canary views, in the app nav bar
+        <li>Fixed some general module loading logic that was preventing the Link and Button module's "allowAutoSubmit" params from working.
+        <li>Quite a lot of small compatibility fixes for when an admin has set Splunk Enterprise 8.0 to run all apps in python3.
+        <li>Fixed a bug in TimePicker where it would erroneously push changes downstream when you opened the "Custom" modal popup.
+        <li>Fixed a bug in some advanced Multiplexer cases.
+        <li>Fixed file encoding issues with a couple third party libraries that were causing breakage on Python3
+        <li>Removed last usage of the Splunk Python SDK
+        <li>Fixed various problems in the Sideview licensing endpoint when run in Python3.
+      </ul>
+
+
+      <h4>Version 0.6.1 (August 28th, 2019)</h4>
+      <ul>
+        <li>TopNav module now has a link to the Admin section landing page.
+        <li>if apps link to 'search' with a canary uri, the controller now redirects the browser to the standard splunk uri, retaining other params.
+        <li>Deleting the "Messaging" module as it dates from extremely early on in Canary's timeline and the level of configurability that it aimed for now seems silly. All messaging rewritten to be handled by a single message area for now.
+        <li>Fixed bugs in CheckboxPulldown and Multiplexer modules that were causing an extra cycle of job dispatch+cancel in some cases.
+        <li>Fixed a bug in the AppNav module where clicks upon the actual arrow icons would fail to open the submenu.
+        <li>Introduced a mechanism where any module can set a "hideChildrenOnload" param to True, and all downstream modules will load hidden when the page first loads.
+        <li>Fixed a bug where modules in some hierarchies would end up with the incorrect layout panel
+        <li>Fixed bugs in the Pager module around the two-pager configuration (with one above and one below).
+        <li>Fixed a bug where job progress events were not firing on previewable jobs.
+        <li>Chart module modified so on progress events it will update it's existing chart object instead of recreating it from scratch.
+        <li>Search module now can accept $foo$ tokens in its "preview" param, allowing this to be set from form elements or other upstream logic
+        <li>Chart module now, even if the job is not previewable, it will at least update with a little "Loading (12.34%)" text.
+        <li>TimePicker module now gets the times.conf stanzas in correct order (sorted by the order key, numerically)
+        <li>Fixed a bug in CheckboxPulldown where in some cases it would erroneously deselect all of its options on page load (instead of selecting all).
+      </ul>
+
+      <h4>Version 0.6 (August 23rd, 2019)</h4>
+      <ul>
+        <li>First release
+        <li>A list of release notes is not feasible since this is about 7 years of development. <br>
+          Such a list would include thousands of stories added and defects resolved.
+      </ul>
+
+    ]]></param>
+  </module>
+</view>

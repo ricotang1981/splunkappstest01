@@ -1,0 +1,13 @@
+
+<%page args="module" expression_filter="h"/>
+
+
+
+% if (not APP.get("sideviewHasAlreadyIncludedD3",False)): 
+    <%
+    APP["sideviewHasAlreadyIncludedD3"] = True
+    %>
+    <%lib:script_tags files="${['/static/app/sideview_utils/d3/d3.v3.js']}" />
+% endif
+<%lib:script_tags files="${['/static/app/sideview_utils/d3/sankey.js']}" />
+

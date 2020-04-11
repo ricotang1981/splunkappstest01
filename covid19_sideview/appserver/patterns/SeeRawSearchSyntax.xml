@@ -1,0 +1,12 @@
+<module name="Link">
+  <param name="label">&#187; see search syntax</param>
+  <module name="Redirector">
+    <param name="url">search</param>
+    <param name="arg.q">$search$ $postProcess$</param>
+    <param name="arg.earliest">$search.timeRange.earliest$</param>
+    <param name="arg.latest">$search.timeRange.latest$</param>
+    <param name="arg.display.general.type">visualizations</param>
+    <param name="arg.display.page.search.tab">visualizations</param>
+    <param name="target">_blank</param>
+  </module>
+</module>

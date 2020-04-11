@@ -1,0 +1,282 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the FreshMaker</label>
+  
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Sideview Utils - the FreshMaker</h1>
+    ]]></param>
+  </module>
+
+  
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Pulldown">
+      <param name="name">entity</param>
+      <param name="label">1. Choose something to refresh</param>
+      <param name="float">left</param>
+      <param name="staticOptions">
+        <list><param name="value">admin/conf-times</param></list>
+        <list><param name="value">data/ui/manager</param></list>
+        <list><param name="value">data/ui/nav</param></list>
+        <list><param name="value">data/ui/views</param><param name="selected">true</param></list>
+        <list><param name="value">admin/MonitorNoHandle</param></list>
+        <list><param name="value">admin/WinEventLog</param></list>
+        <list><param name="value">admin/WinHostMon</param></list>
+        <list><param name="value">admin/WinNetMon</param></list>
+        <list><param name="value">admin/WinPrintMon</param></list>
+        <list><param name="value">admin/WinRegMon</param></list>
+        <list><param name="value">admin/alert_actions</param></list>
+        <list><param name="value">admin/applicense</param></list>
+        <list><param name="value">admin/clusterconfig</param></list>
+        <list><param name="value">admin/collections-conf</param></list>
+        <list><param name="value">admin/commandsconf</param></list>
+        <list><param name="value">admin/conf-checklist</param></list>
+        <list><param name="value">admin/conf-deploymentclient</param></list>
+        <list><param name="value">admin/conf-inputs</param></list>
+        <list><param name="value">admin/conf-times</param></list>
+        <list><param name="value">admin/conf-wmi</param></list>
+        <list><param name="value">admin/cooked</param></list>
+        <list><param name="value">admin/crl</param></list>
+        <list><param name="value">admin/datamodel-files</param></list>
+        <list><param name="value">admin/datamodelacceleration</param></list>
+        <list><param name="value">admin/datamodeledit</param></list>
+        <list><param name="value">admin/dataset_consolidation_datamodeleditOK</param></list>
+        <list><param name="value">admin/deploymentserver</param></list>
+        <list><param name="value">admin/distsearch-peer</param></list>
+        <list><param name="value">admin/eventtypes</param></list>
+        <list><param name="value">admin/fields</param></list>
+        <list><param name="value">admin/fvtags</param></list>
+        <list><param name="value">admin/ga</param></list>
+        <list><param name="value">admin/http</param></list>
+        <list><param name="value">admin/indexer-discovery-configOK</param></list>
+        <list><param name="value">admin/indexes</param></list>
+        <list><param name="value">admin/limits</param></list>
+        <list><param name="value">admin/livetail</param></list>
+        <list><param name="value">admin/localapps</param></list>
+        <list><param name="value">admin/lookup-table-files</param></list>
+        <list><param name="value">admin/macros</param></list>
+        <list><param name="value">admin/manager</param></list>
+        <list><param name="value">admin/messages-conf</param></list>
+        <list><param name="value">admin/metrics-reload</param></list>
+        <list><param name="value">admin/modalerts</param></list>
+        <list><param name="value">admin/monitor</param></list>
+        <list><param name="value">admin/nav</param></list>
+        <list><param name="value">admin/panels</param></list>
+        <list><param name="value">admin/passwords</param></list>
+        <list><param name="value">admin/pools</param></list>
+        <list><param name="value">admin/powershell</param></list>
+        <list><param name="value">admin/powershell2</param></list>
+        <list><param name="value">admin/proxysettings</param></list>
+        <list><param name="value">admin/quickstart</param></list>
+        <list><param name="value">admin/raw</param></list>
+        <list><param name="value">admin/remote_eventlogs</param></list>
+        <list><param name="value">admin/remote_indexes</param></list>
+        <list><param name="value">admin/remote_monitor</param></list>
+        <list><param name="value">admin/remote_perfmon</param></list>
+        <list><param name="value">admin/remote_raw</param></list>
+        <list><param name="value">admin/remote_script</param></list>
+        <list><param name="value">admin/remote_udp</param></list>
+        <list><param name="value">admin/savedsearch</param></list>
+        <list><param name="value">admin/scheduledviews</param></list>
+        <list><param name="value">admin/script</param></list>
+        <list><param name="value">admin/search-head-bundles</param></list>
+        <list><param name="value">admin/serverclasses</param></list>
+        <list><param name="value">admin/shclusterconfig</param></list>
+        <list><param name="value">admin/sourcetypes</param></list>
+        <list><param name="value">admin/splunktcptoken</param></list>
+        <list><param name="value">admin/ssl</param></list>
+        <list><param name="value">admin/syslog</param></list>
+        <list><param name="value">admin/tcpout-default</param></list>
+        <list><param name="value">admin/tcpout-group</param></list>
+        <list><param name="value">admin/tcpout-server</param></list>
+        <list><param name="value">admin/telemetry</param></list>
+        <list><param name="value">admin/transforms-extract</param></list>
+        <list><param name="value">admin/transforms-lookup</param></list>
+        <list><param name="value">admin/transforms-reload</param></list>
+        <list><param name="value">admin/transforms-statsd</param></list>
+        <list><param name="value">admin/udp</param></list>
+        <list><param name="value">admin/ui-prefs</param></list>
+        <list><param name="value">admin/ui-tour</param></list>
+        <list><param name="value">admin/views</param></list>
+        <list><param name="value">admin/viewstates</param></list>
+        <list><param name="value">admin/visualizations</param></list>
+        <list><param name="value">admin/vix-indexes</param></list>
+        <list><param name="value">admin/vix-providers</param></list>
+        <list><param name="value">admin/win-admon</param></list>
+        <list><param name="value">admin/win-event-log-collectionsOK</param></list>
+        <list><param name="value">admin/win-eventlogs</param></list>
+        <list><param name="value">admin/win-perfmon</param></list>
+        <list><param name="value">admin/win-regmon</param></list>
+        <list><param name="value">admin/win-wmi-collections</param></list>
+        <list><param name="value">admin/workflow-actions</param></list>
+      </param>
+
+      <module name="Button">
+        <param name="allowSoftSubmit">True</param>
+        <param name="label">Refresh</param>
+
+        <module name="ValueSetter">
+          <param name="name">encodedEntity</param>
+          <param name="urlEncodeKeys">entity</param>
+          <param name="value">$entity$</param>
+
+          <module name="HTML" layoutPanel="panel_row1_col2">
+            <param name="html"><![CDATA[
+              <iframe id="theFreshMaker" name="theFreshMaker" src="../../custom/sideview_utils/freshmaker/refresh?entityPath=/$encodedEntity$" height="1000px" width="100%" style="border:0px;"></iframe>
+            ]]></param>
+
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>2. Or if you prefer to click links you can do that.</p>
+      <h3>Most Common</h3>
+      <ul>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fdata%2Fui%2Fnav" target="theFreshMaker">data/ui/nav</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fdata%2Fui%2Fviews" target="theFreshMaker">data/ui/views</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fsavedsearch" target="theFreshMaker">admin/savedsearch</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-checklist" target="theFreshMaker">admin/conf-checklist</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Feventtypes" target="theFreshMaker">admin/eventtypes</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-extract" target="theFreshMaker">admin/transforms-extract</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-lookup" target="theFreshMaker">admin/transforms-lookup</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-reload" target="theFreshMaker">admin/transforms-reload</a></li>
+      </ul>
+
+      <h3>EVERYTHING</h3>
+
+      <ul>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-times" target="theFreshMaker">admin/conf-times</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fdata%2Fui%2Fmanager" target="theFreshMaker">data/ui/manager</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fdata%2Fui%2Fnav" target="theFreshMaker">data/ui/nav</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fdata%2Fui%2Fviews" target="theFreshMaker">data/ui/views</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2FMonitorNoHandle" target="theFreshMaker">admin/MonitorNoHandle</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2FWinEventLog" target="theFreshMaker">admin/WinEventLog</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2FWinHostMon" target="theFreshMaker">admin/WinHostMon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2FWinNetMon" target="theFreshMaker">admin/WinNetMon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2FWinPrintMon" target="theFreshMaker">admin/WinPrintMon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2FWinRegMon" target="theFreshMaker">admin/WinRegMon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Falert_actions" target="theFreshMaker">admin/alert_actions</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fapplicense" target="theFreshMaker">admin/applicense</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fclusterconfig" target="theFreshMaker">admin/clusterconfig</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fcollections-conf" target="theFreshMaker">admin/collections-conf</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fcommandsconf" target="theFreshMaker">admin/commandsconf</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-checklist" target="theFreshMaker">admin/conf-checklist</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-deploymentclient" target="theFreshMaker">admin/conf-deploymentclient</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-inputs" target="theFreshMaker">admin/conf-inputs</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-times" target="theFreshMaker">admin/conf-times</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fconf-wmi" target="theFreshMaker">admin/conf-wmi</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fcooked" target="theFreshMaker">admin/cooked</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fcrl" target="theFreshMaker">admin/crl</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fdatamodel-files" target="theFreshMaker">admin/datamodel-files</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fdatamodelacceleration" target="theFreshMaker">admin/datamodelacceleration</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fdatamodeledit" target="theFreshMaker">admin/datamodeledit</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fdataset_consolidation_datamodeleditOK" target="theFreshMaker">admin/dataset_consolidation_datamodeleditOK</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fdeploymentserver" target="theFreshMaker">admin/deploymentserver</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fdistsearch-peer" target="theFreshMaker">admin/distsearch-peer</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Feventtypes" target="theFreshMaker">admin/eventtypes</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ffields" target="theFreshMaker">admin/fields</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ffvtags" target="theFreshMaker">admin/fvtags</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fga" target="theFreshMaker">admin/ga</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fhttp" target="theFreshMaker">admin/http</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Findexer-discovery-configOK" target="theFreshMaker">admin/indexer-discovery-configOK</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Findexes" target="theFreshMaker">admin/indexes</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Flimits" target="theFreshMaker">admin/limits</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Flivetail" target="theFreshMaker">admin/livetail</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Flocalapps" target="theFreshMaker">admin/localapps</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Flookup-table-files" target="theFreshMaker">admin/lookup-table-files</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fmacros" target="theFreshMaker">admin/macros</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fmanager" target="theFreshMaker">admin/manager</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fmessages-conf" target="theFreshMaker">admin/messages-conf</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fmetrics-reload" target="theFreshMaker">admin/metrics-reload</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fmodalerts" target="theFreshMaker">admin/modalerts</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fmonitor" target="theFreshMaker">admin/monitor</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fnav" target="theFreshMaker">admin/nav</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fpanels" target="theFreshMaker">admin/panels</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fpasswords" target="theFreshMaker">admin/passwords</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fpools" target="theFreshMaker">admin/pools</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fpowershell" target="theFreshMaker">admin/powershell</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fpowershell2" target="theFreshMaker">admin/powershell2</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fproxysettings" target="theFreshMaker">admin/proxysettings</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fquickstart" target="theFreshMaker">admin/quickstart</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fraw" target="theFreshMaker">admin/raw</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_eventlogs" target="theFreshMaker">admin/remote_eventlogs</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_indexes" target="theFreshMaker">admin/remote_indexes</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_monitor" target="theFreshMaker">admin/remote_monitor</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_perfmon" target="theFreshMaker">admin/remote_perfmon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_raw" target="theFreshMaker">admin/remote_raw</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_script" target="theFreshMaker">admin/remote_script</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fremote_udp" target="theFreshMaker">admin/remote_udp</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fsavedsearch" target="theFreshMaker">admin/savedsearch</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fscheduledviews" target="theFreshMaker">admin/scheduledviews</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fscript" target="theFreshMaker">admin/script</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fsearch-head-bundles" target="theFreshMaker">admin/search-head-bundles</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fserverclasses" target="theFreshMaker">admin/serverclasses</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fshclusterconfig" target="theFreshMaker">admin/shclusterconfig</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fsourcetypes" target="theFreshMaker">admin/sourcetypes</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fsplunktcptoken" target="theFreshMaker">admin/splunktcptoken</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fssl" target="theFreshMaker">admin/ssl</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fsyslog" target="theFreshMaker">admin/syslog</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftcpout-default" target="theFreshMaker">admin/tcpout-default</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftcpout-group" target="theFreshMaker">admin/tcpout-group</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftcpout-server" target="theFreshMaker">admin/tcpout-server</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftelemetry" target="theFreshMaker">admin/telemetry</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-extract" target="theFreshMaker">admin/transforms-extract</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-lookup" target="theFreshMaker">admin/transforms-lookup</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-reload" target="theFreshMaker">admin/transforms-reload</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Ftransforms-statsd" target="theFreshMaker">admin/transforms-statsd</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fudp" target="theFreshMaker">admin/udp</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fui-prefs" target="theFreshMaker">admin/ui-prefs</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fui-tour" target="theFreshMaker">admin/ui-tour</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fviews" target="theFreshMaker">admin/views</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fviewstates" target="theFreshMaker">admin/viewstates</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fvisualizations" target="theFreshMaker">admin/visualizations</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fvix-indexes" target="theFreshMaker">admin/vix-indexes</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fvix-providers" target="theFreshMaker">admin/vix-providers</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fwin-admon" target="theFreshMaker">admin/win-admon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fwin-event-log-collectionsOK" target="theFreshMaker">admin/win-event-log-collectionsOK</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fwin-eventlogs" target="theFreshMaker">admin/win-eventlogs</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fwin-perfmon" target="theFreshMaker">admin/win-perfmon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fwin-regmon" target="theFreshMaker">admin/win-regmon</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fwin-wmi-collections" target="theFreshMaker">admin/win-wmi-collections</a></li>
+        <li><a href="../../custom/sideview_utils/freshmaker/refresh?entityPath=%2Fadmin%2Fworkflow-actions" target="theFreshMaker">admin/workflow-actions</a></li>
+
+      </ul>
+
+      
+
+      <h3>The Bump Endpoint</h3>
+      <p>
+        <a href="/en-US/_bump">/en-US/_bump</a>  Click this after changing any files in /appserver/static or /appserver/modules. If you don't click this at such times then Splunk's aggressive cacheing on static files will cause problems in your deployment. Specifically, other users of this Splunk instance may continue to see the out-of-date versions previously cached by their browsers.
+      </p>
+    ]]></param>
+  </module>
+
+    
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Ah. So refreshing.  
+      </p>
+      <p>
+        If you have no idea what you're looking at,  this is a tool to make it slightly easier to refresh Splunk entities while you're developing your splunk apps.   If you don't know what that means, that's ok;  it's probably not your cup of tea anyway.
+      </p>
+
+    ]]></param>
+  </module>
+
+  
+ 
+
+
+</view>

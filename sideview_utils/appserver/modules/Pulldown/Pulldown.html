@@ -1,0 +1,108 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+<%page args="module"/>
+<%
+    def isPopulated(pName, module) :
+        if (pName in module and module[pName]) :
+            return True
+        else:
+            return False
+    def allowsMultipleSelection(module) :
+         if (module.get("size")!= "1"): 
+             return True
+         return False
+%>
+
+<%def name="buildOption(label, value='', selected='False')">\
+    <% 
+    selectedAttr = ('selected="selected"') if selected.lower() == "true" else '' 
+    if (value==None): value=""
+    if (label==None): label=value
+
+    %>
+    <option ${selectedAttr} value="${value | h}">${label | h}</option>
+</%def>\
+
+## if the label begins and ends with $, we do $foo$ substitution, 
+## straight from the URL
+<%def name="buildLabel(module)">\
+    <%
+    staticLabel  = _(module.get('label', ''))
+    # Splunk is silly and gives us, not explicit None values in the config, 
+    # but literally the string "None".  Thanks Obama.
+    if(staticLabel=="None" or staticLabel==None) :
+        staticLabel=""
+    %>
+    % if len(staticLabel)>2 and staticLabel[0]=="$" and staticLabel[-1]=="$" :
+        <label for="${module['id']}_select">${cherrypy.request.params.get(staticLabel[1:-1],"") | h}</label>
+    % elif (len(staticLabel)>0) :
+        <label for="${module['id']}_select">${staticLabel|h}</label>
+    % endif
+</%def>\
+
+
+
+##ie doesnt do a good job with vertical-align unless 
+##we put it on both the select and the label.
+% if allowsMultipleSelection(module): 
+    <div class="multipleSelect">
+% endif
+<div class="progressTop"></div>
+        <%self:buildLabel module="${module}" />
+        <select id="${module['id']}_select"
+% if allowsMultipleSelection(module): 
+            multiple="multiple" size="${module['size']|h}"
+% endif 
+% if module.get("width",False): 
+            style="width:${module['width']|h}" 
+% endif
+        >
+
+
+<%
+if "staticOptions" not in module and "staticFieldsToDisplay" not in module and not (allowsMultipleSelection(module)) :
+    module["staticFieldsToDisplay"] = [{"label":"All", "value":"*"}]
+%>
+
+
+% if (isPopulated("staticOptions",module)):
+    % for field in module['staticOptions']:
+        % if field and field.get('value', False)!=False :
+    <%self:buildOption label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" />
+        % else :
+    <option> Pulldown.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</option>
+        % endif
+    % endfor
+% elif (isPopulated("staticFieldsToDisplay", module)):
+    % for field in module['staticFieldsToDisplay']:
+        % if field and field.get('value', False)!=False :
+    <%self:buildOption label="${field.get('label')}" value="${field.get('value','')}" selected="${field.get('selected', 'False')}" />
+        % else :
+    <option> Pulldown.html - VIEW CONFIGURATION ERROR - you have specified a &lt;list&gt; element with no &lt;value&gt; element</option>
+        % endif
+    % endfor
+% endif
+
+%if (isPopulated("searchFieldsToDisplay",module) or isPopulated("valueField",module)):
+    <option class="dynamic" value=""
+    % if not allowsMultipleSelection(module): 
+        selected="selected" 
+    % endif
+    >${_("Loading...")|h}</option>
+% endif
+
+</select>
+
+% if allowsMultipleSelection(module): 
+    </div>
+% endif
+
+% if (module.get("mode","standard") == "advanced" and (not APP.get("chosenAlreadyIncluded",False))): 
+    <%
+    APP["chosenAlreadyIncluded"] = True
+    %>
+    <script type="text/javascript" src="../../static/app/sideview_utils/chosen/chosen.jquery.js"></script>
+    <link rel="stylesheet" href="../../static/app/sideview_utils/chosen/chosen.css" />
+% endif
+

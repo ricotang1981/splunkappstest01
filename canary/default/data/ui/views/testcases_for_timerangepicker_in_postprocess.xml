@@ -1,0 +1,80 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>Testcases for TimeRangePicker in postprocess</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for TimeRangePicker in postprocess</h1>
+    ]]></param>
+  </module>
+
+
+      
+  <module name="Pulldown" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="staticOptions">
+      <list>
+        <param name="value">-1h@h,now</param>
+        <param name="label">Last hour</param>
+      </list>
+      <list>
+        <param name="value">-2h@h,now</param>
+        <param name="label">Last two hours</param>
+      </list>
+      <list>
+        <param name="value">-12h@h,-6h@h</param>
+        <param name="label">Between 6 and 12 hours ago</param>
+      </list>
+    </param>
+    <param name="name">selectedTimeRange</param>
+    <param name="label">TimeRange</param>
+
+    <!--  ValueSetter splits our Pulldown values into our two timerange pieces -->
+    <module name="ValueSetter">
+      <param name="delim">,</param>
+      <param name="name">multivaluedKey</param>
+      <param name="value">$selectedTimeRange$</param>
+      
+      <!--  This matches 0 events and returns fast but gives us a single result row -->
+      <!--  with an "earliest" field and a "latest" field that are the absolute -->
+      <!-- equivalent of our timerange, even if the timerange is relative -->
+      <module name="Search">
+        <param name="search"><![CDATA[
+          foo NOT foo | stats count | addinfo | rename info_min_time as earliest info_max_time as latest
+        ]]></param>
+        <param name="earliest">$multivaluedKey[0]$</param>
+        <param name="latest">$multivaluedKey[1]$</param>
+        
+        <!-- RVS pulls down earliest and latest and makes them into $foo$ tokens -->
+        <module name="ResultsValueSetter">
+          <param name="fields">earliest,latest</param>
+
+          <module name="SavedSearch">
+            <param name="name">your_saved_search_here</param>
+            
+            <!-- Finally, we just filter the savedsearch rows manually on _time -->
+            <module name="PostProcess">
+              <param name="search"><![CDATA[
+                search _time>$earliest$ _time<$latest$
+              ]]></param>
+
+              <module name="Pager">
+                <module name="Table" />
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>    
+    </module>
+  </module>
+
+        
+          
+
+
+
+</view>

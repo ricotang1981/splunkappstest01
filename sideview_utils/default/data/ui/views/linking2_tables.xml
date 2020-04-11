@@ -1,0 +1,200 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>linking to other views from tables</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Linking - Tables</h1>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="one pulldown, one table">
+    <param name="html"><![CDATA[
+      <p>
+        Here we exchange the second pulldown for a standard 
+        Pager+SimpleResultsTable pattern.
+      </p>
+      <p>
+        When you use Sideview Utils, new keys become available downstream from Table (and SimpleResultsTable  and JSChart and FlashChart), that make drilldowns and link behaviors much easier to implement.
+      <p>
+        Click a row and read what appears on the right side.  Note that the Splunk SimpleResultsTable is patched by Sideview Utils to have the same tokens, although they are all prefixed with "click.*" instead of "row.*"
+      </p>
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">group</param>
+    <param name="label">Type</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">Sourcetype</param>
+        <param name="value">per_sourcetype_thruput</param>
+      </list>
+      <list>
+        <param name="label">Source</param>
+        <param name="value">per_source_thruput</param>
+      </list>
+      <list>
+        <param name="label">Host</param>
+        <param name="value">per_host_thruput</param>
+      </list>
+      <list>
+        <param name="label">Index</param>
+        <param name="value">per_index_thruput</param>
+      </list>
+    </param>
+
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" metrics group="$group$" | top series limit=100 showperc=f</param>
+      <param name="earliest">-2h</param>
+      
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        <param name="entityName">results</param>
+
+        <module name="Table">
+
+          <module name="HTML" layoutPanel="panel_row2_col2">
+            <param name="html"><![CDATA[
+              <b>Legacy values</b><br>
+              row.name   = $row.name$<br>
+              row.value  = $row.value$<br>
+              row.name2  = $row.name2$<br>
+              row.value2 = $row.value2$<br>
+
+              <br>
+              <b>Newer values from Sideview customization</b><br>
+              row.fields.series = $row.fields.series$<br>
+              row.fields.count  = $row.fields.count$<br>
+              <br>
+              <b>And for when you just need numbered values</b><br>
+              row.cell0.name  = $row.cell0.name$<br>
+              row.cell0.value = $row.cell0.value$<br>
+              row.cell1.name  = $row.cell1.name$<br>
+              row.cell1.value = $row.cell1.value$<br>
+              <br>
+              <br>
+              <b>For when you are trying to build a larger search expression and so it makes sense to use the automatic "searchTerms" value:</b><br>
+              row.searchTerms = $row.searchTerms$<br>
+              <br>
+              <br>
+              <b>If you like the look of the $$searchTerms$$ key, but you want to treat the main group-by terms differently from the split-by terms.</b><br>
+              row.xTerm = $row.xTerm$<br>
+              row.splitByTerms = $row.splitByTerms$<br>
+              <br>
+              NOTE: splitByTerms will be accurate even when the click fell on NULL or OTHER. In these cases they will be somewhat large boolean expressions wrapped in parens. 
+
+              
+              
+              
+              
+              
+              ]]></param>
+          </module>
+
+          
+          <module name="Button">  
+            <param name="label">OK, redirect me</param>
+            <module name="Redirector">
+              <param name="url">target_view3</param>
+              <param name="arg.group">$group$</param>
+              <param name="arg.series">$row.fields.series$</param>
+              <param name="arg.title">Showing report for $group.label$=$row.fields.series$</param>
+              <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+            </module>
+          </module>
+          
+        </module>
+        <module name="Pager">
+          <param name="entityName">results</param>
+        </module>
+
+      </module>
+
+
+
+    </module>
+  </module>
+  <!-- EXAMPLE END  -->
+
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Pulldown" layoutPanel="panel_row3_col1" group="Same example, but without the Button" autoRun="True">
+    <param name="name">group</param>
+    <param name="label">Type</param>
+    <param name="staticOptions">
+      <list>
+        <param name="label">Sourcetype</param>
+        <param name="value">per_sourcetype_thruput</param>
+      </list>
+      <list>
+        <param name="label">Source</param>
+        <param name="value">per_source_thruput</param>
+      </list>
+      <list>
+        <param name="label">Host</param>
+        <param name="value">per_host_thruput</param>
+      </list>
+      <list>
+        <param name="label">Index</param>
+        <param name="value">per_index_thruput</param>
+      </list>
+    </param>
+
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" metrics group="$group$" | top series limit=100 showperc=f</param>
+      <param name="earliest">-2h</param>
+      
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        <param name="entityName">results</param>
+
+        <module name="Table">
+          
+          <module name="Redirector">
+            <param name="url">target_view3</param>
+            <param name="arg.group">$group$</param>
+            <param name="arg.series">$row.fields.series$</param>
+            <param name="arg.title">Showing report for $group.label$=$row.fields.series$</param>
+            <param name="arg.report">timechart min(eps) avg(eps) max(eps)</param>
+          </module>
+        </module>
+
+        <module name="Pager">
+          <param name="entityName">results</param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Assuming you are familiar with the extensive drilldown examples in the "UI Examples for 4.1" app, this will also seem quite familiar.   These improvements should dovetail in quite well with what you learned in that app.  
+        </li>
+        <li>
+          If on the other hand you are not familiar with the drilldown examples from that app, then I suggest you go spend some time reading them now.   (App > Launcher > Browse more apps > UI Examples for 4.1 > Install,   and then follow the links to restart)
+        </li>
+        <li>
+          We inserted a Button module in between the SimpleResultsTable and the Redirector module.  YOU WOULD NOT NORMALLY DO THIS.  We only did it here because it allows us to break the click and the redirection down into two separate steps, and that's how you're able to see the dynamic values printed out above.  When you use this configuration just take out that Button module, which will leave the Redirector module nested right inside the SimpleResultsTable.
+        </li>
+        <li>If this page leaves you wanting more... Specifically if you're looking for a way to have a click on one cell go do one thing, and a click on the next tablecell do something else, know these two things.  1) the Sideview Table module dooesn't support the sometimes crazy "click.name2" thing that the legacy SimpleResultsTable module did 2) However if you skip way ahead to the <a href="table5_embedding">Table Embedding docs</a>,  you can "embed" HTML or Link+Redirector modules into your cells and this might achieve your goal. 
+        
+
+        <li>To back up and see a high level list of $foo$ tokens available with different modules and in different scenarios, check out this page - <a href="custom_keys">An overview of all the $foo$ tokens</a>
+      </ol>
+      ]]></param>
+  </module>
+</view>

@@ -1,0 +1,156 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Report Module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Report</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Report is an invisible module.  You use it in conjunction with one or more other interactive modules that the user uses to choose fields and statistical operations.  The Report module combines these arguments and determines the correct "timechart" or "chart" command to run.  The module also provides some other useful information to other Sideview modules downstream.  
+      </p>
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" `get_fields_for_report_pulldowns`</param>
+    <param name="earliest">-30min</param>
+    <param name="latest">now</param>
+
+    <module name="CustomBehavior">
+      <param name="requiresDispatch">True</param>
+    </module>
+
+    <module name="Pulldown">
+      <param name="name">stat</param>
+      <param name="label">2) Chart the</param>
+      <param name="clear">left</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">distinct count of</param>
+          <param name="value">dc</param>
+        </list>
+        <list>
+          <param name="label">average</param>
+          <param name="value">avg</param>
+        </list>
+        <list>
+          <param name="label">max</param>
+          <param name="value">max</param>
+        </list>
+        <list>
+          <param name="label">min</param>
+          <param name="value">min</param>
+        </list>
+        <list>
+          <param name="label">sum</param>
+          <param name="value">sum</param>
+        </list>
+        <list>
+          <param name="label">95th percentile</param>
+          <param name="value">perc95</param>
+        </list>
+        <list>
+          <param name="label">5th percentile</param>
+          <param name="value">perc5</param>
+        </list>
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">yField</param>
+        <param name="valueField">field</param>
+        <param name="labelField">label</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">events</param>
+            <param name="value"></param>
+          </list>
+        </param>
+
+        <module name="Pulldown">
+          <param name="name">xField</param>
+          <param name="valueField">field</param>
+          <param name="labelField">label</param>
+          <param name="postProcess">eval label=if(field=="divider",label,"over " + label)</param>
+          <param name="staticOptions">
+            <list>
+              <param name="label">over time</param>
+              <param name="value">_time</param>
+            </list>
+          </param>
+
+          <module name="Pulldown">
+            <param name="name">zField</param>
+            <param name="label">split by</param>
+            <param name="valueField">field</param>
+            <param name="labelField">label</param>
+            <param name="staticOptions">
+              <list>
+                <param name="label">(none)</param>
+                <param name="value"></param>
+              </list>
+            </param>
+            
+            <module name="Button">
+              <param name="allowSoftSubmit">True</param>
+
+              <module name="Report">
+                <param name="name">report</param>
+                <param name="stat">$stat$</param>
+                <param name="xField">$xField$</param>
+                <param name="yField">$yField$</param>
+                <param name="zField">$zField$</param>
+
+                <module name="Search" layoutPanel="panel_row3_col1">
+                  <param name="search">index=_internal source="*metrics.log" | $report$</param>
+
+                  <module name="HTML">
+                    <param name="html"><![CDATA[
+                    our search : <b>$search$</b>
+                    ]]></param>
+                  </module>
+
+                  <module name="ProgressIndicator" />
+
+                  <module name="Pager">
+
+                    <module name="Table" />
+                  </module>
+                </module>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          The Report module has four required params : name, xField, yField and zField.  As with other Sideview modules, the 'name' param determines the $$foo$$ key by which this module's output will be available to other modules downstream. Generally, name is set to "report", meaning that the module's output is referenced downstream as $$report$$.    
+        </li>
+        <li>
+          The xField, yField and zField params will perform $$foo$$ substitution, so that you can populate these params wholly or in part using dynamic values from upstream <a href="pulldown1_static">Pulldowns</a>, and <a href="text_field1">TextFields</a>, etc.
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Report" target="_blank">Report and its params</a>.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+</view>

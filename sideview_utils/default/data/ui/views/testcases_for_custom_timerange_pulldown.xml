@@ -1,0 +1,204 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for a custom timeRange pulldown</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for a custom timeRange pulldown</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="viewHeader" autoRun="True">
+
+
+    <module name="Pulldown" layoutPanel="panel_row1_col1">
+      <param name="name">customTimeString</param>
+      <param name="float">left</param>
+      <param name="label">Time Range</param>
+      <param name="staticFieldsToDisplay">
+        <list>
+          <param name="label">Last 7 days</param>
+          <param name="value">-7d@d;@d</param>
+        </list>
+        <list>
+          <param name="label">Last 30 days</param>
+          <param name="value">-30d@d;@d</param>
+        </list>
+        <list>
+          <param name="label">Last 3 months</param>
+          <param name="selected">True</param>
+          <param name="value">-3mon@mon;@d</param>
+        </list>
+      </param>
+      <module name="ValueSetter">
+        <param name="delim">;</param>
+        <param name="name">customTime</param>
+        <param name="value">$customTimeString$</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+      customTime: $customTime$<br />
+      customTimeString: $customTimeString$<br />
+      customTime array0: $customTime[0]$<br />
+      customTime array1: $customTime[1]$<br />
+
+          ]]></param>
+        </module>
+      </module>
+     
+    </module>
+    <module name="Pulldown" layoutPanel="panel_row1_col1" group="custom earliest, latest unset">
+      <param name="name">customEarliest</param>
+      <param name="label">set earliest to</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">24 hours</param>
+          <param name="value">-24h@h</param>
+        </list>
+
+        <list>
+          <param name="label">12 hours</param>
+          <param name="value">-12h@h</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats sum(kb) as totalKB by series | sort - totalKB</param>
+        <param name="earliest">$customEarliest$</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          <div style="width:50%;float:left;margin-right:20px;">
+            <h4>Search keys</h4>
+            earliest: $search.timeRange.earliest$<br>
+            latest: $search.timeRange.latest$<br>
+            label: $search.timeRange.label$
+          </div>
+          <h4>Results keys</h4>
+          earliest: $results.timeRange.earliest$<br>
+          latest: $results.timeRange.latest$<br>
+          label: $results.timeRange.label$<br>
+          ]]></param>
+        </module>
+
+        <module name="Pager">
+          <param name="count">5</param>
+          <module name="SimpleResultsTable">
+            <param name="displayRowNumbers">False</param>
+            <param name="entityName">results</param>
+          </module>
+        </module>
+      </module>
+        
+
+    </module>
+
+
+
+    <module name="Pulldown" layoutPanel="panel_row1_col2" group="custom earliest, latest hardcoded">
+      <param name="name">customEarliest</param>
+      <param name="label">set earliest to</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">24 hours</param>
+          <param name="value">-24h@h</param>
+        </list>
+
+        <list>
+          <param name="label">12 hours</param>
+          <param name="value">-12h@h</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats sum(kb) as totalKB by series | sort - totalKB</param>
+        <param name="earliest">$customEarliest$</param>
+        <param name="latest">-6h@h</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          <div style="width:50%;float:left;margin-right:20px;">
+            <h4>Search keys</h4>
+            earliest: $search.timeRange.earliest$<br>
+            latest: $search.timeRange.latest$<br>
+            label: $search.timeRange.label$
+          </div>
+          <h4>Results keys</h4>
+          earliest: $results.timeRange.earliest$<br>
+          latest: $results.timeRange.latest$<br>
+          label: $results.timeRange.label$<br>
+          ]]></param>
+        </module>
+
+        <module name="Pager">
+          <param name="count">5</param>
+          <module name="SimpleResultsTable">
+            <param name="displayRowNumbers">False</param>
+            <param name="entityName">results</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Pulldown" layoutPanel="panel_row2_col1" group="custom earliest and custom latest, with valueSetter">
+      <param name="name">customRange</param>
+      <param name="label">set earliest to</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">Today</param>
+          <param name="value">@d,+1d@d</param>
+        </list>
+        <list>
+          <param name="label">Yesterday</param>
+          <param name="value">-1d@d,@d</param>
+        </list>
+      </param>
+
+      <module name="ValueSetter">
+        <param name="name">multiValueTimeRange</param>
+        <param name="delim">,</param>
+        <param name="value">$customRange$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats sum(kb) as totalKB by series | sort - totalKB</param>
+          <param name="earliest">$multiValueTimeRange[0]$</param>
+          <param name="latest">$multiValueTimeRange[1]$</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            <div style="width:50%;float:left;margin-right:20px;">
+              <h4>Search keys</h4>
+              earliest: $search.timeRange.earliest$<br>
+              latest: $search.timeRange.latest$<br>
+              label: $search.timeRange.label$
+            </div>
+            <h4>Results keys</h4>
+            earliest: $results.timeRange.earliest$<br>
+            latest: $results.timeRange.latest$<br>
+            label: $results.timeRange.label$<br>
+            ]]></param>
+          </module>
+
+          <module name="Pager">
+            <param name="count">5</param>
+            <module name="SimpleResultsTable">
+              <param name="displayRowNumbers">False</param>
+              <param name="entityName">results</param>
+            </module>
+          </module>
+        </module>
+      </module>
+        
+
+    </module>
+
+
+  </module>
+
+
+</view>

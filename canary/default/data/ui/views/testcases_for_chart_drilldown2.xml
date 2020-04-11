@@ -1,0 +1,112 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>Testcases for Chart - drilldown 2</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Chart - drilldown 2</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="Search" layoutPanel="panel_row1_col1" group="JSChart + timechart">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | table _time | streamstats count | eval type=if(count%10==0,"dont click me","ClickMe") | timechart count by type
+      ]]></param>
+      
+      <module name="ValueSetter">
+        <param name="arg.charting.chart.stackMode">stacked</param>
+        <module name="JSChart">
+        
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+              $$chart.splitByValue$$ = <span class="shouldBe" s:shouldBe="ClickMe">$chart.splitByValue$</span><br>
+              $$chart.searchTerms$$ = <span class="shouldBe" s:shouldBe="type=&quot;ClickMe&quot;">$chart.searchTerms$</span><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="JSChart + bar chart">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | table _time | streamstats count | eval type=if(count%10==0,"dont click me","ClickMe") | stats count by type
+      ]]></param>
+
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">bar</param>
+        <param name="arg.charting.chart.stackMode">stacked</param>
+        <module name="JSChart">
+          <param name="height">120px</param>
+        
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+              $$chart.xValue = <span class="shouldBe" s:shouldBe="ClickMe">$chart.xValue$</span><br>
+              $$chart.searchTerms$$ = <span class="shouldBe" s:shouldBe="type=&quot;ClickMe&quot;">$chart.searchTerms$</span><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row3_col1" group="JSChart + bar chart w/splitby">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | table _time | streamstats count | eval type=if(count%10==0,"dont click me","ClickMe") | eval type2=if(count%9==0,"not me","ME!") | chart count over type by type2
+      ]]></param>
+   
+
+      <module name="ValueSetter">
+        <param name="arg.charting.chart">bar</param>
+        <param name="arg.charting.chart.stackMode">stacked</param>
+        <module name="JSChart">
+          <param name="height">120px</param>
+
+          <module name="HTML">
+            <param name="customBehavior">highlightPassesAndFails</param>
+            <param name="html"><![CDATA[
+              $$chart.xValue = <span class="shouldBe" s:shouldBe="ClickMe">$chart.xValue$</span><br>
+              $$chart.splitByValue$$  = <span class="shouldBe" s:shouldBe="ME!">$chart.splitByValue$</span><br>
+              $$chart.searchTerms$$ = <span class="shouldBe" s:shouldBe="type2=&quot;ME!&quot; type=&quot;ClickMe&quot;">$chart.searchTerms$</span><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row4_col1" group="JSChart + pie  chart">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | table _time | streamstats count | eval type=if(count%10==0,"dont click me","ClickMe") | stats count by type
+      ]]></param>
+      <module name="Button">
+
+        <module name="ValueSetter">
+          <param name="arg.charting.chart">pie</param>
+          <param name="arg.charting.chart.stackMode">stacked</param>
+          <module name="JSChart">
+          
+            <module name="HTML">
+              <param name="customBehavior">highlightPassesAndFails</param>
+              <param name="html"><![CDATA[
+                $$chart.value$$ = <span class="shouldBe" s:shouldBe="ClickMe">$chart.value$</span><br>
+                $$chart.rawValue$$ = <span class="shouldBe" s:shouldBe="ClickMe">$chart.rawValue$</span><br>
+                $$chart.searchTerms$$ = <span class="shouldBe" s:shouldBe="type=&quot;ClickMe&quot;">$chart.searchTerms$
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+  </module>
+</view>

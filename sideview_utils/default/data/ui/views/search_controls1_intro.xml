@@ -1,0 +1,113 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="True" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the SearchControls module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>SearchControls</h1>
+    ]]></param>
+  </module>
+  
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      The SearchControls module allows you to give your users control over the job, control over the search results, and the ability to save searches and create dashboards.    You can pick and choose exactly which of these actions you want to have on the page, and you can control the exact ordering of the top-level buttons as well as the ordering of the submenu items. 
+      ]]></param>
+  </module>
+
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1">
+    <param name="search"><![CDATA[
+      index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) by series
+    ]]></param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        default configuration - showing all options, with controls rendered in default order.
+        ]]></param>
+    </module>
+
+    <module name="SearchControls"></module>
+        
+    <module name="Pager">
+      
+      <module name="Table"></module>
+    
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row3_col1">
+    <param name="search"><![CDATA[
+      index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) by series
+    ]]></param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        example configuration - showing only certain options, with a few changes to item order.
+        ]]></param>
+    </module>
+
+    <module name="SearchControls">
+      
+      <!-- OPTIONAL - we specify that we only show the jobControls,  the export button, and the 'create' menu -->
+      <param name="sections">jobControls export createMenu</param>
+      
+      <!-- OPTIONAL - here we specify that we only want the pause and cancel buttons for the jobControls -->
+      <param name="jobControls">pause cancel</param>
+      
+      <!-- OPTIONAL - here we specify that we only want the create Alert option under 'create' -->
+      <param name="createMenu">createAlert</param>
+
+    </module>
+        
+    <module name="Pager">
+      
+      <module name="Table"></module>
+    
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+  
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          The optional "sections" param allows you to specify which buttons and menus you want, and in which order.
+        </li>
+        <li>
+          The optional 'createMenu', 'saveMenu',  and 'jobControls' params allow you to specify the sub-options and ordering inside those controls.
+        </li>
+        <li>
+          Note that within the 'jobControls' item,   the play and the pause button occupy the same space.  the button will automatically be changed from play to pause, and within the 'jobControls' param you should refer to it as 'pause' despite the fact that half the time it becomes a 'play' button.
+        </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.SearchControls" target="_blank">SearchControls and its params</a>
+        </li>
+
+      </ol>
+    ]]></param>
+  </module>
+
+
+
+
+
+</view>

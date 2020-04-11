@@ -1,0 +1,154 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Overview</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Using Customizable Sideview Interfaces - Intro</h1>
+    ]]></param>
+  </module>
+  
+
+  
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+
+      <h3>Go Crazy</h3>
+      <p>
+          Sideview Utils also provides some off-the-shelf interfaces for search and reporting.  Subject to the <a href="/static/app/sideview_utils/Sideview_Free_Internal_Use_Agreement_2013.07.10.pdf">appropriate licensing restrictions</a> (<a href="https://sideviewapps.com/apps/sideview-utils/licensing-faq">see licensing faq</a>) you can take these interfaces and customize them for your own purposes.
+      </p>
+      
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      
+      <h3>Interfaces</h3>
+      <ol>
+        <li>
+          <b><a href="user_activity" target="_blank">Search</a></b>
+          <p> 
+            The User Activity view allows Splunk admins to quickly see and analyze which users are running expensive searches, and in which apps and dashboards. 
+          </p>
+        </li>
+
+
+        <li>
+          <b><a href="sv_search" target="_blank">Search</a></b>
+          <p> 
+            The Sideview Search interface looks a lot like the default Search Interface, except
+          </p>
+          <ol type="a">
+            <li>It is a lot more compact so that the first event is much higher on the screen</li>
+            <li>You can click and click drag on the compact "Timeline" module, or click its axis labels. </li>
+            <li>It uses the Sideview "Events" module that implements Endless Scrolling. This means you never have to click a link to change the 'page'. Simply scroll up and down.</li>
+            <li>The sidebar is closed by default. </li>
+          </ol>
+          Also note - the "chart" mode will only work if you're actually using explicit transforming search commands in your searches.
+        </li>
+
+        <li>
+          <b><a href="advanced_search?autoRun=True&searchBar=index%3D_internal group%3Dper_sourcetype_thruput&earliest=-60m%40m&latest=now" target="_blank">Advanced Search</a></b>
+          <p>
+            The Sideview Advanced Search interface can be used like the core Splunk Search view, except that it has some key improvements: 
+          </p>
+          <ol type="a"> 
+            <li>Instead of the "events over time" histogram, there is a compact but powerful reporting interface. No matter what report you run there, you can click on it and both the sidebar and the events will update accordingly. </li>
+            <li>The Sidebar is simplified to be off by default, but to show you just one field worth of breakdown at a time.</li>
+            <li>The Events panel uses the Sideview Events module, and has endless scrolling enabled.   </li>
+            <li>Throughout the view things are squeezed and simplified so that you have more real estate for the actual events. </li>
+          </ol>
+
+          <p>
+            Here's <b><a href="advanced_search?zField=series&stat=sum&autoRun=True&searchBar=index%3D_internal group%3Dper_sourcetype_thruput&earliest=-60m%40m&latest=now&yField=kb&xField=_time" target="_blank">another example of Advanced Search, showing a more interesting chart to click on.</a></b>  
+          </p>
+
+        </li>
+
+
+        <li>
+          <b><a href="sv_report" target="_blank">Metrics Explorer</a></b>
+          <p> 
+            This experimental interface will only be useful if you are using Splunk 7.0 and you have indexed so called "Metrics" data.    But if you've done that, definitely check it out.  It allows you to quickly drive around inside your metrics data,  understand what's there and jump right to paging through timecharts of those metrics.
+          </p>
+        </li>
+
+
+        
+        
+        <li>
+          <b><a href="sv_report" target="_blank">Report</a></b>
+          <p> 
+            The Sideview Report interface offers a generic base implementation of a general report builder.  NOTE that the SPL you type in at the top is just for your base events.  
+          </p>
+          <p>
+            For advanced users who are comfortable with Sideview modules like Pulldown and TextField, you can create your own Report builder based on it, with your own custom filtering form elements added to the top. 
+          </p>
+        </li>
+        
+        <li>
+          <b><a href="chart#autoRun=True&searchBar=index%3D_internal sourcetype%3Dsplunkd_access | timechart count by status&charting.chart.stackMode=stacked" target="_blank">Chart</a></b>
+          <p> 
+            The Sideview Chart interface is for people who are very familiar with the Splunk search language. It's designed for you to type complex SPL expressions right in, reporting commands and all. Use Chart if would prefer to type out your reports rather than use the form elements offered by the Report interface.  If that doesn't sound right for you, then use the Report view.
+          </p>
+        </li>
+
+        <li>
+          <b><a href="search_exploder" target="_blank">Search Exploder</a></b>
+          <p>This view is a useful debugging tool for very complex search expressions with multiple pipes.  You enter your search string and hit return, and then it gives you a table of N rows where each row shows your search up until the Nth pipe search command.   When you click on one of the rows it will run the search up until that pipe and show you: </p>
+          <ol type="1">
+            <li>The fields that are defined at that pipe (clicking a field in the field table will then give you top values for that field</li>
+            <li>The result rows</li>
+          </ol>
+        </li>
+
+        <li>
+          <b><a href="search_wpostprocess" target="_blank">Search with PostProcess</a></b>
+          <p>This a good view to use when you need to debug postprocess searches. It is much like the standard search view except that there is an extra search bar into which you can type postprocess searches.</p>
+        </li>
+
+        
+        
+
+<!-- 
+        <li>
+          <b><a href="explore" target="_blank">Explore</a></b>
+          <p> 
+            The Sideview Explore interface is something you've never seen before, and it requires a little customization to make it into something your users would use.  It is designed for use cases where your events have some categorical fields that exist in a loose hierarchy (ie Datacenter &gt; Cluster &gt; Host),  and where you have some consistent set of numerical fields in this data that users want to run reports on. 
+          </p>
+          <p>
+            
+            Currently, you (meaning you the app-developer) configure it by setting three macros.  Then once deployed it will work as a standalone interface for your end-users.
+          </p>
+          <ol type="a">
+            <li>
+              <b>the "get_base_data_for_explorer" macro</b>
+              You use this macro to set what basic events the interface should run all of it's searches against. In the demo version this is set to "index=_internal source=*metrics.log"
+            </li>
+            <li>
+              <b>the "filterable_fields" macro</b>
+              You use this macro to set the categorical fields that will define a sensible drilldown hierarchy for your users as they dig around in the data. For instance you might set this to "Site Building Floor Area Room".   In the demo version this is set to "group series".
+            </li>
+            <li><b>the "numeric_fields" macro</b>
+              You use this macro to set the scalar-valued numeric fields that the user might wish to analyze in the report view.  For instance you might set "temperature pressure".  Do not set this to values that look numerical but are in fact categorical id's.   In the demo version this is set to "eps kb kbps ev avg_age max_age"
+            </li>
+          </ol>
+        </li>
+-->
+        
+        
+        
+       </ol>
+
+    ]]></param>
+  </module>
+
+</view>

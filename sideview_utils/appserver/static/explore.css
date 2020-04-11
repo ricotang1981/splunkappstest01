@@ -1,0 +1,96 @@
+
+
+div.mainSearchControls {
+    padding-bottom:0px;
+    border-bottom-width:0px;
+}
+div.Tabs,
+div.ZoomLinks {
+    clear:both;
+}
+
+
+.graphArea input.searchButton {
+    height:22px;
+    margin-bottom:5px;
+}
+.graphArea .HTML h2 {
+    clear:left;
+    margin:0px;
+}
+.mainSearchControls .Button button {
+    -moz-border-radius: 4px 4px 4px 4px;
+    background-color: #659C40;
+    border: 1px solid #5E8D3D;
+    cursor: pointer;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size:14px;
+    font-weight:bold;
+    width:35px;
+}
+.mainSearchControls .Button button span {
+    width:auto;
+    min-width:0px;
+    margin-top:-2px;
+}
+
+
+.viewHeader .TimeRangePicker, 
+.mainSearchControls .Pulldown, 
+.mainSearchControls .TextField, 
+.graphArea .Pulldown {
+    float: left;
+    margin-right: 10px;
+    padding-right: 0;
+}
+.Filters .filter {
+    padding-top:4px;
+}
+.graphArea .SubmitButton {
+    float:left;
+}
+
+.graphArea .Button {
+    float:left;
+}
+
+div.dashboardCell div.FlashChart {
+    border: 1px solid #CCCCCC;
+    margin-bottom: 10px;
+    padding-left: 1px;
+}
+
+
+
+
+
+.graphArea,
+.ResultsActionButtons {
+    background-color: #F5F5F5 !important;
+}
+.viewHeader,
+.mainSearchControls,
+.Tabs {
+    background-color: #ADB4C0;
+}
+.Tabs,
+.Filters {
+    padding-top:0px;
+}
+.Tabs ul li {
+    margin-top:0px;
+    background-color:#1B3F5A;
+}
+
+.Tabs ul li.selected {
+    background-color:#F5F5F5;
+}
+
+
+.Pulldown select {
+    padding-left:3px;
+}
+.Pulldown select option {
+    padding-right:6px;
+}
+

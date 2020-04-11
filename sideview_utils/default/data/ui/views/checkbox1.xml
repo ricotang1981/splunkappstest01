@@ -1,0 +1,129 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the Checkbox module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Checkbox</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      Checkbox is a very simple module that outputs one value when checked and another value when unchecked. 
+      Like the other Sideview modules, it can also be prepopulated by arguments in the page URL.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Checkbox" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">maxMin</param>
+    <param name="label">Include Max and Min</param>
+    <param name="onValue">max(eps) min(eps)</param>
+    
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) $maxMin$ by series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        <param name="entityName">results</param>
+
+        <module name="Table"></module>
+      
+      </module>
+
+      <!-- this HTML module here is just to show you the token values and the search -->
+      <!-- feel free to delete it -->
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          report is: <b>$selectedReport$</b><br>
+          the entire search is: <b>$search$</b>
+        ]]></param>
+      </module>
+
+    </module>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>It's a pretty simple module. You can set either the onValue param or the offValue param, or both.</li>
+        <li>You can use $$foo$$ tokens in either param and it will of course incorporate the dynamic values from upstream.</li>
+        <li>You can also use $$foo$$ tokens in the label param.</li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Checkbox" target="_blank">Checkbox and its params</a>.
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+  
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h3>Making items optional</h3>
+      <p>
+        By using $$foo$$ tokens from upstream modules within the onValue or offValue of the Checkbox module, you can make whole groups of options optional.
+      </p>
+      ]]></param>
+  </module>
+
+
+  <module name="Pulldown" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="name">extraFields</param>
+    <param name="label">Extra stats</param>
+    <param name="size">3</param>
+    <param name="template">$value$(eps)</param>
+    <param name="outerTemplate">$value$</param>
+    <param name="separator">+</param>
+    <param name="staticOptions">
+      <list>
+        <param name="value">max</param>
+        <param name="selected">true</param>
+      </list>
+      <list>
+        <param name="value">min</param>
+        <param name="selected">true</param>
+      </list>
+    </param>
+      
+    <module name="Checkbox">
+      <param name="name">optionalExtraFields</param>
+      <param name="label">Include Extra Fields</param>
+      <param name="onValue">$extraFields$</param>
+    
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | stats avg(eps) $optionalExtraFields$ by series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="ProgressIndicator" />
+        
+        <module name="Pager">
+          <param name="entityName">results</param>
+          
+          <module name="Table"></module>
+
+        </module>
+
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            report is: <b>$selectedReport$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+
+    </module>
+  </module>
+</view>

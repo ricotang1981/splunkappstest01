@@ -1,0 +1,88 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+.CheckboxPulldown {
+    min-height:27px;
+}
+.CheckboxPulldown button span.ui-icon {
+    width:21px;
+}
+.CheckboxPulldown button.ui-state-active {
+    border: 2px solid #62c2f7;
+}
+.CheckboxPulldown button {
+    border-radius:3px;
+}
+
+
+.CheckboxPulldown button {
+    outline:1;
+}
+.CheckboxPulldown select {
+    height:22px;
+}
+.CheckboxPulldown .ui-widget {
+    font-family: Roboto,Droid,Helvetica Neue,Helvetica,Arial,sans-serif;
+}
+.CheckboxPulldown label {
+    font-size:1em;
+}
+
+.CheckboxPulldown .progressTop {
+    position:absolute;
+    height:2px;
+    width:0px;
+    background-color:#73A550;
+}
+
+.CheckboxPulldown button.ui-corner-all {
+    border-radius:0px;
+}
+
+.CheckboxPulldown .ui-state-default, 
+.CheckboxPulldown .ui-widget-content .ui-state-default, 
+.CheckboxPulldown .ui-widget-header .ui-state-default {
+    background-color:#fff;
+    color:#111;
+    font-weight:normal;
+    height:22px;
+}
+
+
+.CheckboxPulldown .ui-multiselect { 
+    border-color:none;
+}
+.CheckboxPulldown .ui-widget-content {
+    background-color:#fff;
+    border:1px solid #ccc;
+}
+
+
+.CheckboxPulldown .ui-widget {
+    font-size: 1em;
+}
+
+.ui-state-hover, 
+.ui-widget-content .ui-state-hover, 
+.ui-widget-header .ui-state-hover, 
+.ui-state-focus, 
+.ui-widget-content .ui-state-focus, 
+.ui-widget-header .ui-state-focus {
+    font-weight: normal !important;
+    color:#000 !important;
+}
+
+.ui-multiselect-header span{
+    position:relative;
+    top:2px;
+}
+a.ui-multiselect-all {
+    margin:right:3px;
+}
+
+.ui-multiselect-header span.ui-icon {
+    top:0px;
+}
+
+
+
+

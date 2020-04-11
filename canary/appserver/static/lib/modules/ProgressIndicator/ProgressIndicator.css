@@ -1,0 +1,11 @@
+.ProgressIndicator {
+    display: none;
+}
+.ProgressIndicator .outerBar {
+    width:100%;
+    border-color:#999;
+}
+.ProgressIndicator .innerBar {
+    height:10px;
+    background-color:#73A550;
+}

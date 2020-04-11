@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://www.splunk.com/xhtml-extensions/1.0" xml:lang="en" lang="en" class="no-js">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="Sideview, LLC" />
+    <link rel="shortcut icon" href="${canary_static_url_prefix}/images/favicon.ico" />
+    <title><%block name="title"/></title>
+
+<script type="text/javascript" src="${canary_static_url_prefix}/lib/i18n_stub.js"></script>
+<%block name="js"/>
+
+
+<%block name="css"/>
+</head>
+<%self:body_element_open/>
+  <%next:body/>
+<%self:body_element_close/>
+</html>
+
+
+<%def name="body_element_open()">
+  <body>
+</%def>
+<%def name="body_element_close()">
+  </body>
+</%def>

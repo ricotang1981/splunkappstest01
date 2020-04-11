@@ -1,0 +1,16 @@
+<module name="Pulldown" layoutPanel="pageControls">
+  <param name="name">results.count</param>
+  <param name="label">results per page</param>
+  <param name="float">right</param>
+  <param name="staticOptions">
+    <list><param name="value">10</param></list>
+    <list><param name="value">20</param><param name="selected">True</param></list>
+    <list><param name="value">50</param></list>
+    <list><param name="value">100</param></list>
+    <list><param name="value">200</param></list>
+  </param>
+  <module name="Pager">
+    <module name="ProgressIndicator" layoutPanel="resultsAreaLeft"></module>
+    <module name="Table" layoutPanel="resultsAreaLeft" />
+  </module>
+</module>

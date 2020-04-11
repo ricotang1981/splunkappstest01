@@ -1,0 +1,245 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Pulldown</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Pulldown</h1><br>
+
+    (NOTE that these testcases are a little thin given the feature space, and the massive usage in the field. The reason is that a lot of coverage comes for free just by spot-testing the documentation, and also because breakage in many areas shows up very fast in apps themselves... )
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+    
+    <module name="Pulldown" group="static config">
+      <param name="name">test1</param>
+      <param name="label">test1</param>
+
+      <param name="staticOptions">
+        <list>
+          <param name="label">fooLabel</param>
+          <param name="value">fooValue</param>
+        </list>
+        <list>
+          <param name="label">barLabel</param>
+          <param name="value">barValue</param>
+        </list>
+        <list>
+          <param name="label">bazLabel</param>
+          <param name="value">bazValue</param>
+        </list>
+      </param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         
+         <p>
+         selected value is:<br>
+          $test1$
+         </p>
+         
+        ]]></param>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row1_col2" group="dynamic config, even length">
+      <param name="search"><![CDATA[
+        index=_internal | head 1000 | rename sourcetype as value | stats count by value | eval label=value + "(" + count + ")"
+      ]]></param>
+      <module name="Button">
+        <module name="Pulldown">
+          <param name="name">test2</param>
+          <param name="label">test2</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             selected value is:<br>
+              $test2$
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row2_col1" group="dynamic config, ragged length">
+      <param name="search"><![CDATA[
+        | stats count | eval name="foo,bar,baz,bat,cux,foo,bar,baz,bat,cux,foo,bar,baz,bat,cux,foo,bar,baz,bat,cux,foo,bar,baz,bat,cux,somethingLonger,foo,bar,baz,bat,cux" | fields - count | eval name=split(name,",") | mvexpand name | eval label=name+"Label" | eval value=name+"Value" | fields - name
+      ]]></param>
+      <module name="Pulldown">
+        <param name="name">test3</param>
+        <param name="label">test3</param>
+        <param name="valueField">value</param>
+        <param name="labelField">label</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+           
+           <p>
+           selected value is:<br>
+            $test3$
+           </p>
+           
+          ]]></param>
+        </module>
+      </module>
+
+
+      <module name="Button" layoutPanel="panel_row2_col2" group="pulldown reloading 1">
+        
+        <module name="Pulldown">
+          <param name="name">test1</param>
+          <param name="label">only reloads the first time.</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          
+          <module name="Pulldown">
+            <param name="name">test2</param>
+            <param name="label">reloads when first pulldown is changed</param>
+            <param name="postProcess">search value!="$test1$"</param>
+            <param name="valueField">value</param>
+            <param name="labelField">label</param>
+
+            <module name="HTML">
+              <param name="html"><![CDATA[
+               Second pulldown is perturbed by postProcess param on Pulldown module.<br>
+               <br>
+               first pulldown: $test1$<br>
+
+               second pulldown: $test2$<br>
+
+               
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+
+
+      <module name="Button" layoutPanel="panel_row3_col1" group="pulldown reloading 2">
+        
+        <module name="Pulldown">
+          <param name="name">test1</param>
+          <param name="label">only reloads the first time.</param>
+          <param name="valueField">value</param>
+          <param name="labelField">label</param>
+          
+          <module name="PostProcess">
+            <param name="search">search value!="$test1$"</param>
+
+            <module name="Pulldown">
+              <param name="name">test2</param>
+              <param name="label">reloads when first pulldown is changed</param>
+              <param name="valueField">value</param>
+              <param name="labelField">label</param>
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                 Second pulldown is perturbed by PostProcess module<br>
+                 <br>
+                 first pulldown: $test1$<br>
+
+                 second pulldown: $test2$<br>
+   
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    
+    <module name="Search" layoutPanel="panel_row4_col1" group="complex example">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log sourcetype=splunkd group=per_*_thruput | stats count by group series date_hour
+      ]]></param>
+      <param name="earliest">-24h</param>
+
+      <module name="Pulldown">
+        <param name="name">group</param>
+        <param name="label">$name$</param>
+        <param name="valueField">$name$</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="postProcess">dedup $name$ | sort $name$</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">per_sourcetype_thruput (static)</param>
+            <param name="value">per_sourcetype_thruput</param>
+          </list>
+        </param>
+
+
+        <module name="Pulldown">
+          <param name="name">date_hour</param>
+          <param name="label">$name$</param>
+          <param name="valueField">$name$</param>
+          <param name="template">$name$="$value$"</param>
+          <param name="postProcess">search $group$ | dedup $name$ | sort $name$</param>
+
+          <module name="Pulldown">
+            <param name="name">series</param>
+            <param name="label">$name$</param>
+            <param name="valueField">$name$</param>
+            <param name="template">$name$="$value$"</param>
+            <param name="postProcess">search $group$ $date_hour$ | dedup $name$ | sort $name$</param>
+
+            <module name="Search">
+              <param name="search">index=_internal source=*metrics.log sourcetype=splunkd $group$ $series$ | stats avg(eps) by date_hour</param>
+              <param name="earliest">-24h</param>
+              
+              <module name="Pager">
+                <module name="Table"/>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row5_col1" group="nontransforming, with no required fields list">
+      <param name="search"><![CDATA[
+        index=_internal component=metrics group=per_sourcetype_thruput | head 10 | rename series as value 
+      ]]></param>
+      <module name="Button">
+        <module name="Pulldown">
+          <param name="name">test2</param>
+          <param name="label">test2</param>
+          <param name="valueField">value</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+             
+             <p>
+             selected value is:<br>
+              $test2$
+             </p>
+             
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+  </module>
+  
+        
+
+</view>

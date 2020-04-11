@@ -1,0 +1,50 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>refreshOnlyOnce CustomBehavior</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>refreshOnlyOnce CustomBehavior</h1>
+    ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_*_thruput" | stats sum(kb) as KB by group,series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    
+    <module name="Button">
+
+      <module name="Pulldown">
+        <param name="name">group</param>
+        <param name="label">group</param>
+        <param name="valueField">$name$</param>
+        <param name="postProcess">dedup $name$ | sort $name$</param>
+        <param name="customBehavior">refreshOnlyOnce</param>
+
+        <module name="Pulldown">
+          <param name="name">series</param>
+          <param name="label">series</param>
+          <param name="valueField">$name$</param>
+          <param name="postProcess">dedup $name$ | sort $name$</param>
+          <param name="customBehavior">refreshOnlyOnce</param>
+          
+          <module name="HTML" layoutPanel="panel_row2_col2">
+            <param name="html"><![CDATA[
+              group is $group$<br>
+              series is $series$<br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+</view>

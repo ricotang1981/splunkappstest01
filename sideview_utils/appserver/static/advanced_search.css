@@ -1,0 +1,32 @@
+.splSearchControls-inline table.mainSearchControlsTable {
+    margin-top:3px;
+    margin-bottom:3px;
+}
+.splSearchControls-inline .assTab {
+    display:none;
+}
+.mainSearchControls div.SplunkModule {
+    padding-bottom:0px;
+    padding-top:0px;
+    padding-right:0px;
+    margin-bottom:0px;
+}
+.mainSearchControls {
+    padding-bottom:0px;
+}
+.graphArea {
+    clear:left;
+}
+.resultsHeaderPanel .Checkbox {
+    float:right;
+    padding:1px 10px 0px 0px;
+    min-height:15px;
+}
+.resultsHeaderPanel .HTML {
+    padding-top:5px;
+    padding-bottom:5px;
+    min-height:10px;
+}
+.FlashWrapperContainer {
+    padding-bottom:6px;
+}

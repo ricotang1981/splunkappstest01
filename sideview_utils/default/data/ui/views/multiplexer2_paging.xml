@@ -1,0 +1,179 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Using Multiplexer with Pager</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Using Multiplexer with Pager</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      Like a lot of modules, Multiplexer gets more powerful and more mindbending when you begin to combine it with other advanced modules.   Let's start by thinking about the "Pager" module.   The simple use cases on the previous page will work great when you are "multiplexing" 5 modules, but what about when there are 10,000? <br>
+      <br>
+      Multiplexer works natively with the Pager module, so the answer is simply to put Multiplexer and its multiplexed modules downstream from a Pager module.   <br>
+      <br>
+      Picture doing this with simple HTML modules and suddenly you have a very open ended way to do custom event rendering. See below.  
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h2>Paging Multiplexer</h2> 
+      in an (index=* OR index=_*) search, for the most recent 50,000 events, show me pages of sourcetypes, where for EACH sourcetype there is then a paged table of sources for that sourcetype.
+      <br clear="all">
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+    <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+      <param name="search">index=*  | head 50000 | stats count by sourcetype source</param>
+      <param name="earliest">-30d</param>
+      <param name="latest">now</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="PostProcess">
+        <param name="search">dedup sourcetype</param>
+    
+        <module name="Pager">
+          <param name="count">5</param>
+
+          <module name="Multiplexer">
+            <param name="fields">sourcetype</param>
+
+            <module name="PostProcess">
+              <param name="search">search sourcetype="$sourcetype$" | stats sum(count) as eventCount by source</param>
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  <b>$sourcetype$</b> 
+                ]]></param>
+              </module>
+              <module name="Pager">
+                <module name="Table" />
+              </module>
+
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  <!-- EXAMPLE END -->
+
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      Now we do the same thing with PostProcess and JSChart modules.   
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | bin _time span="1min" | stats sum(kb) as totalKB by series, _time | rename series as sourcetype</param>
+    <param name="earliest">-60m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="ValueSetter">
+      <param name="arg.charting.chart">line</param>
+      <param name="arg.charting.legend.placement">none</param>
+      <param name="arg.charting.axisTitleX.visibility">collapsed</param>
+
+      <module name="PostProcess">
+        <param name="search">dedup sourcetype | sort sourcetype</param>
+
+        <module name="Pager">
+          <param name="count">5</param>
+
+          <module name="Multiplexer">
+            <param name="field">sourcetype</param>
+      
+            <module name="PostProcess">
+              <param name="search">search sourcetype="$sourcetype$" | timechart span="1min" max(totalKB) as totalKB</param>
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  <h2>$sourcetype$</h2>
+                ]]></param>
+              </module>
+            
+              <module name="JSChart">
+                <param name="height">150px</param>
+                <param name="width">100%</param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h3>Paging through a set of Paged Tables</h3>
+      
+    ]]></param>
+  </module>
+    <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search">index=_internal sourcetype=splunk_web_access NOT /en-US/splunkd/services/search status=* | stats count by file referer status</param>
+    <param name="earliest">-4h</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+  
+    <module name="PostProcess">
+      <param name="search"> | streamstats dc(referer) as refCount by file | sort - refCount | fields - refCount | dedup file</param>
+      <module name="Pager">
+        <module name="Multiplexer">
+          <param name="field">file</param>  
+          <module name="PostProcess">
+            <param name="search">search file="$file$" | chart sum(count) as count over referer by status</param>
+            
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                <h2>$file$</h2>
+              ]]></param>
+            </module>
+            
+            <module name="Pager">
+              <module name="Table"/>
+            </module>
+          </module>
+        </module>    
+      </module>
+    </module>
+  </module>
+
+  <!-- END EXAMPLE -->  
+        
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          You can also put Search modules downstream from Multiplexers and thus you can make new searches get kicked off for each multiplexed values.   This should be used very sparingly and only in admin-user use cases, because you can of course rapidly spawn large numbers of searches and potentially drag down system performance. 
+        </li>
+        <li>You can even multiplex Multiplexers although I didn't tell you that because that would be insane. But you can.  </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Multiplexer" target="_blank">Multiplexer and its params</a>
+        </li>
+
+      </ol>
+    ]]></param>
+  </module>
+
+
+
+</view>

@@ -1,0 +1,500 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the CheckboxPulldown module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for CheckboxPulldown module </h1>
+    ]]></param>
+  </module>
+
+  <module name="Button" layoutPanel="panel_row1_col1" autoRun="True" group="static">
+    <param name="label">push</param>
+
+    <module name="CheckboxPulldown">
+      <param name="name">type</param>
+      <param name="label">type</param>
+      <param name="template">( $value$ )</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">inbound</param>
+          <param name="value">type=incoming destSpan=0</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="label">outbound</param>
+          <param name="value">type=outgoing origSpan=0</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="label">internal</param>
+          <param name="value">type=internal origSpan=0 destSpan=0</param>
+        </list>
+        <list>
+          <param name="label">tandem</param>
+          <param name="value">type=tandem</param>
+        </list>
+      </param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          selection  is: <b>$type$</b><br>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  
+  <module name="Search" layoutPanel="panel_row1_col2" autoRun="True" group="one dynamic">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="CheckboxPulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="template">series="$value$"</param>
+      <param name="valueField">series</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes$ | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          <module name="Table"></module>
+        </module>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetypes is: <b>$selectedSourcetypes$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+
+      </module>
+    </module>
+  </module>
+
+
+
+  <module name="Search" layoutPanel="panel_row1_col3" autoRun="True" group="two dynamic">
+    <param name="search">index=_internal | stats count by group series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+
+    
+    <module name="CheckboxPulldown">
+      <param name="name">group</param>
+      <param name="label">Group</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="valueField">$name$</param>
+      <param name="postProcess">| dedup $name$ | sort $name$</param>
+
+      <module name="CheckboxPulldown">
+        <param name="name">series</param>
+        <param name="label">Series</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="valueField">$name$</param>
+        <param name="postProcess">search * $group$ | dedup $name$ | sort $name$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" $group$ $series$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="Pager">
+            
+            <module name="Table"></module>
+          </module>
+        
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              groups are: <b>$group$</b><br>
+              serieses are <b>$series$</b><br>
+              search is <b>$search$</b><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <module name="URLLoader" autoRun="True" layoutPanel="appHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="Button" layoutPanel="panel_row2_col1" group="static with URLLoader">
+      <param name="label">push again</param>
+
+      <module name="CheckboxPulldown">
+        <param name="name">selectedSourcetypes_static</param>
+        <param name="label">Sourcetype</param>
+        <param name="template">series="$value$"</param>
+        <param name="staticOptions">
+          <list>
+            <param name="value">splunkd</param>
+          </list>
+          <list>
+            <param name="value">splunkd_access</param>
+          </list>
+        </param>
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes_static$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="Pager">
+            
+            <module name="Table"></module>
+          </module>
+          
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              selectedSourcetypes is: <b>$selectedSourcetypes_static$</b><br>
+              the entire search is: <b>$search$</b>
+            ]]></param>
+          </module>
+
+        </module>
+      </module>
+
+      <module name="Button" layoutPanel="panel_row2_col2" group="Dynamic, with URLLoader">
+        <param name="label">push again</param>
+
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="CheckboxPulldown">
+            <param name="name">selectedSourcetypes</param>
+            <param name="label">Sourcetype</param>
+            <param name="template">series="$value$"</param>
+            <param name="valueField">series</param>
+
+            <module name="Search">
+              <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes$ | stats min(eps) avg(eps) max(eps) </param>
+              <param name="earliest">-1h</param>
+              <param name="latest">now</param>
+              
+              <module name="Pager">
+                
+                <module name="Table"></module>
+              </module>
+              
+              <!-- this HTML module here is just to show you the token values and the search -->
+              <!-- feel free to delete it -->
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  selectedSourcetypes is: <b>$selectedSourcetypes$</b><br>
+                  the entire search is: <b>$search$</b>
+                ]]></param>
+              </module>
+
+            </module>
+          </module>
+        </module>
+      </module>
+
+    </module>
+
+
+
+    <module name="Search" layoutPanel="panel_row2_col3" >
+      <param name="search">index=_internal | stats count by group series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+
+
+
+      <module name="CheckboxPulldown">
+        <param name="name">group</param>
+        <param name="label">Group</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="valueField">$name$</param>
+        <param name="postProcess">| dedup $name$ | sort $name$</param>
+
+        <module name="CheckboxPulldown">
+          <param name="name">series</param>
+          <param name="label">Series</param>
+          <param name="template">$name$="$value$"</param>
+          <param name="valueField">$name$</param>
+          <param name="postProcess">search * $group$ | dedup $name$ | sort $name$</param>
+
+          <module name="Search">
+            <param name="search">index=_internal source="*metrics.log" $group$ $series$ | stats min(eps) avg(eps) max(eps) </param>
+            <param name="earliest">-1h</param>
+            <param name="latest">now</param>
+            
+            <module name="Pager">
+              
+              <module name="Table"></module>
+            </module>
+          
+            <!-- this HTML module here is just to show you the token values and the search -->
+            <!-- feel free to delete it -->
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                groups are: <b>$group$</b><br>
+                serieses are <b>$series$</b><br>
+                search is <b>$search$</b><br>
+              ]]></param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+  <module name="Button" layoutPanel="panel_row3_col1" autoRun="True" group="static, star optimization">
+    <param name="label">push</param>
+
+    <module name="CheckboxPulldown">
+      <param name="name">type</param>
+      <param name="label">type</param>
+      <param name="template">( $value$ )</param>
+      <param name="selectAllOptimization">*</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">inbound</param>
+          <param name="value">type=incoming destSpan=0</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="label">outbound</param>
+          <param name="value">type=outgoing origSpan=0</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="label">internal</param>
+          <param name="value">type=internal origSpan=0 destSpan=0</param>
+        </list>
+        <list>
+          <param name="label">tandem</param>
+          <param name="value">type=tandem</param>
+        </list>
+      </param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          selection  is: <b>$type$</b><br>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row3_col2" autoRun="True" group="one dynamic, star optimization">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="CheckboxPulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="template">series="$value$"</param>
+      <param name="selectAllOptimization">*</param>
+      <param name="valueField">series</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes$ | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          <module name="Table"></module>
+        </module>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetypes is: <b>$selectedSourcetypes$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+
+      </module>
+    </module>
+  </module>
+
+
+
+  <module name="Search" layoutPanel="panel_row3_col3" autoRun="True" group="two dynamic, star optimization">
+    <param name="search">index=_internal | stats count by group series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+
+    
+    <module name="CheckboxPulldown">
+      <param name="name">group</param>
+      <param name="label">Group</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="valueField">$name$</param>
+      <param name="selectAllOptimization">*</param>
+      <param name="postProcess">| dedup $name$ | sort $name$</param>
+
+      <module name="CheckboxPulldown">
+        <param name="name">series</param>
+        <param name="label">Series</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="valueField">$name$</param>
+        <param name="selectAllOptimization">*</param>
+        <param name="postProcess">search * $group$ | dedup $name$ | sort $name$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" $group$ $series$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="Pager">
+            
+            <module name="Table"></module>
+          </module>
+        
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              groups are: <b>$group$</b><br>
+              serieses are <b>$series$</b><br>
+              search is <b>$search$</b><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+  <module name="Button" layoutPanel="panel_row4_col1" autoRun="True" group="static, omit optimization">
+    <param name="label">push</param>
+
+    <module name="CheckboxPulldown">
+      <param name="name">type</param>
+      <param name="label">type</param>
+      <param name="template">( $value$ )</param>
+      <param name="selectAllOptimization">omit</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">inbound</param>
+          <param name="value">type=incoming destSpan=0</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="label">outbound</param>
+          <param name="value">type=outgoing origSpan=0</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="label">internal</param>
+          <param name="value">type=internal origSpan=0 destSpan=0</param>
+        </list>
+        <list>
+          <param name="label">tandem</param>
+          <param name="value">type=tandem</param>
+        </list>
+      </param>
+
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          selection  is: <b>$type$</b><br>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row4_col2" autoRun="True" group="one dynamic, omit optimization">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="CheckboxPulldown">
+      <param name="name">selectedSourcetypes</param>
+      <param name="label">Sourcetype</param>
+      <param name="template">series="$value$"</param>
+      <param name="selectAllOptimization">omit</param>
+      <param name="valueField">series</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypes$ | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          <module name="Table"></module>
+        </module>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetypes is: <b>$selectedSourcetypes$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+
+      </module>
+    </module>
+  </module>
+
+
+
+  <module name="Search" layoutPanel="panel_row4_col3" autoRun="True" group="two dynamic, omit optimization">
+    <param name="search">index=_internal | stats count by group series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+
+
+    
+    <module name="CheckboxPulldown">
+      <param name="name">group</param>
+      <param name="label">Group</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="valueField">$name$</param>
+      <param name="selectAllOptimization">omit</param>
+      <param name="postProcess">| dedup $name$ | sort $name$</param>
+
+      <module name="CheckboxPulldown">
+        <param name="name">series</param>
+        <param name="label">Series</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="valueField">$name$</param>
+        <param name="selectAllOptimization">omit</param>
+        <param name="postProcess">search * $group$ | dedup $name$ | sort $name$</param>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" $group$ $series$ | stats min(eps) avg(eps) max(eps) </param>
+          <param name="earliest">-1h</param>
+          <param name="latest">now</param>
+          
+          <module name="Pager">
+            
+            <module name="Table"></module>
+          </module>
+        
+          <!-- this HTML module here is just to show you the token values and the search -->
+          <!-- feel free to delete it -->
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              groups are: <b>$group$</b><br>
+              serieses are <b>$series$</b><br>
+              search is <b>$search$</b><br>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+
+  
+</view>

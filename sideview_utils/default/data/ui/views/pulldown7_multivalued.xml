@@ -1,0 +1,97 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - setting more than one value</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - setting more than one value</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: dynamic pulldown">
+    <param name="html"><![CDATA[
+      By thinking a little differently, and using a ValueSetter module, we can easily set up any Pulldown to output more than one value downstream. 
+      ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal OR index=* | stats count last(_time) as earliest first(_time) as latest by sourcetype | eval label=sourcetype | eval combinedValue=sourcetype . "," . earliest . ",". latest</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">combinedValue</param>
+      <param name="labelField">label</param>
+      <param name="staticOptions"></param>
+
+      <module name="ValueSetter">
+        <param name="name">multivaluedKey</param>
+        <param name="delim">,</param>
+        <param name="value">$selectedSourcetype$</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            the $$selectedSourcetype.label$$ is: <b>$selectedSourcetype.label$</b><br>
+            the raw $$selectedSourcetype$$ value is: <b>$selectedSourcetype$</b><br>
+            <br>
+
+            However if we use the $$multivaluedKey$$ that we have created with our ValueSetter module here, we can access all three keys separately: <br><br>
+
+            $$multivaluedKey[0]$$ = <b>$multivaluedKey[0]$</b><br>
+            $$multivaluedKey[1]$$ = <b>$multivaluedKey[1]$</b><br>
+            $$multivaluedKey[2]$$ = <b>$multivaluedKey[2]$</b><br>
+
+            <br>
+            <br>
+            And in addition to being able to display the three values separately, we can also plug these three values into another Search module however we like.   Here we use the sourcetype in the search, and the other two values in the timerange. 
+
+          ]]></param>
+
+          <module name="Search" layoutPanel="panel_row2_col1">
+            <param name="search">index=_internal OR index=* sourcetype="$multivaluedKey[0]$" | timechart count</param>
+            <param name="earliest">$multivaluedKey[1]$</param>
+            <param name="latest">$multivaluedKey[2]$</param>
+
+            <module name="ProgressIndicator" />
+            
+            <module name="HTML">
+              <param name="html"><![CDATA[
+                <h3>timechart of sourcetype="$multivaluedKey[0]$"</h3>
+                <p>
+                  The search is dispatched so as to explicitly zoom the timechart in just on the timerange: <b>$results.timeRange.label$</b>
+                </p>
+              ]]></param>
+            </module>
+
+            <module name="JSChart"></module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>In this example we first start with a dynamic Pulldown.  We use the search language to make a single field that consists of a sourcetype, an earliest time and a latest time, with the three values separated by commas. 
+        </li>
+        <li>Then downstream from the Pulldown module we put another Sideview module - ValueSetter.</li>
+        <li>ValueSetter takes a "delim" param and here we set that to ",".  This causes ValueSetter to split the incoming string-valued $$selectedSourcetype$$ key from the Pulldown into a multivalued key. </li>
+        <li>Then for any module downstream from the ValueSetter module we can access any one of the three selected values separately</li>
+        <li>
+          read the specification for the Sideview module <a href="/modules#Splunk.Module.Pulldown" target="_blank">Pulldown and its params</a>
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+</view>

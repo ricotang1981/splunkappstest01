@@ -1,0 +1,1 @@
+Look in the release_notes view,  ie  /en-US/splunkd/__raw/sv_view/canary/release_notes

@@ -1,0 +1,11 @@
+<!-- Copyright (C) 2018-2019 Sideview LLC.  All Rights Reserved. -->
+<dashboard script="shunt.js">
+  <label>Home</label>
+  <row>
+    <panel>
+      <html>
+       Loading Canary UI...
+      </html>
+    </panel>
+  </row>
+</dashboard>

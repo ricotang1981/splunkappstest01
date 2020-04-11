@@ -1,0 +1,47 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>Gate - Waiting until a search completes</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Gate - Waiting until a search completes</h1>
+    ]]></param>
+  </module>
+
+  
+  
+  <!-- EXAMPLE BEGIN -->
+    <module name="Search" layoutPanel="panel_row1_col1" autoRun="True">
+      <param name="search"><![CDATA[
+        index=* OR index=_* | head 100000 | stats count
+      ]]></param>
+
+      <module name="Button">
+      
+        <module name="ResultsValueSetter">
+          <param name="fields">foo</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+            $count$
+            ]]></param>
+          </module>
+
+
+          <module name="Redirector">
+            <param name="url">http://google.com</param>
+            <param name="popup">True</param>
+            
+          </module>
+        </module>
+      </module>
+    </module>
+  <!-- EXAMPLE END -->
+
+  
+
+</view>

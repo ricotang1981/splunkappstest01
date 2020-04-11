@@ -1,0 +1,61 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - embedding Multiplexer modules</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Table - embedding Multiplexer modules</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Search">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_*_thruput" | head 1000 | stats sum(kb) as totalKB by group series | eval values="foo"
+      ]]></param>
+
+      <module name="Button">
+
+        <module name="Search">
+          <param name="search">| stats count | eval field="sourcetype" | table field madness</param>
+
+          <module name="ProgressIndicator" />
+
+          <module name="Pager">
+
+            <module name="Table">
+
+              <module name="Search" group="row.fields.madness">
+
+                <param name="search">| metadata type="$row.fields.field$s" index=*</param>
+
+                <module name="Multiplexer">
+                  <param name="field">sourcetype</param>
+
+                  <module name="HTML">
+                    <param name="html">OH HAI $sourcetype$ </param>
+                  </module>
+                </module>
+              </module>
+            </module>
+
+          </module>
+        </module>
+      </module>
+
+    </module>
+        
+
+  </module>
+  
+        
+
+</view>

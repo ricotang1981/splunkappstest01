@@ -1,0 +1,108 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>the ResultsValueSetter module</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>ResultsValueSetter</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      The ResultsValueSetter module does something strange but very powerful.   <br>
+      <br>
+      By now you are familiar with the Splunk search language and the fact that all search result rows have named "fields".  And you are also familiar with the $$foo$$ tokens from Splunk views. <br>
+      <br>
+      You've probably realized that although the $$foo$$ tokens sometimes feel like "fields",  these are really two different spaces of fields entirely. <br>
+      <br>
+      Well, ResultsValueSetter allows you to reach up into the server's search results,  grab some field values from the first row of the current search results,  pull those values to the UI layer, and use them downstream as simple tokens like $$fieldName$$ and $$myOtherFieldName$$. 
+
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN --> 
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as totalKB by series | rename series as sourcetype | sort - totalKB | head 1
+    ]]></param>
+    <module name="ResultsValueSetter">
+      <param name="fields">sourcetype totalKB</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         Here you see we run a search :  <b>$search$</b><br>
+         <br>
+         And then we use ResultsValueSetter to pull down these two fields from the first search result row: <br>
+         $$sourcetype$$ =  $sourcetype$<br>
+         $$totalKB$$ = $totalKB$<br>
+         <br>
+         Granted, we could have done this just using the HTML module's $$results[0].fieldName$$ syntax,  like so: <br>
+         $$results[0].sourcetype$$ = $results[0].sourcetype$<br>
+         $$results[0].totalKB$$= $results[0].totalKB$<br>
+         <br>
+         The advantage of using ResultsValueSetter however is that you can reference the field values in any Sideview module that accepts $$foo$$ tokens,  rather than just in the HTML module.  For instance you can plug those values back into more searches, as in the next example below.
+
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+  <!-- EXAMPLE BEGIN --> 
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal source=*metrics.log group=per_sourcetype_thruput | stats sum(kb) as totalKB by series | rename series as sourcetype | sort - totalKB | head 1
+    ]]></param>
+    <module name="ResultsValueSetter">
+      <param name="fields">sourcetype totalKB</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+         As before, the sourcetype with the highest totalKB is: <b>$sourcetype$</b>, and in this example we're going to plug that value right into another search... 
+         <br>
+         <br>
+         The most recent 10 events from that sourcetype are as follows:
+        ]]></param>
+      </module>
+
+      <module name="Search">
+        <param name="search">index=* OR index=_* sourcetype="$sourcetype$" | head 10</param>
+
+        <module name="Events">
+          <param name="resizeMode">fixed</param>
+          <param name="height">500px</param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          be careful you don't get confused and think you need to use ResultsValueSetter for table and chart drilldowns.    If you want to get field values from a table row or a chart element that a user has clicked on,   nest your modules inside the table or chart, and follow the example on this page: <a href="drilldown1_tables">Drilldown - Intro</a>.
+        </li>
+        <li>
+          ResultsValueSetter will always get its field values from the <b>first</b> row.   So you generally use it in cases where you have sorted search results and you only want the top result,  or where you're using "stats max(someFieldValue) as highestValue", and there only is one row of results.
+        </li>
+        <li>ResultsValueSetter takes a "fields" param.  In that param you tell it one or more fields that you're interested in.   The fields can be space-separated or comma-separated.  If you want to tell it to get *all* available fields on the search results,  you can just set it to "*".
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.ResultsValueSetter" target="_blank">ResultsValueSetter and its params</a>.
+        </li>       
+      </ol>
+      ]]></param>
+  </module>
+
+
+</view>

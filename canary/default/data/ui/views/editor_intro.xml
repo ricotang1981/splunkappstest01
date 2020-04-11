@@ -1,0 +1,112 @@
+<!-- Copyright (C) 2010-2020 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>Editor</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1><a href="home">Home</a> &gt; Sideview Editor - Intro</h1>
+
+
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <h3>You can use the Editor to create and edit Canary views and dashboards.  Some prerequisites exist however.</h3>
+      <p>
+        You are already familiar with <a href="framework_intro">our documentation about how Canary UI modules work</a>.
+      </p>
+
+      <p>
+        One more important note before we begin - you cannot use the Editor to edit "Simple XML" views or dashboards, nor can you use it to author Splunk's "html dashboards".
+      </p>
+
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="customBehavior">launchEditor</param>
+    <param name="html"><![CDATA[
+      <table class="splTable">
+        <tr>
+          <th>statement</th>
+          <th>I understand and agree</th>
+        </tr>
+
+        <tr>
+          <td>The Sideview User Interface Editor is not a toy. It is possible to make destructive changes with it.</td>
+          <td><input type="checkbox" name="agreement" value="1"></td>
+        </tr>
+
+        <tr>
+          <td>If I damage views that came with some app that I downloaded, I know how to restore the "default" versions of those views.<br>
+            (I log in to the Splunk host, find the xml files in /etc/apps/&lt;appName&gt;/local/data/ui/views/, delete them, and restart.)  <br>
+          </td>
+          <td><input type="checkbox" name="agreement" value="2"></td>
+        </tr>
+
+        <tr>
+          <td>If I have important views that were created locally and were never packaged into the 'default' directory of an app,  I should be backing those views up.</td>
+          </td>
+          <td><input type="checkbox" name="agreement" value="3"></td>
+        </tr>
+
+
+      </table>
+
+      <p>
+        Once you understand and agree with the points above <b><a href="#" class="launchEditor" style="font-size:14px;">Launch the Sideview Editor</a></b>
+      </p>
+
+    ]]></param>
+    </module>
+
+
+    <module name="HTML" layoutPanel="panel_row2_col2">
+      <param name="html"><![CDATA[
+
+      <h3>What do the various panels do?</h3>
+      <ul>
+        <li>
+          <p>
+            <b>Top Left, the "Edit panel"</b>:<br>
+            The top left panel is where you'll do all the actual editing.  Generally there are form fields here.
+          </p>
+        </li>
+        <li>
+
+          <p>
+            <b>Top Right, the "Schematic Panel"</b>:<br>
+            The top right panel gives you an abstract schematic of how the modules are wired together to make the view work.  Not all modules will be visible initially.  Click and drag, and select modules to recenter the schematic. Modules that may be currently hidden will display as you move around. If a module is shaded pink or red, that means it has more downstream modules that are not currently shown.
+          </p>
+
+        </li>
+        <li>
+
+          <p>
+            <b>Bottom Left, the "Description panel"</b>:<br>
+            Whatever you're doing, this panel will try and tell you something about it.   For instance as you move through the form fields of a module's params, it will display the documentation for the selected parameter.
+          </p>
+
+        </li>
+        <li>
+
+          <p>
+            <b>Bottom Right, the "View panel"</b>:<br>
+            This should look familiar.  It's the view that you're editing.  Note that despite being embedded in the editor, it's a fully functional view.  Although you can click modules to 'select' them,  it's often easier to use the schematic panel. Also yes if you click to another page entirely in this panel, you'll break the Editor a bit.
+          </p>
+
+        </li>
+      </ul>
+    ]]></param>
+  </module>
+
+
+
+</view>

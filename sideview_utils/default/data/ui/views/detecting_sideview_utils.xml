@@ -1,0 +1,151 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>how to check if the Sideview modules are present</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>How to check if the Sideview modules are present</h1>
+    ]]></param>
+  </module>
+  
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        If your app uses the modules from Sideview Utils, then your app will need some way to make sure this app is there and loaded correctly. 
+      </p>
+      <p>
+        Below is javascript and HTML that you can add to your app, that will do the following:
+      </p>
+      <ol>
+        <li>Detect that the sideview app is installed on the system.</li>
+        <li>Detect that the SideviewUtils module is present in each view.</li>
+        <li>Detect that the version of Sideview is either the required version or a later version.</li>
+      </ol>
+
+      <p>
+        If you have any problems or any questions, <a href="mailto:nick@sideviewapps.com">contact us</a>.
+      </p>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1" group="1: The logic">
+    <param name="html"><![CDATA[
+
+    <p>
+      Put this Javascript into etc/apps/&lt;appname&gt;/appserver/static/application.js:
+    </p>
+<pre>
+function runSideviewSanityChecks() {
+    var REQUIRED_VERSION = "2.0.3";
+
+    function isAppLoaded() {
+        var appList = false;
+        try {appList = Splunk.Module.loadParams.AccountBar_0_0_0.appList;}
+        catch(e) {}
+        if (!appList) return -1;
+        for (var i=0,len=appList.length;i&lt;len;i++) {
+            if (appList[i].id == "sideview_utils") return 1;
+        }
+        return 0;
+    }
+
+    function isModulePresent() {
+        return ($$("div.SideviewUtils").length&gt;0);
+    }
+
+    // only show the most pressing error at a time.
+    if (isAppLoaded()==0)        $$("#SideviewAppNotInstalled").show();
+    else if (!isModulePresent()) $$("#SideviewModuleNotPresent").show();
+    else if (REQUIRED_VERSION && typeof(Sideview)!="undefined") {
+        var currentVersion,
+            allIsWell = false;
+        if (Sideview.utils.hasOwnProperty("checkRequiredVersion")) {
+            currentVersion = Sideview.utils.getCurrentVersion();
+            allIsWell = Sideview.utils.checkRequiredVersion(REQUIRED_VERSION);
+        }
+        if (!allIsWell){
+            currentVersion = currentVersion || "1.0.5.2 or older";
+            $$("#SideviewModuleVersionTooOld .currentVersion").text(currentVersion);
+            $$("#SideviewModuleVersionTooOld .requiredVersion").text(REQUIRED_VERSION);
+            $$("#SideviewModuleVersionTooOld").show();
+        }
+    }
+}
+
+runSideviewSanityChecks();
+
+    </pre>
+    ]]></param>
+  </module>
+  
+  
+  <module name="HTML" layoutPanel="panel_row3_col1" group="2: The error messages">
+    <param name="html"><![CDATA[
+
+    <p>
+      Put this HTML into etc/apps/&lt;appname&gt;/appserver/static/error_messages.html.  Or if you're only going to warn the user on a single page anyway, you might as well embed it directly into an HTML module.
+    </p>
+<pre>
+
+&lt;div class="error" id="SideviewAppNotInstalled" style="display:none;"&gt;
+  ERROR: this app depends on the Sideview Utils app, but that app does not 
+  appear to be installed on this Splunk instance.  &lt;br&gt;To make this 
+  error go away you can install the 
+  &lt;a href="https://sideviewapps.com/apps/sideview-utils/"&gt;Sideview Utils from the site&lt;/a&gt; 
+  or &lt;a href="mailto:sales@sideviewapps.com"&gt;contact Sideview&lt;/a&gt; 
+  for other options.
+&lt;/div&gt;
+&lt;div class="error" id="SideviewModuleNotPresent" style="display:none;"&gt;
+  ERROR: the SideviewUtils module is required in all views for this app to 
+  function. See documentation in The Sideview Utils app.  &lt;br&gt;(Note that 
+  the &lt;b&gt;app&lt;/b&gt; itself does appear to be installed 
+  successfully)
+&lt;/div&gt;
+&lt;div class="error" id="SideviewModuleVersionTooOld" style="display:none;"&gt;
+  ERROR: This app requires at least version 
+  &lt;span class="requiredVersion"&gt;&lt;/span&gt; of the Sideview Utils app 
+  to be installed on the system. You currently have the app installed but 
+  your version is &lt;span class="currentVersion"&gt;&lt;/span&gt;. 
+  Please download a newer version from &lt;a href="https://sideviewapps.com/apps/sideview-utils/"&gt;our site&lt;/a&gt; .
+&lt;/div&gt;
+
+</pre>
+    ]]></param>
+  </module>
+  
+
+
+  <module name="HTML" layoutPanel="panel_row4_col1" group="3: Embedding the error messages">
+    <param name="html"><![CDATA[
+
+    <p>
+      If you embedded the error messages right into an HTML module, then you can skip this step. 
+    </p>
+    <p>
+      But if you put them into an error_messages.html file over in appserver/static,  then you'll have to load them in at least one view with a ServerSideInclude module.  
+    </p>
+    <p>
+      Typically this is done on the homepage view, but you might want to put it on other views, particularly if some users might bypass the homepage.
+    </p>
+
+<pre>
+&lt;module name="ServerSideInclude"&gt;
+  &lt;param name="src"&gt;error_messages.html&lt;/param&gt;
+&lt;/module&gt;
+</pre>
+
+    <p>The end result is that on that page in your app, if the end-user doesn't have the app or doesn't have the right version, they'll get a warning right away, rather than just thinking your app is broken.</p>
+
+    ]]></param>
+  </module>
+  
+  
+</view>

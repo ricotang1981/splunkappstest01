@@ -1,0 +1,69 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Button - A customBehavior example allowing automatic submission conditionally</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Button - A customBehavior example allowing automatic submission conditionally</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row2_col1" autoRun="True">
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        by default - the autosubmit will not go through. <br><br>
+
+        If you load the page from <a href="?showOnly=1">this link</a>,  only 1 option will be visible and the customBehavior will allow the autoSubmit to go through. 
+        <br>
+        <br>
+        If you load the page from <a href="?showOnly=5">this link</a>,  several options will be visible and the customBehavior will NOT allow the autoSubmit to go through  (thus effectively prompting the user to pick one of the 2 options). 
+      ]]></param>
+    </module>
+    <module name="ValueSetter">
+      <param name="name">optionalHeadCommand</param>
+      <param name="value">| head $showOnly$</param>
+      <param name="requiredKeys">showOnly</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series $optionalHeadCommand$ | sort series | fields series</param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pulldown">
+          <param name="name">series</param>
+          <param name="label">Sourcetype:</param>
+          <param name="template">series="$value$"</param>
+          <param name="valueField">series</param>
+          <param name="staticOptions"></param>
+
+          <module name="Button">
+            <param name="allowAutoSubmit">False</param>
+            <param name="allowSoftSubmit">True</param>
+            <param name="customBehavior">autoSubmitWhenOnlyOneValue</param>
+
+            
+            <module name="Search">
+              <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $series$ | stats min(eps) avg(eps) max(eps) </param>
+              <param name="earliest">-1h</param>
+              <param name="latest">now</param>
+              
+              <module name="Pager">
+                
+                <module name="Table"></module>
+
+              </module>
+            </module>
+          </module>
+          
+        </module>
+      </module>
+    </module>
+  </module>
+
+
+</view>

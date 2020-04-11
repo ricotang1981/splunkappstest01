@@ -1,0 +1,86 @@
+<view>
+  <label>data onboarding notes</label>
+  <module name="TopNav" layoutPanel="appHeader" />
+  <module name="AppNav" layoutPanel="appHeader" />
+
+  <!-- this legacy Sideview Utils module is only here as a workaround since Splunk has not yet released
+any mechanism whereby Sideview XML views can specify what URI should handle Users who to to the legacy
+Advanced XML views. This is also why the "Sideview Utils" app is still required, incidentally. -->
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+
+  <module name="URLLoader" layoutPanel="viewHeader">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="HTML" layoutPanel="panel_row1_col1">
+      <param name="html"><![CDATA[
+      <h1>Overview</h1>
+      <p>
+        A tool to help visually analyze the publicly available data of COVID-19 infections.
+      </p>
+
+      <h2>Getting Started</h2>
+      <p>
+        So you downloaded this app.  If you are reading this in the Splunk GUI, then you already have the prerequisites, <a href="https://splunkbase.splunk.com/app/1486/"><strong>sideview_utils</strong></a> and <a href="https://splunkbase.splunk.com/app/4697/"><strong>canary</strong></a>.
+      </p>
+
+      <p>
+        Once those two apps are installed, you also need to remember to restart the Splunk instance to allow the various app setup actions to trigger.  That's normal, and fortunately, not that common.
+      </p>
+
+      <p>
+        Where do you go from here?  Well, you head over to the <a href="analysis">analysis view</a> which can be reached by the home URL.  It will reload to analysis if all went well, do not panic.
+      </p>
+
+      <p>
+        Now is when the analysis begins for real.  Select the view you want, the countries or regions you wish to analyze, and the case types you wish displayed.  In the graphs you can mouse over particular datapoints to see the numbers.  Remember, you are studying data normalized to time since infections grew beyond a base threshold.
+      </p>
+
+
+      <h2>The Data - Notes, Qualifiers, Assumptions</h2>
+
+      <p>
+        This app uses data pulled regularly from the <a href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data" target="_blank">CSSE COVID-19 dataset</a>.  Some assumptions were made and normalizations were done in the course of building this app.
+      </p>
+
+      <dl>
+        <dt>Missing entries</dt>
+        <dd>The dataset is missing numbers occasionally for particular combinations of day, country and province/state.  What happens in the csv file for that day is that the last-known number for the given country/province is written out again,  with the "Last Update" field set to the last known value from a previous day.
+        <br>
+        <br>
+        The problem is that Splunk out of the box would set _time based on that timestamp, and would thus index these events *into* that prior day... thus doubling the counts when you sum() them up.<br>
+        <br>
+        I have gone back and forth about the right solution to this.  Initially I specifically filtered these events out, and made the SPL itself fill the old numbers forward.  However this was trickier than expected.  Then I let these events be only to discover that even with them all in place, there are still many days with gaps.
+        <br>
+        <br>
+        Currently they are indexed and counted, but the searches set the _time from the filename.
+        </dd>
+
+        <dt>Minimum thresholds</dt>
+        <dd>To normalize the data somewhat, the time point is not since first infection reported, but days since the <em>nth</em> infection in that country, region or state.  Why do this?  Because a region may have limited reporting of confirmed cases until the number of confirmed cases reaches a certain threshold</dd>
+        <dd>You can select different values, but be aware that some charts are a little nonsensical. For example charting the total number of Confirmed cases since the 100th death results in very poor grouping, which makes sense. the "normalization" of the x-axis is in that case almost more of a "random shuffling". </dd>
+        <dd>Two good combinations to try are -- days since 100th confirmed case, and days since 30th death.</dd>
+
+        <dt>Unshifting China</dt>
+        <dd>In the COVID-19 dataset, China begins at 547 confirmed cases.  So it is already well past our arbitrarily defined threshold of "the day it passes 100 confirmed cases".    This causes China to appear quite divergent from the other curves. Previous versions of this app fixed this by manually subtracting 3 days. However now that states/provinces can be charted together with countries, and the number of days used for the x-axis normalization is variable, this is no longer a solution so it's just been taken out. </dd>
+
+        <dt>Normalizing Country_Region values</dt>
+        <dd>A lot of countries are in the list twice with slightly different names and while much of this is probably well-intentioned,  much of it just seemed like arbitrary error.   I have normalized the names and you can see the specific normalizations taken by <a href="../../../../../app/covid19_sideview/search?q=| inputlookup normalized_country_names">running this search</a>.</dd>
+
+        <dt>Some numbers in the dataset are lower than what's in the news</dt>
+        <dd>The numbers for some countries - notably Japan and Australia,  do not seem to match what is currently in the news.  I don't have any explanation for this and I've just let it be.  If you know the explanation please do let me know. (nick@sideviewapps.com)</dd>
+      </dl>
+
+      <h2>Splunk isms - Notes, Qualifiers, Assumptions</h2>
+      <dl>
+        <dt>Update frequency</dt>
+        <dd>I'll update this app every day. It has a copy of the raw JHU CSSE daily report data in it already (see covid_data subdirectory) but it does not ship an enabled data input, nor do you need to turn on the disabled ones that it does ship. See release notes for 0.7 for more information why it's like this now.</dd>
+      </dl>
+
+
+
+      ]]></param>
+    </module>
+
+  </module>
+</view>

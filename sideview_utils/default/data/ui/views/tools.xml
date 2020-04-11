@@ -1,0 +1,89 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Other Tools</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Tools &gt; Other Tools</h1>
+    ]]></param>
+  </module>
+  
+
+
+  
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="The FreshMaker">
+    <param name="html"><![CDATA[
+      <p>
+        When you work on Splunk views and Splunk configurations, you often find yourself keeping <b>http://&lt;your host and port&gt;/debug/refresh?entity=/admin/views</b> open in a separate tab.   You probably also find yourself reloading this tab a few hundred times a day.  If you're a normal person you found this tiresome at some point on the second day. 
+      </p>
+      <p>
+        <a href="refresh_entities">The FreshMaker</a> does not make this tedium go away entirely, but it does make it slightly more pleasant.
+      </p>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col2" group="The Lookup Updater">
+    <param name="html"><![CDATA[
+      <p>
+        The Lookup Updater has moved out of Sideview Utils and currently ships inside the "Sideview Admin Tools" app which is available under the same licensing as Sideview Utils.  If this move has caused or will cause problems for you please <a href="https://sideviewapps.com/contact">contact us and we'll try to help</a>.
+      </p>
+    ]]></param>
+  </module>
+
+
+
+  
+
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True" group="The Export Controller">
+    <param name="search"><![CDATA[
+      index=_internal | head 20000 | stats count by date_hour date_minute sourcetype source host
+    ]]></param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <p>
+          The tools page is not the place for this, but it's hiding here for now. 
+        </p>
+        <p>
+          There is a custom controller in Sideview Utils that you can use to export search results from splunk, while passing a postProcess search.  (Although the relevant endpoints on the splunkd server do accept postprocess arguments,  the core Export Dialog, and the SplunkWeb export endpoints on *SplunkWeb* do not have the ability to use postProcess searches. Hence the need for this controller)
+        </p>
+        <p>
+          The SearchControls module has been updated to use this controller, such that if you use SearchControls in your view, and your view is using a postprocess search, the SearchControls "export" button will incorporate that postprocess search as appropriate. 
+          URL: <br>
+          <br>
+          And if you're more of a developer type interested in the endpoint, it looks like: <br>
+          <b>/custom/sideview_utils/export/results?sid=&lt;YOUR SEARCH ID&gt;&search=&lt;YOUR POSTPROCESS SEARCH&gt;&outputMode=csv</b>
+          <br>
+          Rather than write the endpoint from scratch we just licensed the code from Splunk via the Splunk Developer Agreement so this is largely a copy of the core SplunkWeb endpoint, with a bunch of stuff deleted and postProcess support added. Ymmv.
+        </p>
+        <a href="/custom/sideview_utils/export/results?sid=$results.sid$&outputMode=csv">Export job $results.sid$</a><br>
+        <a href="/custom/sideview_utils/export/results?sid=$results.sid$&outputMode=csv&search=stats count">Use postProcess to export just the count of that same job</a>
+
+      ]]></param>
+    </module>
+  </module>
+
+  
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1" group="Everything else">
+    <param name="html"><![CDATA[
+      <p>
+        If you somehow read this far you are one of the few, the proud, the possibly nonexistent.  Your reward is that you get to see the <a href="custom_behavior1_overview">secret page about the CustomBehavior module</a>.
+      </p>
+    ]]></param>
+  </module>
+
+  
+</view>

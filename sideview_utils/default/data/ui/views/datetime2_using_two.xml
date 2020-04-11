@@ -1,0 +1,68 @@
+  <!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Datetime - using two</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>the Datetime module</h1>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      Here you can see the use of two DateTime modules.  I've thrown in a ZoomLinks and Timeline module combination below so you can see how these modules interact.  Try clicking a bar on the Timeline and then clicking "zoom in to selected range" on the ZoomLinks module.  And I've also thrown in a URLLoader module with 'keepURLUpdated' set to true, so you can see how the back button can work throughout all this.
+    ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="DateTime">
+      <param name="name">earliest</param>
+      <param name="label">From</param>
+      <param name="float">left</param>
+
+      <module name="DateTime">
+        <param name="name">latest</param>
+        <param name="label">To</param>
+        <param name="float">right</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <div class="clearFloats"></div>
+          ]]></param>
+        </module>
+
+        <module name="Search">
+          <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series=splunkd | stats min(eps) avg(eps) max(eps) </param>
+
+          <module name="ZoomLinks">
+            <module name="Timeline">
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  <h3>Statistics for $search.timeRange.label$</h3>
+                ]]></param>
+              </module>
+
+              <module name="ProgressIndicator" />
+              <module name="Pager">
+                <module name="Table"/> 
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END  -->
+
+
+</view>

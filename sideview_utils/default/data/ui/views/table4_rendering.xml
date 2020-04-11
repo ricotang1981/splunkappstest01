@@ -1,0 +1,235 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Table - custom rendering</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Table - advanced rendering abilities</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        In more complex situations the Table module has a few very powerful tricks that make it almost infinitely customizable. 
+      </p>
+      <p>
+        First let's talk about params that can give rows and cells dynamic CSS classes and CSS styles.  This comprises the "custom rendering" feature set of Table.  On the next page we'll talk about Table's "custom embedding" feature set which is very different.
+      </p>
+        
+      <h2>rowClass and rowStyle params</h2>
+      <p>
+        Let's start with 'rowClass'.  This param gets evaluated once for every row in the rendered table. the value accepts $$foo$$ tokens so you can plug in any upstream tokens.  You can also use the syntax $$row.fields.fieldName$$ to plug in the given field value in each rendered row.  The final rowClass value, with all dynamic $$foo$$ tokens substituted,  then gets plugged in as the CSS class name of the given table row (in web-monkey-speak it becomes the 
+        class attribute of the given tr element).
+      </p>
+      
+      ]]></param>
+  </module>
+
+  
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h3>rowClass example</h3>
+      <p>
+        The most common use case of the "rowClass" param, is to combine it with a little custom CSS in your app, and a little search language (typically eval or rangemap), and give your table rows a background color from some finite set of background colors.    This is shown below.
+      </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | stats count by sourcetype | eval myClassField=case(count>100,"red",count>50,"orange",count>25,"yellow",1==1,"blue")
+    ]]></param>
+
+    <module name="ProgressIndicator" />
+    
+    <module name="Pager">
+
+      <module name="Table">
+        <param name="rowClass">$row.fields.myClassField$</param>
+        <param name="hiddenFields">myClassField</param>
+      </module>
+    </module>
+
+  </module>
+  
+  <!-- its best to use application.css,  custom CSS, or even the SideviewUtils
+  modules "customStylesheet" param, but you can also embed CSS directly like 
+  this in a pinch. -->
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <style type="text/css">
+      .Table tr.red {
+        background-color:#f01b31;
+      }
+      .Table tr.orange {
+        background-color:#fcb316;
+      }
+      .Table tr.yellow {
+        background-color:#fef200;
+      }
+      .Table tr.blue {
+        background-color:#0090d6;
+      }
+      </style>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE END-->
+  
+
+
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h3>rowStyle example</h3>
+      <p>
+        Here we use the numeric "count" value, and some odd looking search language in a postProcess search, to create background colors for each row that range from a deep red to a neutral gray. Higher count values will have redder backgrounds.  
+      </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | stats count by sourcetype 
+    ]]></param>
+
+    <module name="ProgressIndicator" />
+    
+    <!-- just an example, but this search language creates a gradient of 
+    color values from a sort of grey to a deep red. 
+    To be frank the best practice here is to vary the colors on an HSB scale
+    rather than an RGB scale, but that requires slightly nuttier search 
+    language to convert from HSB to RGB at the end. 
+    -->
+    <module name="PostProcess">
+      <param name="search"><![CDATA[
+        | eval myCustomRed=round(255*count/1000) | eval myCustomRed=round(myCustomRed/2) + 127 | eval myCustomRedHex=tostring(myCustomRed,"hex") | eval myCustomRedHex=replace(myCustomRedHex,"0x","") | eval myCustomRedHex=if(length(myCustomRedHex)<2,"0"+myCustomRedHex,myCustomRedHex) | eval myCustomHexColor=myCustomRedHex + "6666" | fields - myCustomRed myCustomRedHex
+      ]]></param>
+      <module name="Pager">
+        <module name="Table">
+          <param name="rowStyle">background-color:#$row.fields.myCustomHexColor$</param>
+          <param name="hiddenFields">myCustomHexColor</param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+    <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h3>columns.myFieldName.class example</h3>
+      <p>
+        here we assign a background color from some finite set of background colors, but we assign it just to the "count" cells. 
+      </p>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | stats count max(eps) by sourcetype | eval myClassField=case(count>100,"red",count>50,"orange",count>25,"yellow",1==1,"blue")
+    ]]></param>
+
+    <module name="ProgressIndicator" />
+    
+    <module name="Pager">
+
+      <module name="Table">
+        <param name="columns.count.class">$row.fields.myClassField$</param>
+        <param name="hiddenFields">myClassField</param>
+      </module>
+    </module>
+
+  </module>
+  
+  <!-- its best to use application.css,  custom CSS, or even the SideviewUtils
+  modules "customStylesheet" param, but you can also embed CSS directly like 
+  this in a pinch. -->
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <style type="text/css">
+      .Table td.red {
+        background-color:#f01b31;
+      }
+      .Table td.orange {
+        background-color:#fcb316;
+      }
+      .Table td.yellow {
+        background-color:#fef200;
+      }
+      .Table td.blue {
+        background-color:#0090d6;
+      }
+      </style>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE END-->
+  
+
+
+
+  <module name="HTML" layoutPanel="panel_row5_col1">
+    <param name="html"><![CDATA[
+      <p>
+        Last but not least we assign a custom CSS style to the count column.  As with the rowStyle example above, we create a hexColor and use it as the background color.
+      </p>
+    ]]></param>
+  </module>
+
+    <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row5_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      index=_internal | head 1000 | stats count max(eps) by sourcetype 
+    ]]></param>
+
+    <module name="ProgressIndicator" />
+    
+    <!-- just an example, but this search language creates a gradient of 
+    color values from a sort of grey to a deep red. 
+    To be frank the best practice here is to vary the colors on an HSB scale
+    rather than an RGB scale, but that requires slightly nuttier search 
+    language to convert from HSB to RGB at the end. 
+    -->
+
+    <module name="PostProcess">
+      <param name="search"><![CDATA[
+        | eval myCustomRed=round(255*count/1000) | eval myCustomRed=round(myCustomRed/2) + 127 | eval myCustomRedHex=tostring(myCustomRed,"hex") | eval myCustomRedHex=replace(myCustomRedHex,"0x","") | eval myCustomRedHex=if(length(myCustomRedHex)<2,"0"+myCustomRedHex,myCustomRedHex) | eval myCustomHexColor=myCustomRedHex + "6666" | fields - myCustomRed myCustomRedHex
+      ]]></param>
+      <module name="Pager">
+        <module name="Table">
+          <param name="columns.count.style">background-color:#$row.fields.myCustomHexColor$</param>
+          <param name="hiddenFields">myCustomHexColor</param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>Note that we use the "hiddenFields" param of the Table module to avoid also displaying the text values of the "rowClass" and "myCustomHexColor" fields in their own columns. </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Table" target="_blank">Table and its params</a>.
+        </li>       
+      </ol>
+      ]]></param>
+  </module>
+
+  
+  
+
+</view>

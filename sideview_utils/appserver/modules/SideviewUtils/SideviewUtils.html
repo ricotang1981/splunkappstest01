@@ -1,0 +1,115 @@
+<% 
+# Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved.
+%>
+
+<%
+import splunk.appserver.mrsparkle.lib.times as times
+from splunk.appserver.mrsparkle.lib import util
+
+timeRangeStanzas  = times.getTimeRanges(namespace=APP['id'])
+timesJson = []
+for t in timeRangeStanzas:
+    item = {}
+    if "is_sub_menu" in t:
+        continue
+    for k in t :
+        if k in ("label", "header_label"):
+            item[k] = _(t[k])
+        elif k in ("earliest_time", "latest_time") :
+            item[k] = t[k]
+    timesJson.append(item)
+
+def validateApp(app) :
+    if (not app.replace("_","").replace("-","").isalnum()) : 
+        raise ValueError("app names in the SideviewUtils module can only be made of alphanumeric characters, underscores and hyphens. (" + app + ")")
+
+def validateFilename(filename) :
+    if (not filename.replace("_","").replace(".","").isalnum()) : 
+        raise ValueError("filename values in the SideviewUtils module can only be made of alphanumeric characters, underscores and periods. (" + filename + ")")
+
+def getAppAndFileDict(appAndFileStr) :
+    appAndFile = appAndFileStr.split("/")
+    d = {}
+
+    if (len(appAndFile)==1) :
+        d["app"] = APP['id']
+        d["filename"] = appAndFile[0]
+    elif (len(appAndFile)==2) :
+        d["app"] = appAndFile[0]
+        d["filename"] = appAndFile[1]
+    else : 
+        raise ValueError("you can only have zero or one slash character(s) in each customJavascript/customStylesheet value")
+    
+    validateApp(d["app"])
+    validateFilename(d["filename"])
+        
+    return d
+
+def getJavascriptFiles(module) :
+    if "customJavascript" not in module or not module["customJavascript"] :
+        return []
+
+    rawParam = module["customJavascript"]
+    cleanDicts = []
+    
+    for appAndFile in rawParam.split(" ") : 
+        d = getAppAndFileDict(appAndFile)
+        cleanDicts.append(d)
+
+    return cleanDicts
+
+
+def getStylesheetFiles(module) :
+    if "customStylesheet" not in module or not module["customStylesheet"] :
+        return []
+    rawParam = module["customStylesheet"]
+    cleanDicts = []
+    
+    for appAndFile in rawParam.split(" ") : 
+        d = getAppAndFileDict(appAndFile)
+        cleanDicts.append(d)
+
+    return cleanDicts
+%>
+
+
+<%def name="buildScriptTags(module)">
+    % for appAndFile in getJavascriptFiles(module) :
+<script type="text/javascript" src="${make_url('/static/app/' + appAndFile['app'] + '/' + appAndFile['filename'])}"></script>
+    % endfor
+</%def>
+
+<%def name="buildStylesheetTags(module)">
+    % for appAndFile in getStylesheetFiles(module) :
+<link rel="stylesheet" type="text/css" href="${make_url('/static/app/' + appAndFile['app'] + '/' + appAndFile['filename'])}" />
+    % endfor
+</%def>
+
+
+<%page args="module"/>
+<%namespace name="shared" file="/sideview_utils:/templates/shared.html" import="*"/>
+
+<!--[if IE]>
+<style type="text/css">
+div.Pulldown select {
+    height:auto;
+</style>
+<![endif]-->
+
+<script type="text/javascript" src="${make_url('/static/app/sideview_utils/sideview.js')}"></script>
+<script type="text/javascript" src="${make_url('/static/app/sideview_utils/sideview_xml.js')}"></script>
+<script type="text/javascript" src="${make_url('/static/app/sideview_utils/core_patches.js')}"></script>
+
+<script type="text/javascript">
+    Sideview.utils.customTimeRanges = ${jsonify(timesJson)};
+</script>
+
+${buildScriptTags(module)}\
+${buildStylesheetTags(module)}\
+
+<link rel="stylesheet" type="text/css" media="print" href="${make_url('/static/app/sideview_utils/print.css')}" />
+<%call expr="shared.inline_script()">
+    $(document).trigger("javascriptClassesLoaded");
+    window.$C["FORM_KEY"] = "${util.getFormKey()|h}"
+    foobar =" bazcuux"
+</%call>

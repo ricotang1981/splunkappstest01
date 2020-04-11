@@ -1,0 +1,94 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - dynamic config</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - Dynamic Config</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: dynamic pulldown">
+    <param name="html"><![CDATA[
+      Now the only change is changing our Pulldown to a dynamic configuration from a static one. 
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="valueField">series</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$selectedSourcetype$" | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          
+          <module name="Table"></module>
+      
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetype is: <b>$selectedSourcetype$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Relative to the previous page, the big change here is that the Pulldown is now configured dynamically, in that it will load it's values using the current search result rows.  As to how it does this, the Pulldown will inherit whatever search was defined upstream.  Think of Pulldown just like any other results-rendering module like SimpleResultsTable.
+        </li>
+        <li>
+          There are lots of very nice things that fall into place with this improvement.
+        </li>
+        <li>
+          Want to use a scheduled saved search or just a saved search to render the options for your pulldown?  Because Pulldown loads from the current search results, it's now trivial to do so - you just use HiddenSavedSearch module. 
+        </li>
+        <li>
+          Want there to be a ProgressIndicator module to show the user the progress on the job running the pulldowns?  Again, no problem, just throw a JobProgressIndicator module in there.* 
+        </li>
+        <li>
+          Want there to be 7 dynamic pulldowns but you don't want to run 7 searches to populate them?  Now you can use a PostProcess module and hang them all off of one datacube search.*
+        </li>
+        <li>
+          To configure the Pulldown to get values dynamically from search results, use the 'valueField' param. In addition to 'valueField', if you want a second field to specify the label of the elements,  you can set 'labelField'.  (You can also omit 'labelField' and the labels will just be the values themselves). 
+        </li>
+        <li>
+          In Sideview Utils 1.3.X and earlier, Pulldown used two params that are now deprecated- 'searchFieldsToDisplay' and 'staticFieldsToDisplay'. This code is backwards-compatible such that you can still use these old params.  However, it is recommended to use the newer names - 'staticOptions' replaces 'staticFieldsToDisplay', and the simple params 'valueField' and 'labelField' replace the old and unwieldy param 'searchFieldsToDisplay'.
+        </li>
+        <li>
+          Also, when you need to preselect one of the dynamic options, you do this by using a ValueSetter module upstream from the Pulldown. The <a href="value_setter1_intro?" target="_blank">ValueSetter docs page discusses this, and contains a working example</a>.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Pulldown" target="_blank">Pulldown and its params</a>
+        </li>
+      </ol>
+
+      * The functionality denoted with an asterisk is not possible using just Splunk's core modules.
+      ]]></param>
+  </module>
+</view>

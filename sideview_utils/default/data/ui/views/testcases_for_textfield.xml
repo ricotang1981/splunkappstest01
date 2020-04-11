@@ -1,0 +1,197 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for TextField</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for TextField</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" autoRun="True" layoutPanel="viewHeader">
+    
+    <module name="TextField" layoutPanel="panel_row1_col1" group="simple one line">
+      <param name="name">field1</param>
+      <param name="template">$name$="$value$"</param>
+      <module name="Search">
+        <param name="search">$field1$</param>
+        <module name="HTML">
+          <param name="html">
+          <![CDATA[
+            $$field1$$ = $field1$<br><br>
+            $$field1.rawValue$$ = $field1.rawValue$<br>
+            $$field1.element$$ = $field1.element$  (&lt;- this should just say 'object')<br>
+            $$search$$ = $search$
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+    <module name="TextField" layoutPanel="panel_row1_col2" group="simple three line">
+      <param name="name">field1</param>
+      <param name="rows">3</param>
+
+      <module name="Button">
+        <module name="Search">
+          <param name="search">$field1$</param>
+
+          <module name="HTML">
+            <param name="html">
+            <![CDATA[
+              $$field1$$ = $field1$<br><br>
+              $$field1.rawValue$$ = $field1.rawValue$<br>
+              $$field1.element$$ = $field1.element$  (&lt;- this should just say 'object')<br>
+              $$search$$ = $search$
+            ]]></param>
+          </module>
+        </module>
+      </module>
+
+    </module>
+
+
+
+    <module name="TextField" layoutPanel="panel_row3_col1" group="sending keys upstream">
+      <param name="name">field1</param>
+      <param name="template">$name$="$value$"</param>
+
+      <module name="TextField">
+        <param name="name">field2</param>
+        <param name="template">$name$="$value$"</param>
+      
+        <module name="Search">
+          <param name="search">$field1$ $field2$</param>
+
+
+          <module name="HTML">
+            <param name="html">
+            <![CDATA[
+              <a href="#field1=fred">set field 1 to fred</a><br>
+              <a href="#field2=mildred">set field 2 to mildred</a><br>
+              <br>
+              <br>
+              $search$
+            ]]></param>
+            <param name="customBehavior">sendContextKeysUpstream</param>
+          </module>
+        </module>
+      </module>
+
+    </module>
+
+
+
+    <module name="TextField" layoutPanel="panel_row3_col2" group="prepopulation">
+      <param name="name">field3</param>
+      <param name="template">$name$="$value$"</param>
+
+      <module name="TextField">
+        <param name="name">field4</param>
+        <param name="template">$name$="$value$"</param>
+      
+        <module name="Search">
+          <param name="search">$field3$ $field4$</param>
+
+
+          <module name="HTML">
+            <param name="html">
+            <![CDATA[
+              <a href="testcases_for_textfield?field3=fred&field4=mildred">hard links</a><br>
+              <a href="testcases_for_textfield#field3=fred&field4=mildred">soft links</a><br>
+              <br>
+              <br>
+              $search$
+            ]]></param>
+          </module>
+        </module>
+      </module>
+
+    </module>
+
+
+    <module name="Message" layoutPanel="panel_row4_col1">
+      <param name="filter">customValidator_1</param>
+      <param name="maxSize">1</param>
+      <param name="clearOnJobDispatch">True</param>
+    </module>
+    
+    <module name="TextField" layoutPanel="panel_row4_col1" group="validation with a customBehavior">
+      <param name="name">field_to_validate</param>
+      <param name="template">$name$="$value$"</param>
+      <param name="customBehavior">customInputValidation</param>
+
+      <module name="Search">
+        <param name="search">| stats count | eval fred="$field_to_validate$"</param>
+        
+        <module name="ProgressIndicator"/>
+        <module name="HTML">
+          <param name="html">
+          <![CDATA[
+            <a href="testcases_for_textfield?field3=fred&field4=mildred">hard links</a><br>
+            <a href="testcases_for_textfield#field3=fred&field4=mildred">soft links</a><br>
+            <br>
+            <br>
+            $search$
+          ]]></param>
+        </module>
+      </module>
+
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row5_col1" group="stale data case">
+      <param name="search"><![CDATA[
+        index="_internal" sourcetype="splunkd" component="metrics" group="per_*_thruput" | head 1000 | stats count by group
+      ]]></param>
+      <module name="Pulldown">
+        <param name="name">group</param>
+        <param name="label">Group</param>
+        <param name="template">$name$="$value$"</param>
+        <param name="valueField">$name$</param>
+        <param name="labelField">$name$</param>
+        
+        <module name="TextField">
+          <param name="name">myTextField</param>
+          <param name="template">$name$="$value$"</param>
+          
+          <module name="Search">
+            <param name="search"><![CDATA[
+              index="_internal" sourcetype="splunkd" component="metrics" $group$ | head 1000 | stats count by group
+            ]]></param>
+            
+            <module name="Button">
+              <param name="allowAutoSubmit">True</param>
+              <param name="allowSoftSubmit">False</param>
+              
+              <module name="ProgressIndicator" />
+              
+              
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                 
+                 <p>
+                  group = $group.rawValue$<br>
+                  myTextField = $myTextField.rawValue$<br>
+                 </p>
+                 
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+  </module>
+    
+
+</view>

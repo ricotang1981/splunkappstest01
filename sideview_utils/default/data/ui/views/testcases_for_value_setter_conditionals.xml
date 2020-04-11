@@ -1,0 +1,471 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for ValueSetter - Conditionals</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for ValueSetter - Conditionals</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Pulldown">
+      <param name="name">foo</param>
+      <param name="label">Conditional test with foo=*</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="label">bar</param>
+          <param name="value">bar</param>
+        </list>
+      </param>
+      <module name="ValueSetter">
+        <param name="name">friendOfFoo</param>
+        <param name="if.$foo$=*">foo has a value!!</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            says "foo has a value" if appropriate. Otherwise no default:<br>
+            <b>$friendOfFoo$</b>
+          ]]></param>
+        </module>
+      </module>
+
+      <module name="ValueSetter">
+        <param name="name">isFooNull</param>
+        <param name="if.$foo$=*"></param>
+        <param name="default">yes!</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            says nothing if foo has a value.  "yes!" otherwise.
+            <b>$isFooNull$</b>
+          ]]></param>
+        </module>
+      </module>
+
+    </module>
+    
+    <module name="Pulldown" layoutPanel="panel_row1_col2">
+      <param name="name">foo</param>
+      <param name="label">Conditional test with foo=bar</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="label">bar</param>
+          <param name="value">bar</param>
+        </list>
+        <list>
+          <param name="label">baz</param>
+          <param name="value">baz</param>
+        </list>
+      </param>
+      <module name="ValueSetter">
+        <param name="name">friendOfFoo</param>
+        <param name="if.$foo$=bar">foo is bar!!</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            says "foo is bar" as appropriate. Otherwise nothing<br>
+            $friendOfFoo$
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Pulldown" layoutPanel="panel_row1_col3">
+      <param name="name">foo</param>
+      <param name="label">Conditional test with foo=bar, and default</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="label">bar</param>
+          <param name="value">bar</param>
+        </list>
+        <list>
+          <param name="label">baz</param>
+          <param name="value">baz</param>
+        </list>
+      </param>
+      <module name="ValueSetter">
+        <param name="name">friendOfFoo</param>
+        <param name="if.$foo$=bar">foo is bar</param>
+        <param name="default">sadness</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            says "foo is bar" as appropriate. "sadness" otherwise:<br>
+            <b>$friendOfFoo$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Pulldown" layoutPanel="panel_row2_col1">
+      <param name="name">foo</param>
+      <param name="label">foo</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="label">bar</param>
+          <param name="value">bar</param>
+        </list>
+        <list>
+          <param name="label">baz</param>
+          <param name="value">baz</param>
+        </list>
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">user</param>
+        <param name="label">user</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">(no value)</param>
+            <param name="value"></param>
+          </list>
+          <list>
+            <param name="value">mildred</param>
+          </list>
+          <list>
+            <param name="value">agnes</param>
+          </list>
+        </param>
+        <module name="ValueSetter">
+          <param name="name">friendOfFooAndMildred</param>
+          <param name="if.$foo$=bar">foo is bar!!</param>
+          <param name="if.$user$=mildred">user is mildred!!</param>
+          <param name="default">sadness</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              Should complain that the priority flags are not set. 
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="Pulldown" layoutPanel="panel_row2_col2">
+      <param name="name">foo</param>
+      <param name="label">foo</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="value">bar</param>
+        </list>
+        <list>
+          <param name="value">baz</param>
+        </list>
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">bar</param>
+        <param name="label">bar</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">(no value)</param>
+            <param name="value"></param>
+          </list>
+          <list>
+            <param name="value">bar</param>
+          </list>
+          <list>
+            <param name="value">baz</param>
+          </list>
+        </param>
+        <module name="ValueSetter">
+          <param name="name">friendOfFooAndBar</param>
+          <param name="if.$foo$=$bar$">foo and bar are the same!!!</param>
+          <param name="default">sadness</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              Should say "foo and bar are the same!!" as appropriate, even if they are both null. otherwise default is "sadness"<br>
+              <b>$friendOfFooAndBar$</b>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Pulldown" layoutPanel="panel_row2_col3">
+      <param name="name">foo</param>
+      <param name="label">foo</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="value">bar</param>
+        </list>
+        <list>
+          <param name="value">baz</param>
+        </list>
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">bar</param>
+        <param name="label">bar</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">(no value)</param>
+            <param name="value"></param>
+          </list>
+          <list>
+            <param name="value">bar</param>
+          </list>
+          <list>
+            <param name="value">baz</param>
+          </list>
+        </param>
+        <module name="ValueSetter">
+          <param name="name">friendOfFooAndBar</param>
+          <param name="requiredKeys">foo,bar</param>
+          <param name="if.$foo$=$bar$">foo and bar are the same!!!</param>
+          <param name="default">sadness</param>
+
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              Should say "foo and bar are the same!!" as appropriate, and only if both are non-null. otherwise default is "sadness"<br>
+              <b>$friendOfFooAndBar$</b>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="Pulldown" layoutPanel="panel_row3_col1">
+      <param name="name">foo</param>
+      <param name="label">foo</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no value)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="value">bar</param>
+        </list>
+        <list>
+          <param name="value">baz</param>
+        </list>
+      </param>
+
+      <module name="Pulldown">
+        <param name="name">bar</param>
+        <param name="label">bar</param>
+        <param name="staticOptions">
+          <list>
+            <param name="label">(no value)</param>
+            <param name="value"></param>
+          </list>
+          <list>
+            <param name="value">bar</param>
+          </list>
+          <list>
+            <param name="value">baz</param>
+          </list>
+        </param>
+
+        <module name="Pulldown">
+          <param name="name">baz</param>
+          <param name="label">baz</param>
+          <param name="staticOptions">
+            <list>
+              <param name="label">(no value)</param>
+              <param name="value"></param>
+            </list>
+            <list>
+              <param name="value">bar</param>
+            </list>
+            <list>
+              <param name="value">baz</param>
+            </list>
+          </param>
+          
+          <module name="Pulldown">
+            <param name="name">bat</param>
+            <param name="label">bat</param>
+            <param name="staticOptions">
+              <list>
+                <param name="label">(no value)</param>
+                <param name="value"></param>
+              </list>
+              <list>
+                <param name="value">bar</param>
+              </list>
+              <list>
+                <param name="value">baz</param>
+              </list>
+            </param>
+            <module name="ValueSetter">
+              <param name="name">friend</param>
+              <param name="if.$foo$=$bar$[priority=1]">1. foo and bar are the same!!!</param>
+              <param name="if.$foo$=$baz$[priority=2]">2. foo and baz are the same!!!</param>
+              <param name="if.$foo$=$bat$[priority=3]">3. foo and bat are the same!!!</param>
+              <param name="default">sadness</param>
+
+              <module name="HTML">
+                <param name="html"><![CDATA[
+                  Checking precedence order... <br>
+                  if first Pulldown is the same as any other Pulldown, the FIRST matching one in the list should win.
+
+                  otherwise default is "sadness"<br>
+                  <b>$friend$</b>
+                ]]></param>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row4_col1">
+      <param name="name">foo</param>
+      <param name="if.$foo$=bar">someConditionalValue</param>
+      <param name="value">someValue</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          (Should be an error whingeing about use of "value" with "if.*") 
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row4_col2">
+      <param name="name">foo</param>
+      <param name="if.$foo$=bar OR something=somethingElse">someConditionalValue</param>
+      <param name="value">someValue</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          (Should be an error whingeing about unsupported boolean syntax) 
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="ValueSetter" layoutPanel="panel_row4_col3">
+      <param name="name">foo</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          (Should be an error whingeing that you need either a "value" param or at least one "if.*" param.) 
+        ]]></param>
+      </module>
+    </module>
+
+    <module name="Search" layoutPanel="panel_row5_col1">
+      <param name="search">matches no results at all</param>
+      <param name="earliest">-30min</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="ValueSetter">
+        <param name="name">foo</param>
+        <param name="if.$results.eventCount$=0">there are no events!</param>
+        <param name="default">there are actually more than 0 events matched</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            Should say there are no events<br>
+            $$results.eventCount$$ = $results.eventCount$<br>
+            <span class="shouldBe" s:shouldBe="there are no events!">$foo$</span>
+          ]]></param>
+          <param name="customBehavior">highlightPassesAndFails</param>
+        </module>
+      </module>
+    </module>
+
+
+    <module name="Search" layoutPanel="panel_row5_col2">
+      <param name="search">index=* OR index=* | head 100 | stats count</param>
+
+      <module name="ProgressIndicator" />
+
+      <module name="ValueSetter">
+        <param name="name">foo</param>
+        <param name="if.$results.count$=0">there are no results!</param>
+        <param name="default">results exist!</param>
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <b>KNOWN FAILURE</b><br>
+            Should say results exists<br>
+            <br>
+            $$results.count$$ = $results.count$<br>
+            <span class="shouldBe" s:shouldBe="results exist!">$foo$</span>
+          ]]></param>
+          <param name="customBehavior">highlightPassesAndFails</param>
+        </module>
+      </module>
+    </module>
+
+
+
+    <module name="CheckboxPulldown" layoutPanel="panel_row6_col1">
+      <param name="name">things</param>
+      <param name="label">Array Testcase</param>
+      <param name="staticOptions">
+        <list>
+          <param name="value">thing1selected</param>
+          <param name="label">thing1selected</param>
+          <param name="selected">True</param>
+        </list>
+        <list>
+          <param name="value">thing2selected</param>
+          <param name="label">thing2selectedzero duration</param>
+        </list>
+      </param>
+
+      <module name="ValueSetter">
+        <param name="name">isThingOneSelected</param>
+        <param name="if.$things.rawValue$=thing1selected">YES</param>
+        <param name="default">NO</param>
+
+        <module name="ValueSetter">
+          <param name="name">isThingTwoSelected</param>
+          <param name="if.$things.rawValue$=thing2selected">YES</param>
+          <param name="default">NO</param>
+          
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              Passes if only one is selected. Fails if more than one is selected (and all become NO)
+              <br>
+              $$isThingOneSelected$$ = <span class="shouldBe" s:shouldBe="YES">$isThingOneSelected$</span><br>
+              $$isThingTwoSelected$$ = <span class="shouldBe" s:shouldBe="NO">$isThingTwoSelected$</span>
+            ]]></param>
+            <param name="customBehavior">highlightPassesAndFails</param>
+          </module>
+        </module>
+      </module>
+    </module>
+
+  </module>
+    
+
+</view>

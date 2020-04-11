@@ -1,0 +1,36 @@
+<dashboard>
+  <label>(redirect to Canary UI)</label>
+  <row>
+    <panel>
+
+      <html>
+
+        <p>If you're reading this, and you aren't being redirected away from this page, it means there is a problem.  If there is an error message at the top of this page it will tell you what to do.  If you're not being redirected, and there's no error mesasge please read on.  </p>
+
+        <p>
+          This app requires two other apps to be installed.  <br />
+          Both can be installed from Splunkbase.<br />
+          The apps are:
+        </p>
+
+        <ol>
+          <li>Canary (<a href="https://sideviewapps.com/apps/canary/">details</a>)</li>
+          <li>Sideview Utils (<a href="https://sideviewapps.com/apps/sideview-utils/">details</a>)</li>
+        </ol>
+
+        To install them,
+        <ol>
+          <li>look at the top left of this page - next to the Splunk logo there is an app dropdown.<br />
+              Open that and you'll see "Manage Apps" in there.  Click that link</li>
+          <li>On the following page click the green button in the top right that says "browse more apps"</li>
+          <li>On the following page, note the text box in the top left - type "Canary" into that box (without the quotes) and hit return.</li>
+          <li>If you get a panel telling you about Canary, and it has a green "install" button, click that. </li>
+          <li>Repeat but with "Sideview Utils"   to install the Sideview Utils app. )</li>
+          <li>Afterward you will need to restart Splunk (Splunk has a bug where it might not prompt you itself to restart, but you do need to restart)</li>
+          <li>Afterwards when you try to return to this page, it will automatically redirect you to the main interface for the app</li>
+        </ol>
+
+      </html>
+    </panel>
+  </row>
+</dashboard>

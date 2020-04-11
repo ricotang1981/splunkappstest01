@@ -1,0 +1,147 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - configuring the 'all' options</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - configuring the 'all' options</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      If you don't specify a 'staticOptions' param, by default the Pulldown module will have an 'All' entry that ends up sending down the value "*". Sometimes you may want to suppress this, or you may want it be there, but you want it to send down a null value instead of the "*".
+      ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h3>removing the default 'all' option entirely</h3>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="staticOptions"></param>
+      <param name="valueField">series</param>
+      
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$selectedSourcetype$" | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          <param name="entityName">results</param>
+          
+          <module name="Table"></module>
+
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetype is: <b>$selectedSourcetype$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>Note the null value for the 'staticOptions' param. This overrides the default value that would normally appear with label="All" and value="*".  The end result is that there is no special 'all' or 'choose' value in the Pulldown at all, and the first dynamic value will get selected by default.</li>
+      </ol>
+    ]]></param>
+  </module>
+
+    
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h3>Having a special static option that inserts nothing at all into the search</h3>
+    ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetype</param>
+      <param name="label">Sourcetype</param>
+      <param name="template">series="$value$"</param>
+      <param name="valueField">series</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">(no filter at all)</param>
+          <param name="value"></param>
+        </list>
+        <list>
+          <param name="label">(only events where some value exists for the sourcetype field)</param>
+          <param name="value">*</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetype$ | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+
+          <module name="Table"></module>
+
+        </module>
+        
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetype is: <b>$selectedSourcetype$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>  
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row3_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          When one of the values is just an empty string (""),  and you're using the Pulldown's 'template' param,  then you can have nothing at all inserted into the string when the special option is selected. 
+        </li>
+        <li>
+          In cases where you need the value to be wrapped in a user="" format, this technique will require that you use the 'template' param to do the wrapping.*
+        </li>
+      </ol>
+
+      <p>
+        * Splunk's core UI is not able to do this; 'all' options in SearchSelectListers must insert a fieldName="*" searchterm even if this causes unwanted filtering.
+      </p>
+    ]]></param>
+  </module>
+
+</view>

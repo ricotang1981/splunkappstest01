@@ -1,0 +1,64 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Target View 1 - (no editable controlsor prepopulation)</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Linking - Target view 1</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="HTML" layoutPanel="viewHeader">
+      <param name="html"><![CDATA[
+       <h3>$title$</h3>
+      ]]></param>
+    </module>
+
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" group="$group$" series="$series$" | $report$</param>
+      <param name="earliest">-2h</param>
+
+      <module name="Pager">
+        <param name="entityName">results</param>
+
+        <module name="Table" />
+      </module>
+    </module>
+
+    <module name="HTML" layoutPanel="panel_row1_col2">
+      <param name="html"><![CDATA[
+        DEBUGGING: Here are the keys that get passed down through the modules from URLLoader:
+        group: <b>$group$</b><br>
+        series: <b>$series$</b><br>
+        report: <b>$report$</b><br>
+        <br>
+
+        and here's the overall search that runs when it all gets put together: <br>
+        <b>$search$</b>
+        <br>
+        <br>
+
+        NOTES:
+        <ol>
+          <li>There is no prepopulation in this example. This example is intended just to show how you can link dynamically to an otherwise plain view</li>
+          <li>We don't use it here, but URLLoader has an explicit <b>autoRun</b> param that allows you to dynamically set whether the target view has autoRun set to true or false.</li>
+        </ol>
+
+        ]]></param>
+    </module>
+  </module>
+
+  
+  
+
+
+</view>

@@ -1,0 +1,29 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Table - drilldown with PostProcess</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <!-- EXAMPLE BEGIN -->
+    <module name="HiddenSearch" layoutPanel="panel_row1_col1" autoRun="True">
+      <param name="search">index=_internal source="*metrics.log" group="per_*_thruput"  | fields group series</param>
+      <param name="earliest">-12h</param>
+      
+      <module name="PostProcess">
+        <param name="search">timechart count by group</param>
+            
+        <module name="Table">
+        </module>
+
+      </module>
+    </module>
+  <!-- EXAMPLE END -->
+
+
+ 
+  
+
+</view>

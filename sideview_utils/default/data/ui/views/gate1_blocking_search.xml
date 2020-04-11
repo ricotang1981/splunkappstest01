@@ -1,0 +1,95 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Gate - Blocking Searches</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Gate - Blocking Searches</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        You can use the Gate module to prevent a push from proceeding downstream until one or more $$foo$$ tokens are set.  <br>
+        <br>
+        For example if you have two or more Pulldowns, and you dont want the main search on the page to ever dispatch unless they're both set to real values,  you would use a Gate there. You basically are telling the Gate to only open when the given values are non-null.<br>
+        <br>
+        In the example below we have two Pulldowns, and we don't the main search to dispatch until the user has picked a real value for <b>both</b> of them.   To do this we use the "requiredKeys" param on the Gate module.   click the "View XML Source" link to see how the working configuration. 
+      </p>
+    ]]></param>
+  </module>
+
+
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search"><![CDATA[
+      | eventcount index=* summarize="false" | where count>0
+    ]]></param>
+    
+    <module name="Pulldown">
+      <param name="name">index</param>
+      <param name="label">Index</param>
+      <param name="valueField">$name$</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">Select...</param>
+          <param name="value">ZOMG</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search"><![CDATA[
+          | metadata index="$index$" type="sourcetypes" 
+        ]]></param>
+      
+        <module name="Pulldown">
+          <param name="name">sourcetype</param>
+          <param name="label">Sourcetype</param>
+          <param name="valueField">$name$</param>
+          <param name="staticOptions">
+            <list>
+              <param name="label">Select...</param>
+              <param name="value"></param>
+            </list>
+          </param>
+
+          <module name="Gate">
+            <param name="requiredKeys">index,sourcetype</param>
+
+            <module name="Search">
+              <param name="search"><![CDATA[
+                index=_internal source="*metrics.log" group="per_sourcetype_thruput" series="$sourcetype$" | timechart min(eps) avg(eps) max(eps)
+              ]]></param>
+              <module name="ValueSetter">
+                <param name="arg.charting.chart">line</param>
+                <module name="JSChart"/>
+              </module>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>The gate can close again if one or more keys return to being unset.  When this happens the Gate will call reset on all it's descendant modules, effectively clearing the page below.  Try it out by setting one of the Pulldowns back to "Select..." </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Gate" target="_blank">Gate and its params</a>.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+
+</view>

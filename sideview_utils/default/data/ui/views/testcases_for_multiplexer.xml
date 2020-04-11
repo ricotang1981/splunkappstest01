@@ -1,0 +1,249 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="false" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for Multiplexer</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Multiplexer</h1>
+
+
+
+    ]]></param>
+  </module>
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row1_col1" group="one static child" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top group | streamstats count | eval group=group+" (" + count + ")"</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+
+    <module name="Multiplexer">
+      <param name="field">group</param>
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          Displaying stuff about $group$
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+  
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row1_col2" group="one static child, with postProcess" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top group</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="PostProcess">
+      <param name="search"> | streamstats count | eval groupLabel=group+" (" + count + ")"</param>
+
+      <module name="Multiplexer">
+        <param name="fields">group,groupLabel</param>
+        
+        <module name="Link">
+          <param name="label"><![CDATA[$groupLabel$]]></param>
+
+          <module name="Redirector">
+            <param name="url">search</param>
+            <param name="arg.q">search index=_internal source=*metrics.log group="$group$"</param>
+            <param name="arg.earliest">-1d</param>
+            <param name="arg.latest">now</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+  
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row2_col1" group="one child, 2 grandchildren" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top group | streamstats count | eval group=group+" (" + count + ")"</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+    
+    <module name="Multiplexer">
+      <param name="field">group</param>
+
+      <module name="CustomBehavior">
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            FIRST grandchild module displaying stuff about $group$ 
+          ]]></param>
+        </module>
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            SECOND grandchild module about $group$
+            <hr />
+           
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row2_col2" group="More complex ordering test" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_*_thruput | top group</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="Multiplexer">
+      <param name="field">group</param>
+
+      <module name="CustomBehavior">
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>$group$</h2>
+            <p>S/B a button and then a table</p>
+          ]]></param>
+        </module>
+
+        <module name="Button">
+          <param name="label">search $group$</param>
+          <param name="allowSoftSubmit">True</param>
+
+          <module name="Search">
+            <param name="search">index=_internal source=*metrics.log group="$group$" | stats sum(kb) by series | head 100</param>
+            
+            <module name="ProgressIndicator" />
+            <module name="Pager">
+              <param name="count">5</param>
+              <module name="SimpleResultsTable"></module>
+            </module>
+          </module>
+        </module>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            <h2>this S/B the last element in $group$.</h2>
+            <hr />
+          ]]></param>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- END EXAMPLE -->
+
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row3_col1" group="Paging Multiplexed Modules" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | top 20 series | streamstats count | eval seriesLabel=series+ " (" + count + ")"</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        $results.count$ HTML children are about to be multiplexed and paged.
+      ]]></param>
+    </module>
+
+    <module name="Pager">
+      <param name="count">5</param>
+      
+      <module name="Multiplexer" >
+        <param name="field">series</param>
+
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            series is $series$
+          ]]></param>
+        </module>
+        
+        
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row3_col2" group="Paging Multiplexed Modules" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | top 20 series | streamstats count | eval seriesLabel=series+ " (" + count + ")"</param>
+    <param name="earliest">-15m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+    
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        $results.count$ Link+Redirector children are about to be multiplexed and paged.
+      ]]></param>
+    </module>
+
+    <module name="Pager">
+      <param name="count">5</param>
+      
+      <module name="Multiplexer" >
+        <param name="fields">series,seriesLabel</param>
+        
+        <module name="Link">
+          <param name="label"><![CDATA[$seriesLabel$]]></param>
+
+          <module name="Redirector">
+            <param name="url">search</param>
+            <param name="arg.q">search (index=* OR index=_* ) sourcetype="$series$"</param>
+            <param name="arg.earliest">-1d</param>
+            <param name="arg.latest">now</param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+
+  <!-- BEGIN EXAMPLE -->
+  <module name="Search" layoutPanel="panel_row4_col1" group="Paging and PostProcessing Multiplexed Modules" autoRun="True">
+    <param name="search">index=_internal source=*metrics.log group=per_sourcetype_thruput | stats max(eps) as maxEps sum(ev) as totalEvents sum(kb) as totalKB by series | rename series as sourcetype</param>
+    <param name="earliest">-30m</param>
+    <param name="latest">now</param>
+
+    <module name="ProgressIndicator" />
+
+    <module name="Pager">
+      <param name="count">5</param>
+
+      <module name="Multiplexer">
+        <param name="field">sourcetype</param>
+  
+        <module name="PostProcess">
+          <param name="search">search sourcetype="$sourcetype$"</param>
+  
+          <module name="HTML">
+            <param name="html"><![CDATA[
+              <div class="valueDisplay">
+                <div class="inner"><b>$sourcetype$</b> had max eps of $results[0].maxEps$, total KB of $results[0].totalKB$, total events of $results[0].totalEvents$ </div>
+              </div>
+            ]]></param>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+
+
+</view>

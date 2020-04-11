@@ -1,0 +1,229 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>introduction</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Introduction to post process searches</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+      <p>
+        As you develop a custom view you start with one chart or one table. After a while you've added and added, and you're dispatching several searches.  Often you'll see that a lot of searches are pretty similar to each other.  You're getting the same events off disk more than once and you're making Splunk do extra work.  If you get the nagging feeling that there's a better way, you're right;  it's called "postProcess" and it's a part of the core Splunk API. 
+      </p>
+      <p>
+        Post process searches allow you to avoid this inefficiency.  They allow you to dispatch only one "base search" get the events off disk only once,  but then at request-time,  carve up that base set of results in 2 or more different ways, to render different 'slices'. 
+      </p>
+      <p>
+        The first thing everyone does is very intuitive - they make a "base search" that's a simple search that returns raw events, and they make postProcess searches that contain transforming commands like stats or timechart.  Makes perfect sense, and it's a TERRIBLE IDEA. DO NOT DO THIS. Read on. 
+      </p>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row2_col1">
+    <param name="html"><![CDATA[
+      <h2>Skipping to the end - "what could go wrong?"</h2>
+      <ol>
+        <li>
+          PITFALL #1: base search is a "pure events" search that matches more than 10,000 events. <br>
+          <br>
+          Splunk behaves a little different when the 'search results' are actually events.  In particular, it does not preserve complete information about the events once you pass 10,000 rows.  The problem is that you will not get any warning about this and the rows will be silently discarded from your base search in the postProcess dashboard and therefore your postProcessed results will be wrong.   Conversely if the base search contains transforming commands like stats,  splunk will preserve all the rows in the base search results, to 10,000 rows and beyond.<br>
+          <br>
+          <b>you have fallen into this pit when</b> the postprocessed results displayed seem wrong or truncated, or <b>WORSE</b> they don't seem wrong and you don't find out they are wrong until much later.</li>
+            
+        </li>
+        <li>
+          PITFALL #2: base search is a "pure events" search and postprocess uses a field not explicitly named in base search. <br>
+          <br>
+          If a field is not mentioned <b>explicitly</b> in your base-search somewhere,  splunkd will think it doesn't need to extract and preserve those values when it runs the job.  Then come postprocess-time that field will be absent and you'll be extremely confused.  If you always group your desired fields and rows with the stats command, everything is much more explicit and you sidestep this confusion.
+          <br>
+          <br>
+          <b>you have fallen into this pit when</b> you've spent hours staring at your config wondering why your postProcess search acts like some field isn't there.
+        </li>
+        <li>
+          PITFALL #3: avoid using postProcess searches in cases where the number of rows returned by the 'base search' is extremely high.  You're setting yourself up for very bad performance in your dashboard. <br>
+          <br>
+          <b>you have fallen into this pit when</b> your slick postprocess-heavy dashboard actually has terrible performance.<br>
+          <br>
+          Note that a corollary of this pitfall is that you should avoid using a "pure events" search as your base search because such searches will have a large number of rows.  Throw a "stats count sum(foo) by bar baz" on there and summarize the rows down to the ones you'll actually use.
+        </li>
+        <li>
+          There are other strong reasons to not use a "pure events" search as the base search, when you're using postProcess, but they're extremely technical and have to do with map-reduce and distributed search and all kinds of tweaky things that would take too long to explain.   Just don't do it OK?
+        </li>
+        
+      </ol>
+
+    ]]></param>
+  </module>
+
+
+
+  <module name="HTML" layoutPanel="panel_row1_col2">
+    <param name="html"><![CDATA[
+        
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          If you don't want to read this page now, at least remember it later when postProcess doesn't seem to be working and you're tearing your hair out.     The 3 pitfalls described here are responsible for over 95% of cases where someone says "I'm having a problem with postprocess".
+        </li>
+      </ol>
+      ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row3_col1">
+    <param name="html"><![CDATA[
+      <h2>Example 1) How to use postprocess when _time is not involved</h2>
+      <p>
+        Below we're using access data from SplunkWeb to show a table of the bytes transferred by filename, and also the number of requests by HTTP status.  In the normal approach we'd have to use two different searches:
+      </p>
+      <ol>  
+        <li>index=_internal source="*web_access.log" | stats sum(bytes) as totalBytes by file | sort - totalBytes
+        <li>index=_internal source="*web_access.log" | stats count by status | sort - count
+      </ol>
+      <p>
+        Notice that both searches have to get the same events off disk. This makes it a good candidate for post process. 
+      </p>
+
+      <b>THE WRONG BUT INTUITIVE WAY</b><br>
+      <br>
+
+      <b>Base search:</b>  index=_internal source="*web_access.log" 
+      <ol>
+        <li><b>PostProcess 1:</b>| stats sum(bytes) as totalBytes by file | sort - totalBytes</li>
+        <li><b>PostProcess 2:</b>| stats count by status | sort - count</li>
+      </ol>
+      This is wrong for several reasons, and it wont work anyway. See the "Pitfalls" section above to find out why.<br>
+      <br>
+      <b>THE RIGHT WAY</b><br>
+      <br>
+      <b>Base search:</b>  index=_internal source="*web_access.log" | stats count sum(bytes) as totalBytes by file, status
+      <ol>  
+        <li><b>PostProcess 1:</b>| stats sum(totalBytes) as totalBytes by file | sort - totalBytes</li>
+        <li><b>PostProcess 2:</b>| stats sum(count) as count by status | sort - count</li>
+      </ol>
+
+      <hr/>
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row3_col1" autoRun="True">
+    <param name="search">index=_internal source="*web_access.log" | stats count sum(bytes) as totalBytes by file, status</param>
+    <param name="earliest">-6h</param>
+    <param name="latest">now</param>
+
+    <module name="PostProcess" layoutPanel="panel_row3_col1_grp1">
+      <param name="search">| stats sum(totalBytes) as totalBytes by file | sort - totalBytes</param>
+
+        <module name="HTML">
+        <param name="html"><![CDATA[
+          <h2>Top bytes transferred by file</h2>
+        ]]></param>
+      </module>
+
+      <module name="Pager">
+        <param name="count">5</param>
+
+        <module name="Table"></module>
+      
+      </module>
+    </module>
+
+    <module name="PostProcess" layoutPanel="panel_row3_col1_grp2">
+      <param name="search">| stats sum(count) as count by status | sort - count</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <h2>Number of requests by status</h2>
+        ]]></param>
+      </module>
+
+      <module name="JSChart"></module>
+
+    </module>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row4_col1">
+    <param name="html"><![CDATA[
+      <h2>Example 2) how to use postProcess when time is involved</h2>
+      <p>
+        When time is involved, you have to use Splunk's "bin" command to bucket all the values into some reasonable number of time buckets.
+      </p>
+      <p>
+        Here's a similar example to the above, except instead of the 'request count by status' on the right,  we want the right side to show a 'count over time by status':
+      </p>
+
+      <b>THE WRONG, BUT INTUITIVE WAY</b><br>
+      <br>
+      <b>Base search:</b>  index=_internal source="*web_access.log"
+      <ol>  
+        <li><b>PostProcess 1:</b>| stats sum(bytes) as totalBytes by file | sort - totalBytes</li>
+        <li><b>PostProcess 2:</b>| timechart span=15min count by status</li>
+      </ol>
+      This is wrong for several reasons, and it wont work anyway. See the "Pitfalls" section above to find out why.<br>
+      <br>
+      
+
+
+      <b>THE RIGHT WAY</b><br>
+      <br>
+
+      <b>Base search:</b>  index=_internal source="*web_access.log" | bin _time span=15min | stats count sum(bytes) as totalBytes by file, _time, status
+      <ol>  
+        <li><b>PostProcess 1:</b>| stats sum(totalBytes) as totalBytes by file | sort - totalBytes</li>
+        <li><b>PostProcess 2:</b>| timechart span=15min sum(count) by status</li>
+      </ol>
+      <hr/>
+
+    ]]></param>
+  </module>
+
+  <module name="Search" layoutPanel="panel_row4_col1" autoRun="True">
+    <param name="search">index=_internal source="*web_access.log" | bin _time span=15min | stats count sum(bytes) as totalBytes by file, _time, status</param>
+    <param name="earliest">-6h</param>
+    <param name="latest">now</param>
+
+    <module name="PostProcess" layoutPanel="panel_row4_col1_grp1">
+      <param name="search">| stats sum(totalBytes) as totalBytes by file | sort - totalBytes</param>
+
+        <module name="HTML">
+        <param name="html"><![CDATA[
+          <h2>Top bytes transferred by file</h2>
+        ]]></param>
+      </module>
+
+      <module name="Pager">
+        <param name="count">5</param>
+
+        <module name="Table"></module>
+
+      </module>
+    </module>
+
+    <module name="PostProcess" layoutPanel="panel_row4_col1_grp2" >
+      <param name="search">| timechart span=15min sum(count) by status</param>
+      
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          <h2>Number of requests over time by status</h2>
+        ]]></param>
+      </module>
+
+      <module name="JSChart"></module>
+    </module>
+  </module>
+
+
+  
+
+  
+  
+</view>

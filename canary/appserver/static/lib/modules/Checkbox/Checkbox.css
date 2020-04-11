@@ -1,0 +1,14 @@
+/* Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. */
+
+div.Checkbox input {
+    border:0px;
+}
+
+div.Checkbox {
+    min-height: 27px;
+    padding-top:8px;
+    padding-bottom:2px;
+}
+div.Checkbox label {
+    font-size:1em;
+}

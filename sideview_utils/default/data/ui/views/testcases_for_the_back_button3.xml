@@ -1,0 +1,133 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for the Back Button 2</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for the Back Button 2</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    <module name="Pulldown" layoutPanel="panel_row1_col1" group="1 static pulldown">
+      <param name="name">group</param>
+      <param name="label">$name$</param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">index</param>
+          <param name="value">per_index_thruput</param>
+        </list>
+        <list>
+          <param name="label">source</param>
+          <param name="value">per_source_thruput</param>
+        </list>
+        <list>
+          <param name="label">sourcetype</param>
+          <param name="value">per_sourcetype_thruput</param>
+        </list>
+        <list>
+          <param name="label">host</param>
+          <param name="value">per_host_thruput</param>
+        </list>
+      </param>
+      <module name="Search">
+        <param name="search">index=_internal $group$ | head 10</param>
+        <module name="ProgressIndicator" />
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          $results.count$ results for <br>
+          $group$
+          ]]></param>
+        </module>
+      </module>
+
+
+    </module>
+
+
+
+    <module name="TextField" layoutPanel="panel_row1_col2" group="1 TextField">
+      <param name="name">user</param>
+      <param name="label">$name$</param>
+      
+      
+      <module name="Search">
+        <param name="search">$user$ | head 10</param>
+        <module name="ProgressIndicator" />
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          $results.count$ results for <br>
+          $user$
+          ]]></param>
+        </module>
+      </module>
+
+
+    </module>
+    <module name="Checkbox" layoutPanel="panel_row1_col3" group="1 Checkbox">
+      <param name="name">foo</param>
+      <param name="label">Foo</param>
+      <param name="onValue">fooOn</param>
+      <param name="offValue">fooOff</param>
+      
+      <module name="Search">
+        <param name="search">index=_internal $foo$ | head 10</param>
+        
+        <module name="ProgressIndicator" />
+        
+        <module name="HTML">
+          <param name="html"><![CDATA[
+          $results.count$ results for <br>
+          $foo$
+          ]]></param>
+        </module>
+      </module>
+    </module>
+
+  </module>
+
+      
+
+    
+    
+
+    <!-- 
+    <module name="Search" layoutPanel="panel_row2_col1">
+      <param name="search"><![CDATA[
+        index=_internal source=*metrics.log group="per_*_thruput"| head 1000 | fields group | dedup group | sort group | rex field=group "per_(?<label>.+)_thruput"
+      ]]></param>
+
+      <module name="Pulldown">
+        <param name="name">group2</param>
+        <param name="label">type</param>
+
+        <param name="size">12</param>
+        <param name="separator">+OR+</param>
+        <param name="outerTemplate">( $value$ )</param>
+
+        <param name="valueField">group</param>
+                  
+      </module>
+    </module>
+    -->
+    
+    
+
+    
+
+
+    
+        
+
+</view>

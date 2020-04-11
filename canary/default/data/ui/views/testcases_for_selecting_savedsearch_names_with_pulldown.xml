@@ -1,0 +1,41 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>foo</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>foo</h1>
+    ]]></param>
+  </module>
+  
+  <!-- EXAMPLE BEGIN -->
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <module name="Search">
+      <param name="search">| rest /services/search/jobs | search delegate="scheduler" label="Top Processes by CPU" | fields - remoteSearch performance.* | sort - earliestTime | table earliestTime sid </param>
+
+      <module name="Pulldown">
+        <param name="name">sid</param>
+        <param name="label">Scheduled Results From:</param>
+        <param name="valueField">sid</param>
+        <param name="labelField">earliestTime</param>
+        <param name="staticOptions"></param>
+        
+        <module name="Search">
+          <param name="search">| loadjob $sid$</param>
+
+          <module name="Pager">
+            <module name="Table"></module>
+          </module>
+        </module>
+      </module>
+    </module>
+  </module>
+
+  <!-- EXAMPLE END -->
+
+
+</view>

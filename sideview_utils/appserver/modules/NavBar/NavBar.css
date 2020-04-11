@@ -1,0 +1,52 @@
+.NavBar {
+    padding:0px;
+    background-color: #333;
+    border-top:1px solid #333;
+}
+
+.NavBar a {
+    display: inline-block;
+    padding:12px 15px;
+    color:#fff;
+    text-decoration:none;
+    font-weight: 400;
+    font-size:1.1em;
+    font-family: "Roboto","Droid","Helvetica Neue",Helvetica,Arial,sans-serif;
+    
+}
+.NavBar .appName {
+    float:right;
+}
+.NavBar .appName a {
+    display: inline-block;
+    font-size:1.4em;
+    font-weight: 200;
+}
+.NavBar a:hover {
+    background: #414141;
+}
+
+.NavBar span.arrow::before {
+    content: "˅";
+    font-size: inherit;
+    text-decoration: none;
+}
+.NavBar span.arrow {
+    width:15px;
+    height:10px;
+    font-family: "Splunk Icons";
+    display: inline-block;
+    height: auto;
+    line-height: inherit;
+    padding-left: 0.3em;
+    vertical-align: baseline;
+}
+.NavBar  div.divider {
+    height:1px;
+    width:auto;
+    border-top:1px solid #aaa;
+}
+.NavBar ul {
+    margin-left:0px;
+}
+

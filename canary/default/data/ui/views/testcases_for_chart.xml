@@ -1,0 +1,66 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view isVisible="False" template="dashboard.html">
+  <label>Testcases for Chart</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for Chart</h1>
+    ]]></param>
+  </module>
+
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+
+    <module name="Search">
+      <param name="search"><![CDATA[
+        index=_internal | head 200 | streamstats count as c2 | chart count over c2 by  sourcetype
+      ]]></param>
+      
+      <module name="Chart">
+        <param name="charting.chart">bar</param>
+      </module>
+      
+      
+      
+    </module>
+
+    <module name="Search">
+      <param name="search"><![CDATA[
+        index=_internal | head 200 | streamstats count as c2 | chart count over c2 by source
+      ]]></param>
+      
+      <module name="ValueSetter">
+        <param name="arg.charting.legend.labelStyle.maximumWidth">200</param>
+        <param name="arg.charting.legend.labelStyle.minimumWidth">200</param>
+
+        <module name="FlashChart"></module>
+      </module>
+      
+      
+    </module>
+
+    <module name="Search">
+      <param name="search"><![CDATA[
+        index=_internal | head 200 | streamstats count as c2 | chart count over c2 by host
+      ]]></param>
+      
+      <module name="ValueSetter">
+        <param name="arg.charting.legend.labelStyle.maximumWidth">200</param>
+        <param name="arg.charting.legend.labelStyle.minimumWidth">200</param>
+
+        <module name="FlashChart"></module>
+      </module>
+      
+      
+    </module>
+
+
+  </module>
+  
+        
+
+</view>

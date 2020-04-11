@@ -1,0 +1,29 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="False" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Testcases for $foo$ replacement</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Testcases for $$foo$$ replacement</h1>
+    ]]></param>
+  </module>
+
+  <module name="CustomBehavior" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="customBehavior">fooReplacementTestCases</param>
+
+    <module name="HTML">
+      <param name="html"><![CDATA[
+        <h2>Testing foo replacement</h2>
+        $output$
+      ]]></param>
+    </module>
+
+  </module>
+
+
+</view>

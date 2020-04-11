@@ -1,0 +1,83 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html" >
+  <label>Table-Embedding Example - embedding action buttons</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Page title goes here</h1>
+    ]]></param>
+  </module>
+
+  <!-- best practice for all sideview xml views to have a URLLoader module -->
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    
+    <!-- our main search gets two secret fields that will not be displayed in the table.-->
+    <module name="Search" layoutPanel="panel_row1_col1">
+      <param name="search"><![CDATA[
+index=_internal source=*metrics.log group="per_sourcetype_thruput" 
+| head 1000 
+| stats sum(kb) as totalKB by series 
+| rename series as sourcetype
+| eval actions="PLACEHOLDER"
+| streamstats count as rowNumber
+| lookup acknowledged_sourcetypes_example sourcetype OUTPUT acknowledged
+| fillnull acknowledged value="0"
+      ]]></param>
+
+      <module name="Pager">
+        
+        <module name="Table">
+          <!-- they need to be in the data for our logic, but not displayed -->
+          <param name="hiddenFields">rowNumber,acknowledged</param>
+          
+          <!-- this module config is embedded in each "actions" cell in our table -->
+          <module name="Switcher" group="row.fields.actions">
+            <!-- basically only show the Button for rows where the ack field is "0" -->
+            <param name="selectedGroup">$row.fields.acknowledged$</param>
+
+            <module name="Button" group="0">
+              <param name="label">Acknowledge</param>
+              <param name="allowAutoSubmit">False</param>
+              <!-- We paint this CSS class on here so we can hide the button onclick later -->
+              <param name="cssClass">customButton$row.fields.rowNumber$</param>
+
+              <!-- This is the search that then adds the new acknowledgement to the lookup -->
+              <module name="Search">
+                <param name="search"><![CDATA[
+| inputlookup acknowledged_sourcetypes_example 
+| append [
+  | makeresults 
+  | eval sourcetype="$row.fields.sourcetype$" 
+  | eval acknowledged="1"
+] 
+| stats max(acknowledged) as acknowledged by sourcetype
+| outputlookup acknowledged_sourcetypes_example
+| eval message="Success!"
+                ]]></param>
+                
+                <!-- doesn't really have to be a dynamic message but it's easy enough and might be useful -->
+                <module name="HTML">
+                  <param name="html"><![CDATA[
+                    $results[0].message$
+                  ]]></param>
+                </module>
+                <!-- when the push hits this module it hides the current row's button -->
+                <module name="ShowHide">
+                  <param name="hide">.customButton$row.fields.rowNumber$</param>
+                </module>
+              </module>
+            </module>
+          </module>
+          <!-- thus endeth the table-embedding. -->
+
+        </module>
+      </module>
+    </module>
+  </module>
+
+</view>

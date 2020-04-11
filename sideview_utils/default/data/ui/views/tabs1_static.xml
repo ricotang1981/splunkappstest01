@@ -1,0 +1,111 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Tabs - static config</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+  
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Tabs - static config</h1>
+    ]]></param>
+  </module>
+  
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: static pulldown ">
+    <param name="html"><![CDATA[
+      Here we start with a single static Tabs module. We configure it to output "$$selectedTab$$" for downstream modules and then we use that $$selectedTab$$ token directly in a Search module.  
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Tabs" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="name">selectedTab</param>
+    <param name="staticTabs">
+      <list>
+        <param name="label">Sourcetypes</param>
+        <param name="value">per_sourcetype_thruput</param>
+      </list>
+      <list>
+        <param name="label">Sources</param>
+        <param name="value">per_source_thruput</param>
+      </list>
+      <list>
+        <param name="label">Hosts</param>
+        <param name="value">per_host_thruput</param>
+      </list>
+      <list>
+        <param name="label">Indexes</param>
+        <param name="value">per_index_thruput</param>
+      </list>
+    </param>
+
+    <module name="Search">
+      <param name="search">index=_internal source="*metrics.log" group="$selectedTab$" | stats max(eps) sum(kb) by series</param>
+      <param name="earliest">-1h</param>
+      <param name="latest">now</param>
+      
+      <module name="ProgressIndicator" />
+
+      <module name="Pager">
+        <param name="entityName">results</param>
+
+        <module name="Table" />
+      </module>
+
+      <!-- this HTML module here is just to show you the token values and the search -->
+      <!-- feel free to delete it -->
+      <module name="HTML">
+        <param name="html"><![CDATA[
+          $$selectedTab$$ is: <b>$selectedTab$</b><br>
+          $$selectedTab.label$$ is: <b>$selectedTab.label$</b><br>
+          the entire search is: <b>$search$</b>
+        ]]></param>
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>
+          Use the "name" param to tell the Tabs module what token you want to use downstream.   For example, if you want to refer to the selected value as $$foo$$ deeper in the XML,  set the "name" param to "foo".   
+        </li>
+        <li>
+          To add one or more static tabs to a Tabs module, use the param "staticTabs".  Open the XML file for this view to see the exact XML syntax involved. 
+        </li>
+        <li>
+          If you don't really want to start opening XML files alongside your web browser.... well you won't get the full value out of these docs... However just this once, here's what the 'staticTabs' looks like from this view: 
+<pre>
+  &lt;param name="staticTabs"&gt;
+    &lt;list&gt;
+      &lt;param name="label"&gt;Sourcetypes&lt;/param&gt;
+      &lt;param name="value"&gt;per_sourcetype_thruput&lt;/param&gt;
+    &lt;/list&gt;
+    &lt;list&gt;
+      &lt;param name="label"&gt;Sources&lt;/param&gt;
+      &lt;param name="value"&gt;per_source_thruput&lt;/param&gt;
+    &lt;/list&gt;
+    &lt;list&gt;
+      &lt;param name="label"&gt;Hosts&lt;/param&gt;
+      &lt;param name="value"&gt;per_host_thruput&lt;/param&gt;
+    &lt;/list&gt;
+    &lt;list&gt;
+      &lt;param name="label"&gt;Indexes&lt;/param&gt;
+      &lt;param name="value"&gt;per_index_thruput&lt;/param&gt;
+    &lt;/list&gt;
+  &lt;/param&gt;
+</pre>
+        <li>
+          Note the use of a HTML module to render HTML including the dynamic values of our $foo$ tokens. <a href="html2_dynamic_ui_tokens">Skip to the HTML module docs</a>.
+        </li>
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Tabs" target="_blank">Tabs and its params</a>.
+        </li>
+      </ol>
+    ]]></param>
+  </module>
+</view>

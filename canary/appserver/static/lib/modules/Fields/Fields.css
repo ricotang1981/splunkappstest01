@@ -1,0 +1,84 @@
+.fieldsModuleLayer {
+    width:600px;
+}
+.fieldsModuleLayerClosed {
+    display:none;
+}
+
+.fieldsModuleLayerOpen {
+    display:block;
+}
+
+.availableFields, 
+.selectedFields {
+    list-style-type:none;
+    margin:0px;
+    display:block;
+    border:1px solid #ccc;
+    padding:1px;
+    height:300px;
+    overflow:auto;
+}
+.availableFields {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-right-width:0px;
+}
+.selectedFields {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.availableFields li
+.selectedFields li {
+    line-height:12px;
+}
+.selectedFields li,
+.availableFields li {
+    cursor:pointer;
+}
+
+
+.fieldsModuleLayer h4 {
+    width:320px;
+    margin:5px 0px 5px 0px;
+}
+.selectedSide div.resetLink {
+    font-size:13px;
+    margin-left:10px;
+    cursor:pointer;
+    font-weight:normal;
+}
+.availableSide div.filterAvailableFields, 
+.selectedSide div.resetLink {
+    height:25px;
+}
+.filterAvailableFields label {
+    margin-right:5px;
+}
+
+.availableSide, 
+.selectedSide {
+    width:300px;
+    float:left;
+}
+.fieldsModuleLayer .buttonRow {
+    clear:both;
+}
+.modalPopup .buttonRow button {
+    float:right;
+    margin-top:5px;
+    margin-left:10px;
+}
+
+.availableFields .selected {
+    color:#999;
+}
+.selectedFields span.svIcon {
+    float:none;
+    display:inline-block;
+    height:12px;
+    width:15px;
+    background-image: url(../../../images/icons_444.png);
+    background-position: -82px -128px;
+}

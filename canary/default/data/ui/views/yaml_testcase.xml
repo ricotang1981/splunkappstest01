@@ -1,0 +1,55 @@
+<view template="dashboard.html" isVisible="False">
+  <label>Yaml testcase</label>
+
+
+
+
+  
+  <module name="URLLoader" layoutPanel="panel_row1_col1" autoRun="True">
+    <param name="keepURLUpdated">True</param>
+
+    
+    <module name="Pulldown">
+      <param name="name">selectedReport</param>
+      <param name="label">Show </param>
+      <param name="staticOptions">
+        <list>
+          <param name="label">timechart with splitby</param>
+          <param name="value">timechart bins=200 count by sourcetype limit=8</param>
+        </list>
+        <list>
+          <param name="label">timechart with no splitby</param>
+          <param name="value">timechart bins=200 count</param>
+        </list>
+      </param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | $selectedReport$</param>
+        <param name="earliest">-4h@m</param>
+        <param name="latest">now</param>
+
+        <module name="ProgressIndicator" />
+      
+        <module name="Pager" >
+          <module name="Table" />
+        </module>
+
+      </module>
+    </module>
+
+
+    <module name="Search">
+      <param name="search">some other search</param>
+      <param name="earliest">-4h@m</param>
+      <param name="latest">now</param>
+
+      
+      <module name="Pager" layoutPanel="panel_row1_col2" >
+        <module name="Table" />
+      </module>
+
+    </module>
+  </module>
+
+
+</view>

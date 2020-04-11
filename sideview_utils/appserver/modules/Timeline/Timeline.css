@@ -1,0 +1,26 @@
+/* Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. */
+
+.Timeline table {
+    width:100%;
+    table-layout:fixed;
+}
+.Timeline td {
+    text-align:center;
+    cursor:pointer;
+    overflow:hidden;
+}
+.Timeline tr.unHighlighted td {
+    text-align:left;
+}
+.Timeline th {
+    text-align:right;
+    padding-right:10px;
+    width:50px;
+}
+.Timeline td,
+.Timeline th {
+    border:1px solid #ddd;
+}
+.Timeline table {
+    border-collapse:collapse;
+}

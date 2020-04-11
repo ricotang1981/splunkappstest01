@@ -1,0 +1,75 @@
+<!-- Copyright (C) 2010-2018 Sideview LLC.  All Rights Reserved. -->
+<view autoCancelInterval="90" isVisible="true" onunloadCancelJobs="true" template="dashboard.html" isSticky="False">
+  <label>Pulldown - using the 'template' param</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  <module name="Messaging" layoutPanel="messaging" />
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>Pulldown - using the 'template' param</h1>
+    ]]></param>
+  </module>
+
+  <module name="HTML" layoutPanel="panel_row1_col1" group="example: dynamic pulldown, using 'template' param">
+    <param name="html"><![CDATA[
+      Now we show the use of Pulldown's 'template' param. Specifically, we will pull the 'sourcetype=""' part up and out of the Search and into the Pulldown.
+      ]]></param>
+  </module>
+
+  <!-- EXAMPLE BEGIN -->
+  <module name="Search" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" | dedup series | sort series | fields series</param>
+    <param name="earliest">-1h</param>
+    <param name="latest">now</param>
+    
+    <module name="Pulldown">
+      <param name="name">selectedSourcetypeSearchTerm</param>
+      <param name="label">filter:</param>
+      <param name="template">series="$value$"</param>
+      <param name="valueField">series</param>
+
+      <module name="Search">
+        <param name="search">index=_internal source="*metrics.log" group="per_sourcetype_thruput" $selectedSourcetypeSearchTerm$ | stats min(eps) avg(eps) max(eps) </param>
+        <param name="earliest">-1h</param>
+        <param name="latest">now</param>
+        
+        <module name="Pager">
+          
+          <module name="Table"></module>
+
+        </module>
+
+        <!-- this HTML module here is just to show you the token values and the search -->
+        <!-- feel free to delete it -->
+        <module name="HTML">
+          <param name="html"><![CDATA[
+            selectedSourcetypeSearchTerm is: <b>$selectedSourcetypeSearchTerm$</b><br>
+            the entire search is: <b>$search$</b>
+          ]]></param>
+        </module>
+
+      </module>
+    </module>
+  </module>
+  <!-- EXAMPLE END -->
+
+  <module name="HTML" layoutPanel="panel_row2_col2">
+    <param name="html"><![CDATA[
+      <h3>Notes</h3>
+      <ol class="notesList">
+        <li>Everyone starts out by having a field called say "user", and then <b>user="$user$"</b> in a downstream Search module. However it is generally better to use the 'template' param, to basicaly pull the "user=" part up into the Pulldown's logic.  Apart from keeping the search strings a bit cleaner, it also helps when you start to hit cases where you don't want a <pre>field=*</pre> term to be inserted into the search.  Only using "template" can you have it work so that empty input results in the term dissappearing from the search entirely. Keep reading as other examples will touch on this.</li>
+
+        <li>Within the 'template' param you can use $$value$$ to refer to the currently selected value. As a convenience, you can also refer to the value of the module's 'name' param as $$name$$.  This helps avoid duplication (which in turn helps avoid copy-and-paste errors). </li>
+
+        <li>
+          Read the specification for the Sideview module: <a href="/modules#Splunk.Module.Pulldown" target="_blank">Pulldown and its params</a>
+        </li>
+      </ol>
+
+      ]]></param>
+  </module>
+
+</view>

@@ -1,0 +1,55 @@
+.panel_row1_col .layoutCellInner,
+.panel_row1_col .Tabs {
+/*    background-color:#edede7;
+*/
+}
+.panel_row1_col .Tabs {
+  border-bottom:1px solid #ccc !important;
+}
+.panel_row1_col .Tabs li.selected{
+  position:relative;
+  top:1px;
+  height: 26px;
+  line-height: 26px;
+  border-top:1px solid #ccc;
+  border-left:1px solid #ccc;
+  border-right:1px solid #ccc;
+}
+
+/*
+tricky We use the grp1 div as the 'inside' of our tab design. 
+however there's no classname so we have to apply a dangerous style
+to all child divs, and then patch it
+*/
+.panel_row1_col .dashboardContent div {
+    border-left:1px solid #ccc;
+    border-right:1px solid #ccc;
+    border-bottom:1px solid #ccc;
+    border-top-width:0px;
+}
+.panel_row1_col .dashboardCell,
+.panel_row1_col .dashboardContent div.SplunkModule,
+.panel_row1_col .dashboardContent div.SplunkModule div,
+.panel_row1_col .dashboardContent div.multiplexedBlockInner,
+.panel_row1_col .dashboardContent div.multiplexedBlock {
+    -moz-border-radius: 0px;
+    -moz-box-shadow: none;
+    border-radius:0px;
+    border:0px;
+    box-shadow:none;
+/*
+    background: transparent;
+*/
+    border-width: 0px;
+    padding:0px;
+}
+
+.panel_row1_col div.dashboardContent div.HTML h3,
+.panel_row1_col div.dashboardContent div.Table,
+.panel_row1_col div.dashboardContent div.JSChart {
+    padding:0px 5px 0px 5px;
+    margin:0px;
+}
+.panel_row1_col div.dashboardContent div.Pager {
+    margin:7px 0px 7px 0px
+}

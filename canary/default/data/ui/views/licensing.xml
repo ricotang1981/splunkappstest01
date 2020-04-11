@@ -1,0 +1,38 @@
+<!-- Copyright (C) 2010-2019 Sideview LLC.  All Rights Reserved. -->
+<view template="dashboard.html">
+  <label>licensing</label>
+  <module name="AccountBar" layoutPanel="appHeader" />
+  <module name="AppBar" layoutPanel="appHeader" />
+  <module name="SideviewUtils" layoutPanel="appHeader" />
+  
+  
+
+  <module name="HTML" layoutPanel="viewHeader">
+    <param name="html"><![CDATA[
+    <h1>About - Licensing</h1>
+    ]]></param>
+  </module>
+
+
+  <module name="HTML" layoutPanel="panel_row1_col1">
+    <param name="html"><![CDATA[
+    
+      
+      <h2>How is this app currently distributed?</h2>
+
+      <p>
+        At the moment it is only distributed via the Trial Sideview Internal Use License Agreement.
+      </p>
+      <p>
+        <a href="https://sideviewapps.com/contact">Contact us with any questions</a>
+      </p>
+
+      
+    ]]></param>
+  </module>
+
+
+  
+
+
+</view>
